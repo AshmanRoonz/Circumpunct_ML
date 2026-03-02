@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "circumpunct-ml"
+version = "0.1.0"
+description = "Computational verification and falsification testing for the Circumpunct Framework"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Ashman Roonz", email = "email@ashmanroonz.ca"},
+]
+keywords = ["physics", "fractal", "golden-ratio", "standard-model", "falsification"]
+
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.7"]
+test = ["pytest>=7.0"]
+dev = ["matplotlib>=3.7", "pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+include = ["circumpunct_ml*"]
