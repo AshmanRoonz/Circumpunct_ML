@@ -2,10 +2,13 @@ README.md
 pyproject.toml
 circumpunct_ml/__init__.py
 circumpunct_ml/constants.py
+circumpunct_ml/core.py
 circumpunct_ml/derivations.py
 circumpunct_ml/falsification.py
 circumpunct_ml/fractal.py
+circumpunct_ml/hunter.py
 circumpunct_ml/lattice.py
+circumpunct_ml/mind.py
 circumpunct_ml/predictions.py
 circumpunct_ml.egg-info/PKG-INFO
 circumpunct_ml.egg-info/SOURCES.txt

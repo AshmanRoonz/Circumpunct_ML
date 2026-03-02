@@ -1,0 +1,18 @@
+{
+  "generation": 3,
+  "vocab_size": 246,
+  "d_model": 96,
+  "n_layers": 4,
+  "n_heads": 4,
+  "diagnosis": {
+    "generation": 3,
+    "mean_beta": 0.6221188344061375,
+    "beta_variance": 0.0007014219605936262,
+    "mean_chi": 0.7671016715466976,
+    "D": 1.6221188344061375,
+    "regime": "convergent",
+    "errors": [],
+    "healthy": true,
+    "n_params": 292885
+  }
+}

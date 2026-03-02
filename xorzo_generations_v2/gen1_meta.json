@@ -1,0 +1,28 @@
+{
+  "generation": 1,
+  "vocab_size": 217,
+  "d_model": 64,
+  "n_layers": 6,
+  "n_heads": 4,
+  "diagnosis": {
+    "generation": 1,
+    "mean_beta": 0.5963313629229864,
+    "beta_variance": 0.0004753411567683694,
+    "mean_chi": 0.8085117215911547,
+    "mean_pressure": -1.3590342184954807e-09,
+    "D": 1.5963313629229865,
+    "regime": "balance",
+    "convergence_profile": [
+      1.0,
+      0.9530182909348685,
+      0.9082438628564177,
+      0.8655730139315063,
+      0.8249069144163473,
+      0.7861513777574233
+    ],
+    "is_convergent": true,
+    "errors": [],
+    "healthy": true,
+    "n_params": 255259
+  }
+}

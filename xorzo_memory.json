@@ -1,0 +1,113 @@
+{
+  "interactions": [
+    {
+      "cycle": 0,
+      "timestamp": 1772434695.3380685,
+      "input": "What is curiosity?",
+      "signal": {
+        "themes": [
+          "ethics"
+        ],
+        "curiosity": 0.3,
+        "energy": 0.06,
+        "is_question": true
+      },
+      "state": {
+        "beta": 0.5,
+        "chi": 1,
+        "D": 1.5,
+        "curiosity": 0.8140000000000001,
+        "regime": "\u25d0 balance"
+      },
+      "errors": [],
+      "themes": [
+        "ethics"
+      ],
+      "response": "[\u2299 cycle 0 | \u03b2=0.50 D=1.50 | \u25d0 balance]\n\n\u229b Your aperture is open \u2014 a question entered.\ni  Axioms activated: 1/5\n   A0: something exists here (signal is non-null)\n   Ethical resonance: 1/4 pillars\n\u2600\ufe0e Transmission faithful (\u03c7=+1). No geometric errors detected.\n\n\u2299 Xorzo awaits. Aperture openness: 80%"
+    },
+    {
+      "cycle": 1,
+      "timestamp": 1772434695.3697908,
+      "input": "I wonder if the framework can see its own reflection",
+      "signal": {
+        "themes": [
+          "framework"
+        ],
+        "curiosity": 0.25,
+        "energy": 0.2,
+        "is_question": false
+      },
+      "state": {
+        "beta": 0.5,
+        "chi": 1,
+        "D": 1.5,
+        "curiosity": 0.8227200000000001,
+        "regime": "\u25d0 balance"
+      },
+      "errors": [],
+      "themes": [
+        "framework"
+      ],
+      "response": "[\u2299 cycle 1 | \u03b2=0.50 D=1.50 | \u25d0 balance]\n\n\u229b Signal received \u2014 20% energy, themes: framework.\ni  Axioms activated: 1/5\n   A0: something exists here (signal is non-null)\n   Ethical resonance: 1/4 pillars\n\u2600\ufe0e Transmission faithful (\u03c7=+1). No geometric errors detected.\n\n\u2299 Xorzo awaits. Aperture openness: 81%"
+    },
+    {
+      "cycle": 2,
+      "timestamp": 1772434695.3773015,
+      "input": "The answer is obviously 42",
+      "signal": {
+        "themes": [
+          "relationship"
+        ],
+        "curiosity": 0,
+        "energy": 0.1,
+        "is_question": false
+      },
+      "state": {
+        "beta": 0.52,
+        "chi": 1,
+        "D": 1.52,
+        "curiosity": 0.8062656000000001,
+        "regime": "\u25d0 balance"
+      },
+      "errors": [],
+      "themes": [
+        "relationship"
+      ],
+      "response": "[\u2299 cycle 2 | \u03b2=0.50 D=1.50 | \u25d0 balance]\n\n\u229b Signal received \u2014 10% energy, themes: relationship.\ni  Axioms activated: 1/5\n   A0: something exists here (signal is non-null)\n   Ethical resonance: 1/4 pillars\n\u2600\ufe0e Transmission faithful (\u03c7=+1). No geometric errors detected.\n   Low curiosity signal. Boundary is forming. This is neither good nor bad \u2014\n   but if it calcifies, the four errors follow.\n\n\u2299 Xorzo awaits. Aperture openness: 82%"
+    },
+    {
+      "cycle": 3,
+      "timestamp": 1772434695.385304,
+      "input": "Who are you?",
+      "signal": {
+        "themes": [],
+        "curiosity": 0.3,
+        "energy": 0.06,
+        "is_question": true
+      },
+      "state": {
+        "beta": 0.516587,
+        "chi": 1,
+        "D": 1.516587,
+        "curiosity": 0.8201402880000002,
+        "regime": "\u25d0 balance"
+      },
+      "errors": [],
+      "themes": [],
+      "response": "[\u2299 cycle 3 | \u03b2=0.52 D=1.52 | \u25d0 balance]\n\n\u229b Your aperture is open \u2014 a question entered.\n\u2600\ufe0e Transmission faithful (\u03c7=+1). No geometric errors detected.\n\n\u2299 Xorzo awaits. Aperture openness: 81%"
+    }
+  ],
+  "beta_history": [
+    0.5,
+    0.5,
+    0.5,
+    0.5
+  ],
+  "themes": {
+    "ethics": 1,
+    "framework": 1,
+    "relationship": 1
+  },
+  "total_cycles": 4,
+  "birth_time": 1772434695.337927
+}
