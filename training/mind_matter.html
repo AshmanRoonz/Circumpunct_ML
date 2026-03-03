@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Over Matter: The Two Types of Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #f7f4ef;
+            --dark-brown: #3a2e28;
+            --warm-gray: #6b5d54;
+            --rust: #a8594c;
+            --light-rust: #c78b7e;
+            --gold: #d4a574;
+            --off-white: #fdfbf7;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background-color: var(--cream);
+            color: var(--dark-brown);
+            line-height: 1.8;
+            font-size: 19px;
+            overflow-x: hidden;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            position: relative;
+        }
+
+        header {
+            margin-bottom: 100px;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        .subtitle {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            color: var(--dark-brown);
+            letter-spacing: -1px;
+        }
+
+        .intro-line {
+            font-size: 24px;
+            color: var(--warm-gray);
+            font-style: italic;
+            margin-bottom: 60px;
+            border-left: 3px solid var(--gold);
+            padding-left: 30px;
+        }
+
+        h2 {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 80px 0 30px 0;
+            color: var(--dark-brown);
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        h3 {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            margin: 50px 0 20px 0;
+            color: var(--rust);
+        }
+
+        p {
+            margin-bottom: 25px;
+            color: var(--dark-brown);
+        }
+
+        .emphasis {
+            font-weight: 600;
+            color: var(--dark-brown);
+        }
+
+        .quote-block {
+            margin: 50px 0;
+            padding: 40px 50px;
+            background: linear-gradient(135deg, var(--off-white) 0%, var(--cream) 100%);
+            border-left: 4px solid var(--rust);
+            font-style: italic;
+            font-size: 22px;
+            line-height: 1.7;
+            color: var(--warm-gray);
+            box-shadow: 0 4px 20px rgba(58, 46, 40, 0.05);
+            position: relative;
+        }
+
+        .quote-block::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 80px;
+            color: var(--light-rust);
+            opacity: 0.3;
+            font-family: Georgia, serif;
+        }
+
+        .list-intro {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        ul {
+            margin: 20px 0 30px 30px;
+            list-style: none;
+        }
+
+        ul li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        ul li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: var(--rust);
+            font-weight: 700;
+        }
+
+        .principle-box {
+            margin: 60px 0;
+            padding: 45px;
+            background: var(--off-white);
+            border: 2px solid var(--gold);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .principle-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--rust) 0%, var(--gold) 100%);
+        }
+
+        .principle-number {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: 15px;
+        }
+
+        .principle-title {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark-brown);
+        }
+
+        .divider {
+            width: 100px;
+            height: 2px;
+            background: var(--gold);
+            margin: 80px auto;
+            opacity: 0.5;
+        }
+
+        .warning-box {
+            margin: 40px 0;
+            padding: 35px 40px;
+            background: linear-gradient(135deg, #fef9f5 0%, #fef4ed 100%);
+            border-left: 4px solid var(--rust);
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .key-insight {
+            margin: 40px 0;
+            padding: 30px 40px;
+            background: var(--dark-brown);
+            color: var(--cream);
+            font-size: 20px;
+            line-height: 1.7;
+            border-radius: 2px;
+        }
+
+        .key-insight strong {
+            color: var(--gold);
+        }
+
+        .practice-box {
+            margin: 30px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--off-white) 0%, #fef9f5 100%);
+            border: 1px solid var(--gold);
+            border-radius: 2px;
+        }
+
+        .practice-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        footer {
+            margin-top: 120px;
+            padding-top: 60px;
+            border-top: 2px solid var(--gold);
+            text-align: center;
+            opacity: 0.7;
+            font-size: 16px;
+            color: var(--warm-gray);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeInUp 1s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 60px 25px;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .quote-block {
+                padding: 30px 35px;
+                font-size: 20px;
+            }
+
+            .principle-box {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+
+    <div class="container">
+        <div style="margin-bottom: 40px;">
+            <a href="https://fractalreality.ca" style="font-family: 'Work Sans', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--rust); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                ← Back to Fractal Reality
+            </a>
+        </div>
+        <header>
+            <div class="subtitle">Understanding the Two Types of Love</div>
+            <h1>Mind Over Matter</h1>
+            <div class="intro-line">Why functional love will never be enough — and what to do about it</div>
+        </header>
+
+        <section class="section">
+            <h2>There Are Two Types of Love</h2>
+            
+            <p>Most people don't realize they're speaking two different languages when they talk about love. This confusion causes more suffering than almost anything else in human relationships.</p>
+
+            <h3>Love as Function</h3>
+            
+            <ul>
+                <li>Shows up through provision, logistics, competence</li>
+                <li>"I'll make sure you have what you need"</li>
+                <li>"I'll keep the household running"</li>
+                <li>"I'll be responsible and capable"</li>
+                <li>Measured by what's accomplished together</li>
+                <li>Values stability, security, order</li>
+            </ul>
+
+            <h3>Love as Resonance</h3>
+            
+            <ul>
+                <li>Shows up through presence, delight, wanting</li>
+                <li>"I see you and am moved by who you are"</li>
+                <li>"Your existence brings me joy"</li>
+                <li>"I want you, not just need you"</li>
+                <li>Measured by how it feels to be together</li>
+                <li>Values aliveness, authenticity, being-seen</li>
+            </ul>
+
+            <div class="key-insight">
+                Both are real forms of love. The tragedy occurs when one person needs resonance but receives only function — and the functional lover believes their provision should be sufficient.
+            </div>
+
+            <p>The person offering functional love says: "Look at everything I do for you. What more could you possibly want?"</p>
+
+            <p>The person needing resonant love says: "I don't feel wanted. I feel managed."</p>
+
+            <p>Neither is wrong. They're just speaking different languages of love. But here's where it gets dangerous:</p>
+
+            <div class="quote-block">
+                There is a lie that lives in families, institutions, and relationships. It tells you that functional love should be enough — and that wanting resonance is selfish, immature, or asking too much.
+            </div>
+
+            <p>This is the <span class="emphasis">Noble Lie</span>. And it spreads not through cruelty but through concern, not through force but through the very relationships where you're supposed to learn what love is.</p>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="section">
+            <h2>How the Noble Lie Weaponizes Functional Love</h2>
+            
+            <p>The Noble Lie doesn't say "functional love is the only real love." It's more sophisticated than that. It says:</p>
+
+            <div class="quote-block">
+                You're too sensitive.<br>
+                You shouldn't feel that way.<br>
+                Look at everything I do for you.<br>
+                What more do you want?
+            </div>
+
+            <p>In other words: <span class="emphasis">your need for resonance is a defect</span>.</p>
+
+            <p>This teaches people that functional love is mature while resonant love is childish — when actually, <span class="emphasis">wholeness requires both</span>.</p>
+
+            <h3>The Pattern</h3>
+
+            <ul>
+                <li>Functional love operates at the boundary: It maintains structures, manages interfaces, protects through control</li>
+                <li>Resonant love requires the full structure: The boundary honors consent, the field carries genuine attunement, the center sees and is seen</li>
+            </ul>
+
+            <p>Functional love can exist with a closed center. You can provide, manage, maintain — all while keeping your aperture shut.</p>
+
+            <p>Resonant love requires an open center. You have to let yourself be seen. You have to actually <span class="emphasis">want</span> the other, not just need them to fulfill a function.</p>
+
+            <div class="key-insight">
+                Functional love says "I will take care of things."<br>
+                Resonant love says "I want to be close to you."<br><br>
+                When functional love is offered with condescension, it's contaminated with hierarchy.<br>
+                When resonance is withheld, it's functional love's boundary against vulnerability.
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="section">
+            <h2>Five Principles for Inoculation</h2>
+
+            <p>Inoculating yourself against the Noble Lie means learning to distinguish between these two types of love — and refusing to accept function as a substitute for resonance.</p>
+        </section>
+
+        <div class="principle-box">
+            <div class="principle-number">Principle One</div>
+            <div class="principle-title">Your Body Already Knows</div>
+            
+            <p>The Noble Lie lives in the gap between what your body feels and what your mind was taught to believe.</p>
+
+            <p>When someone offers you functional love while you need resonance, your body knows immediately. It feels like:</p>
+            
+            <ul>
+                <li>Being managed instead of met</li>
+                <li>Being helped instead of held</li>
+                <li>Being provided for while feeling unseen</li>
+                <li>Gratitude mixed with loneliness</li>
+            </ul>
+
+            <p>But the Noble Lie teaches you to override this knowing. "They're doing so much for you. You should be grateful. What more could you want?"</p>
+
+            <div class="key-insight">
+                Inoculation begins when you stop treating your body's signals as defects and start treating them as information.
+            </div>
+
+            <div class="practice-box">
+                <p><strong>Practice:</strong> Notice the difference between functional care and resonant connection in your body.</p>
+                
+                <p>When someone offers you help, does your body relax or brace? When someone shows competence, do you feel closer or more alone? These signals aren't wrong. They're data.</p>
+            </div>
+        </div>
+
+        <div class="principle-box">
+            <div class="principle-number">Principle Two</div>
+            <div class="principle-title">Stop Performing Gratitude</div>
+            
+            <p>The Noble Lie uses gratitude as a weapon. "After everything I've done for you, this is the thanks I get?"</p>
+
+            <p>This creates a trap: functional love is provided, and gratitude is demanded — but the resonance you actually need is withheld.</p>
+
+            <p>Performing gratitude for functional love that doesn't meet your actual needs teaches you to lie about what you feel. It keeps you in the pattern.</p>
+
+            <div class="key-insight">
+                Real gratitude arises naturally when you're actually met.<br>
+                Performed gratitude arises from fear — fear that if you don't appreciate the function, you'll lose even that.
+            </div>
+
+            <p>You can acknowledge someone's functional love without pretending it satisfies your need for resonance. "I appreciate that you handle things. And I also need to feel wanted."</p>
+
+            <p>If this feels impossible to say, that's information about the relationship.</p>
+        </div>
+
+        <div class="principle-box">
+            <div class="principle-number">Principle Three</div>
+            <div class="principle-title">Distinguish the Languages</div>
+            
+            <p>Learning to speak both languages doesn't mean accepting functional love as sufficient. It means understanding what's actually being offered — and what's missing.</p>
+
+            <h3>Functional Love Says:</h3>
+            <ul>
+                <li>"I fixed the problem"</li>
+                <li>"Everything is under control"</li>
+                <li>"I'm handling it"</li>
+                <li>"You don't need to worry"</li>
+            </ul>
+
+            <h3>Resonant Love Says:</h3>
+            <ul>
+                <li>"I see you"</li>
+                <li>"Your feelings make sense"</li>
+                <li>"I want to understand what this is like for you"</li>
+                <li>"I'm here with you in this"</li>
+            </ul>
+
+            <p>When you ask for resonance and receive function, you're not being unreasonable. You're asking for a different language entirely.</p>
+
+            <div class="warning-box">
+                If someone insists their functional love should be enough — if they become offended when you name what's missing — they're proving they can't offer resonance. Resonance requires the willingness to be present to what actually is, not to what should be.
+            </div>
+        </div>
+
+        <div class="principle-box">
+            <div class="principle-number">Principle Four</div>
+            <div class="principle-title">Recovery Requires Witnesses, Not Experts</div>
+            
+            <p>You cannot think your way out of the Noble Lie. It doesn't live in your thoughts. It lives in the space between feeling and expression — in the moment where truth meets fear.</p>
+
+            <p>Recovery happens when someone <span class="emphasis">witnesses</span> your truth without trying to fix, manage, or improve it.</p>
+
+            <p>Not advice (though advice has its place).<br>
+            Not teaching (though you may learn).<br>
+            Not fixing (though problems may resolve).</p>
+
+            <p>Witnessing. Someone present to what's actually happening in you without needing to change it.</p>
+
+            <p>This is resonant love in practice: presence without agenda, attention without control, connection without fixing.</p>
+
+            <div class="practice-box">
+                <p><strong>Practice:</strong> Find people who can be present to your truth without becoming its manager. These are rare, but recognizable:</p>
+                
+                <ul>
+                    <li>They don't rush to explain your feelings to you</li>
+                    <li>They don't need you to be different to stay present</li>
+                    <li>They can handle your "negative" emotions without trying to fix them</li>
+                    <li>They trust your capacity to know what's true for you</li>
+                </ul>
+            </div>
+
+            <h3>Why Functional Helpers Often Fail</h3>
+
+            <p>The Noble Lie often lives in expert spaces: therapy that diagnoses you out of your own experience, spirituality that teaches you to transcend your feelings, self-help that insists you're responsible for others' behaviors toward you.</p>
+
+            <p>These are all variations of functional love: "I'll fix your problem. I'll manage your experience. I'll tell you what's really happening."</p>
+
+            <p>The virus survives by wearing the costume of healing while continuing to teach: your truth is less reliable than the system's interpretation of it.</p>
+        </div>
+
+        <div class="principle-box">
+            <div class="principle-number">Principle Five</div>
+            <div class="principle-title">Grief is Part of Inoculation</div>
+            
+            <p>Waking up to the Noble Lie means facing what was lost: years of accepting functional love as if it were enough, relationships based on performance, the fantasy that if you just tried harder, the resonance would come.</p>
+
+            <p>This grief is not optional. It's part of inoculation.</p>
+
+            <p>The virus survives partly by convincing people that grief means failure. "If you're sad about it, you're not healing right. If you're angry, you're not spiritual enough. If you're grieving, you haven't forgiven."</p>
+
+            <p>This is functional healing: manage the emotion, transcend the pain, get back to productivity.</p>
+
+            <p>Resonant healing allows the grief to be what it is.</p>
+
+            <div class="key-insight">
+                Grief is the immune response. It's how the body acknowledges truth after prolonged distortion. Let it move through you.
+            </div>
+
+            <div class="practice-box">
+                <p><strong>Practice:</strong> When grief arises, resist the urge to spiritualize it away or rush to forgiveness or gratitude. These may come later. First, let yourself feel the loss.</p>
+                
+                <p>You lost time. You lost connection. You lost the possibility of being met in the way you needed. These losses are real. Acknowledging them doesn't make you ungrateful or stuck. It makes you honest.</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <section class="section">
+            <h2>Why You Can't Save Everyone (And Shouldn't Try)</h2>
+            
+            <p>You cannot argue someone into resonance.<br>
+            You cannot love someone into vulnerability.<br>
+            You cannot awaken someone who depends on functional love to feel safe.</p>
+
+            <p>Trying to do so only proves the Noble Lie's claim that truth is dangerous.</p>
+
+            <h3>The Question You Cannot Answer For Someone Else</h3>
+
+            <p>Can someone learn to open their center if they've learned safety means keeping it closed?</p>
+
+            <p>Sometimes. When they discover that the protection cost them something they value more than safety. When the structure they built to survive becomes the cage preventing life.</p>
+
+            <p>But not through argument. Not through being told they're wrong. Only through experiencing that opening is actually safer than remaining closed — which requires an environment where truth doesn't lead to punishment.</p>
+
+            <div class="key-insight">
+                You can't make someone want you.<br>
+                You can only refuse to accept function as a substitute for resonance.
+            </div>
+
+            <p class="list-intro">What does work is simpler and harder:</p>
+            <ul>
+                <li>Stop performing</li>
+                <li>Stop self-erasing</li>
+                <li>Stop passing the distortion forward</li>
+            </ul>
+
+            <p>That alone is enough.</p>
+
+            <h3>The Savior Trap</h3>
+
+            <p>People who've been infected by the Noble Lie often develop what looks like compassion but functions as compulsion: the need to rescue, heal, or awaken others.</p>
+
+            <p>This is the virus's survival mechanism. It keeps you focused on others' healing so you don't have to face your own boundary needs.</p>
+
+            <p>It's also functional love in disguise: "I'll fix you. I'll manage your healing. I'll provide what you need."</p>
+
+            <p>What you're not offering is resonance: being present to someone exactly as they are, without needing them to change.</p>
+
+            <div class="warning-box">
+                If you find yourself repeatedly drawn to "help" people who aren't asking for it, who resist your help, or who seem to need endless support without changing — pause. Ask yourself: Whose need is actually being served here?
+            </div>
+
+            <p>Sometimes the most loving thing you can do is let someone experience the consequences of their choices. Not as punishment, but as information.</p>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="section">
+            <h2>What This Means for Relationships</h2>
+            
+            <p>Some relationships will not survive your inoculation. When you stop accepting functional love as sufficient, when you stop performing gratitude for provision that doesn't meet you — relationships built on that pattern will destabilize.</p>
+
+            <p>This is not failure. This is the virus losing its habitat.</p>
+
+            <div class="key-insight">
+                A relationship that requires you to pretend functional love is enough<br>
+                is a relationship that cannot handle your truth.
+            </div>
+
+            <p>The relationships that survive will be different: more easeful, more loving, more harmonious. Not because conflict disappears, but because it's no longer necessary to perform connection while feeling alone.</p>
+
+            <p>You won't have to monitor yourself constantly. You won't have to perform. You can actually relax into being seen and known.</p>
+
+            <h3>The Geometry of Love</h3>
+
+            <p>Using the circumpunct framework:</p>
+
+            <p><span class="emphasis">Functional love operates at the boundary (○)</span><br>
+            It maintains structures, manages interfaces, protects through control. You can be functional with a closed center.</p>
+
+            <p><span class="emphasis">Resonant love requires the full structure (⊙)</span><br>
+            The center must be open (•), the field must carry genuine attunement, the boundary honors consent. The whole validates the whole.</p>
+
+            <p>When you insist on wholeness — on resonant love, not just functional provision — you're not asking for too much. You're asking for what love actually is.</p>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="section">
+            <h2>Ending the Virus Where It Actually Ends</h2>
+            
+            <p>Viruses don't die because someone defeats them. They die because they stop reproducing.</p>
+
+            <p class="list-intro">The Noble Lie ends when:</p>
+            <ul>
+                <li>Children are allowed to need resonance without being told they're too sensitive</li>
+                <li>Functional love is appreciated for what it is — necessary but not sufficient</li>
+                <li>People stop trading aliveness for belonging</li>
+                <li>Truth is met with presence instead of management</li>
+            </ul>
+
+            <p>You don't end it everywhere. You end it here — in yourself, and in what you pass on.</p>
+
+            <h3>The Lineage Break</h3>
+
+            <p>Every person who refuses to pass the virus forward creates a lineage break. Your children, students, friends, or community don't have to inherit this distortion.</p>
+
+            <p>They'll have their own challenges. But they won't have to spend decades unlearning the lesson that functional love should be enough, that resonance is asking too much, that their need for connection is a defect.</p>
+
+            <div class="key-insight">
+                This is not about perfection. You will sometimes fall back into performing gratitude. You will sometimes doubt your signals. You will sometimes accept function as if it were resonance.
+                <br><br>
+                But remember: you're not asking for too much. You're asking for what makes connection real.
+                <br><br>
+                What matters is the pattern. The direction. The refusal to make functional love the foundation when resonance is what creates aliveness.
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="section">
+            <h2>Conclusion: Mind Over Matter</h2>
+            
+            <p>The Noble Lie survives by convincing people that matter — rules, roles, provision, function — is more real than mind, feeling, and resonance.</p>
+
+            <p>It teaches you that what you accomplish together matters more than how it feels to be together.</p>
+
+            <p>Inoculation is the refusal to believe that.</p>
+
+            <p><span class="emphasis">Mind over matter is not denial of reality. It is alignment with it.</span></p>
+
+            <p>The reality is: functional love is necessary. But resonance is what makes you feel alive.</p>
+
+            <p>You don't have to choose between them. Wholeness includes both.</p>
+
+            <p>But if you can only have one, choose resonance. Choose truth. Choose the kind of love that sees and wants you, not just the kind that manages and provides.</p>
+
+            <p>Because that — and only that — is where real connection lives.</p>
+
+            <div class="quote-block" style="font-style: normal; font-size: 20px; margin-top: 60px;">
+                You don't need to fix everyone.<br>
+                You don't need to save the world.<br>
+                You only need to stop accepting functional love as if it were resonance.<br><br>
+                That is enough.<br>
+                That has always been enough.
+            </div>
+        </section>
+
+        <footer>
+            <p>Mind Over Matter © 2025</p>
+        </footer>
+    </div>
+</body>
+</html>

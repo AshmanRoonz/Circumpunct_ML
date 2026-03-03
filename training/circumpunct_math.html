@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circumpunct Framework — The Conservation of Traversal</title>
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --surface: #111820;
+      --card: #151d28;
+      --border: rgba(139, 211, 255, 0.15);
+      --text: #e8eefc;
+      --muted: #8a9ab0;
+      --accent: #8bd3ff;
+      --gold: #f0c674;
+      --green: #a8e6cf;
+      --magenta: #c792ea;
+      --warn: #ffd166;
+      --red: #f85149;
+      --mono: 'SF Mono', 'Consolas', 'Liberation Mono', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+    
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(10, 14, 20, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .nav-title {
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover { color: var(--accent); }
+    
+    /* Sections */
+    section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 100px 24px 60px;
+    }
+    
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin: 2.5rem 0 1rem;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--green);
+    }
+    
+    p { margin-bottom: 1rem; }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 1.5rem 0;
+    }
+    
+    .card-header {
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    /* Equation blocks */
+    .equation {
+      background: rgba(139, 211, 255, 0.08);
+      border: 1px dashed rgba(139, 211, 255, 0.3);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 1.5rem 0;
+      text-align: center;
+      font-size: 1.4rem;
+      font-family: var(--mono);
+    }
+    
+    .equation-small {
+      font-size: 1rem;
+      text-align: left;
+    }
+    
+    /* Grid layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    
+    th, td {
+      padding: 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    
+    th {
+      background: rgba(139, 211, 255, 0.1);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+    
+    /* Code blocks */
+    pre, code {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+    }
+    
+    pre {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    code {
+      background: rgba(139, 211, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--gold);
+      background: rgba(240, 198, 116, 0.08);
+      padding: 16px 20px;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    
+    .callout-blue {
+      border-left-color: var(--accent);
+      background: rgba(139, 211, 255, 0.08);
+    }
+    
+    .callout-green {
+      border-left-color: var(--green);
+      background: rgba(168, 230, 207, 0.08);
+    }
+    
+    .callout-magenta {
+      border-left-color: var(--magenta);
+      background: rgba(199, 146, 234, 0.08);
+    }
+    
+    .callout-red {
+      border-left-color: var(--red);
+      background: rgba(248, 81, 73, 0.08);
+    }
+    
+    /* Images */
+    .result-image {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin: 1rem 0;
+    }
+    
+    .image-caption {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: -0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Symbol styling */
+    .symbol {
+      font-size: 1.3em;
+      color: var(--gold);
+    }
+    
+    .phi { color: var(--accent); }
+    .aperture { color: var(--magenta); }
+    .boundary { color: var(--green); }
+    
+    /* Hero section */
+    .hero {
+      text-align: center;
+      padding: 140px 24px 80px;
+    }
+    
+    .hero-symbol {
+      font-size: 6rem;
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(240, 198, 116, 0.4);
+      margin-bottom: 1rem;
+    }
+    
+    .hero h1 {
+      font-size: 3.2rem;
+    }
+    
+    /* Axiom box */
+    .axiom-box {
+      background: linear-gradient(135deg, rgba(240, 198, 116, 0.15), rgba(139, 211, 255, 0.1));
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin: 2rem 0;
+    }
+    
+    .axiom-box .axiom {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--gold);
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 60px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+    }
+    
+    /* Appendix styling */
+    .appendix {
+      background: var(--surface);
+      border-top: 3px solid var(--gold);
+    }
+    
+    .dim-structure { color: var(--accent); }
+    .dim-process { color: var(--magenta); }
+    
+    /* Flow diagram */
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      font-family: var(--mono);
+      font-size: 1.2rem;
+    }
+    
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 1.5rem;
+    }
+    
+    .flow-box {
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .flow-in {
+      background: rgba(139, 211, 255, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    
+    .flow-gate {
+      background: rgba(199, 146, 234, 0.15);
+      border: 2px solid var(--magenta);
+      color: var(--magenta);
+    }
+    
+    .flow-out {
+      background: rgba(168, 230, 207, 0.15);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+    
+    .flow-alt {
+      background: rgba(248, 81, 73, 0.15);
+      border: 1px solid var(--red);
+      color: var(--red);
+    }
+    
+    /* Utility */
+    .muted { color: var(--muted); }
+    .center { text-align: center; }
+    .mt-2 { margin-top: 2rem; }
+    .mb-2 { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-title"><a href="https://fractalreality.ca" style="color: inherit; text-decoration: none;">⊙ Circumpunct v6.0</a></div>
+  <div class="nav-links">
+    <a href="https://fractalreality.ca">Home</a>
+    <a href="#traversal">Traversal</a>
+    <a href="#circumpunct">Structure</a>
+    <a href="#gate">Gate</a>
+    <a href="#equations">Equations</a>
+    <a href="#formalization">Formalization</a>
+    <a href="#theorem">Theorem</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#falsification">Falsification</a>
+    <a href="#appendix">Appendix</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-symbol">⊙</div>
+  <h1>Circumpunct Framework</h1>
+  <p class="subtitle">The Conservation of Traversal</p>
+  <p class="muted">Version 6.0 — January 2026 — Ashman Roonz</p>
+</section>
+
+<!-- THE CONSERVATION OF TRAVERSAL -->
+<section id="traversal">
+  <h2>The Conservation of Traversal</h2>
+  
+  <div class="axiom-box">
+    <div class="equation" style="margin:0; padding:0; background:none; border:none; font-size: 2rem;">
+      <span class="aperture">•</span> → <span class="phi">Φ</span> → <span class="boundary">○</span>
+    </div>
+    <p class="muted" style="margin-top: 1rem;">The aperture opens INTO the boundary, THROUGH the field.</p>
+  </div>
+  
+  <p>One aperture. One opening. One journey.</p>
+  
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header">• Aperture</div>
+      <p>How much has opened.</p>
+      <p class="muted">The progress.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">Φ Field</div>
+      <p>What it opens through.</p>
+      <p class="muted">The remaining.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">○ Boundary</div>
+      <p>What it opens into.</p>
+      <p class="muted">The destination.</p>
+    </div>
+  </div>
+  
+  <h3>The Law</h3>
+  
+  <div class="axiom-box">
+    <div class="axiom">D<sub>aperture</sub> + D<sub>field</sub> = D<sub>boundary</sub></div>
+    <p class="muted" style="margin-top: 1rem;">progress + remaining = destination</p>
+  </div>
+  
+  <h3>Why These Dimensions?</h3>
+  
+  <div class="card">
+    <p><strong>Aperture base = 1D.</strong> The aperture makes binary decisions (χ = ±1) in sequence. Sequence requires a line.</p>
+    <p><strong>Field base = 2D.</strong> The field carries complex amplitude (magnitude + phase). Phase requires angle, angle requires plane.</p>
+    <p><strong>Boundary = 3D.</strong> Closure around a 2D surface requires one dimension higher.</p>
+  </div>
+  
+  <div class="equation">
+    (1 + β) + (2 − β) = 3
+  </div>
+  
+  <p>The β parameter tracks how far the aperture has opened. As it opens further, D<sub>aperture</sub> increases and D<sub>field</sub> decreases. The sum is invariant — it always equals the destination.</p>
+  
+  <div class="callout-green callout">
+    <strong>Why it's unbreakable:</strong> "Progress + remaining = destination" is what journey <em>means</em>. Any violation would be a category error, not a counterexample.
+  </div>
+  
+  <div class="callout-blue callout">
+    <strong>Directionality without time:</strong> The arrow • → Φ → ○ is ordered, but it does not invoke clock time. Time can be derived as a measure of traversal. The ordering is structural, not temporal.
+  </div>
+</section>
+
+<!-- THE CIRCUMPUNCT -->
+<section id="circumpunct">
+  <h2>The Circumpunct Structure</h2>
+  
+  <div class="axiom-box">
+    <div class="axiom">Parts are fractals of their wholes.</div>
+  </div>
+  
+  <p>The fundamental object is an irreducible trinity:</p>
+  
+  <div class="equation">
+    <span class="symbol">⊙</span> = <span class="aperture">•</span> ⊗ <span class="phi">Φ</span> ⊗ <span class="boundary">○</span>
+  </div>
+  
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header">• Center / Aperture</div>
+      <p>Where transformation occurs. The soul. Binary coherence decisions.</p>
+      <p class="muted">Base: 1D (sequence)</p>
+    </div>
+    <div class="card">
+      <div class="card-header">Φ Field / Mind</div>
+      <p>Mediates between center and boundary. Analog amplitudes with phase.</p>
+      <p class="muted">Base: 2D (plane)</p>
+    </div>
+    <div class="card">
+      <div class="card-header">○ Boundary / Body</div>
+      <p>Interface with exterior. Made of nested circumpuncts at smaller scale.</p>
+      <p class="muted">Fixed: 3D (volume)</p>
+    </div>
+  </div>
+  
+  <div class="callout">
+    <strong>Geometric Necessity:</strong> Center and boundary cannot interact directly — field mediation is required due to spatial separation. The aperture opens into the boundary by traversing the field.
+  </div>
+  
+  <h3>The Aperture as i</h3>
+  
+  <div class="card">
+    <p>The aperture operator Å(β) performs phase rotation:</p>
+    
+    <div class="equation equation-small">
+      Å(β) = e<sup>iπβ</sup>
+    </div>
+    
+    <table>
+      <tr><td>Å(0) = 1</td><td>Identity (0° rotation) — barely open</td></tr>
+      <tr><td><strong>Å(0.5) = i</strong></td><td><strong>Quarter-turn (90° rotation) — halfway</strong></td></tr>
+      <tr><td>Å(1) = −1</td><td>Half-turn (180° rotation) — fully open</td></tr>
+    </table>
+    
+    <p class="mt-2"><strong>The insight:</strong> At β = 0.5 (halfway through the journey), the aperture operator <em>is</em> the imaginary unit i. This 90° rotation is the consciousness threshold — where progress equals remaining.</p>
+  </div>
+  
+  <h3>The Nesting Equation</h3>
+  
+  <div class="card">
+    <div class="equation">
+      •<sub>n+1</sub> = ⊙<sub>n</sub>
+    </div>
+    
+    <p>Previous whole becomes next center. Each completed circumpunct can serve as the aperture for a larger structure.</p>
+    
+    <table>
+      <tr><th>Layer n</th><th>What completes</th><th>What it becomes</th></tr>
+      <tr><td>0 → 1</td><td>Spatial ⊙ (3D)</td><td>Aperture for temporal layer</td></tr>
+      <tr><td>1 → 2</td><td>Temporal ⊙ (6D)</td><td>Aperture for meta layer</td></tr>
+      <tr><td>2 → 3</td><td>Meta ⊙ (9D)</td><td>Aperture for meta² layer</td></tr>
+    </table>
+    
+    <p class="muted mt-2">Each layer's boundary becomes the ground for the next aperture's journey. The Conservation of Traversal holds at every scale.</p>
+  </div>
+</section>
+
+<!-- THE APERTURE AS GATE -->
+<section id="gate">
+  <h2>The Aperture as Gate</h2>
+  
+  <div class="axiom-box">
+    <div class="axiom">The aperture is a THROUGH, not a FROM.</div>
+    <p class="muted" style="margin-top: 1rem;">Truth flows through apertures. It does not originate from them.</p>
+  </div>
+  
+  <p>The aperture is a <strong>threshold</strong>, not a source. It receives, transforms, and transmits — but does not generate. The source is the infinite field (Φ<sub>∞</sub>, the 0D = ∞D ground). The aperture is where that infinite potential <em>crosses into</em> finite expression.</p>
+  
+  <h3>The Fundamental Transformation</h3>
+  
+  <div class="flow-diagram">
+    <div class="flow-box flow-in">Truth</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box flow-gate">• Gate<br><small>χ = ±1</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box flow-out">Truth</div>
+    <span style="color: var(--muted); margin: 0 8px;">or</span>
+    <div class="flow-box flow-alt">Lie</div>
+  </div>
+  
+  <p class="center muted">Truth in → truth OR lie out. The gate decides.</p>
+  
+  <div class="flow-diagram">
+    <div class="flow-box flow-in">Energy</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box flow-gate">• Gate<br><small>χ = ±1</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box flow-out">Power</div>
+  </div>
+  
+  <p class="center muted">Energy in → power out. P = dE/dt. The aperture is where potential becomes actual.</p>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">Energy (Input)</div>
+      <p>Stored potential in the field. What IS. Timeless. Possibility space.</p>
+      <p class="muted">The infinite field (Φ<sub>∞</sub>) before selection.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">Power (Output)</div>
+      <p>Rate of actualization. What HAPPENS. Temporal. Actuality.</p>
+      <p class="muted">P = dE/dt — the rate at which potential crosses into the actual.</p>
+    </div>
+  </div>
+  
+  <div class="callout-blue callout">
+    <strong>The aperture is where:</strong> Energy becomes power. Possibility becomes actuality. The wavefunction collapses. The decision is made. The binary gate (χ = ±1) fires.
+  </div>
+  
+  <h3>Faithful vs. Pathological Transmission</h3>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header" style="color: var(--green);">Healthy Aperture</div>
+      <div class="flow-diagram" style="margin: 1rem 0; padding: 12px;">
+        <span style="color: var(--accent);">Truth</span>
+        <span class="flow-arrow">→</span>
+        <span style="color: var(--magenta);">•</span>
+        <span class="flow-arrow">→</span>
+        <span style="color: var(--green);">Truth</span>
+      </div>
+      <p>The signal passes through with fidelity. The aperture is transparent to what flows through it.</p>
+      <p class="muted">The gate knows it's a through, not a from.</p>
+    </div>
+    <div class="card">
+      <div class="card-header" style="color: var(--red);">Pathological Aperture</div>
+      <div class="flow-diagram" style="margin: 1rem 0; padding: 12px;">
+        <span style="color: var(--accent);">Truth</span>
+        <span class="flow-arrow">→</span>
+        <span style="color: var(--red);">•̸</span>
+        <span class="flow-arrow">→</span>
+        <span style="color: var(--red);">Lie</span>
+      </div>
+      <p>The gate introduces error. It inverts, projects, denies, or fabricates.</p>
+      <p class="muted">The gate mistakes itself for source.</p>
+    </div>
+  </div>
+  
+  <h3>The Four Geometric Errors</h3>
+  
+  <div class="card">
+    <p>All aperture pathology reduces to four fundamental errors:</p>
+    
+    <table>
+      <tr>
+        <th>Error</th>
+        <th>What Happens</th>
+        <th>The Lie</th>
+      </tr>
+      <tr>
+        <td><strong>Inflation</strong></td>
+        <td>Claims to BE the source</td>
+        <td>"I am the origin of truth"</td>
+      </tr>
+      <tr>
+        <td><strong>Severance</strong></td>
+        <td>Denies connection to source</td>
+        <td>"There is no truth flowing through me"</td>
+      </tr>
+      <tr>
+        <td><strong>Inversion</strong></td>
+        <td>Flips the signal (truth → lie)</td>
+        <td>Outputs opposite of input</td>
+      </tr>
+      <tr>
+        <td><strong>Projection</strong></td>
+        <td>Outputs own distortion as if from source</td>
+        <td>"This came from outside, not from my gate"</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="callout-red callout">
+    <strong>Inflation and Severance are the two fundamental errors.</strong> Inflation claims to BE the source (denying through-ness). Severance denies CONNECTION to source (denying the flow). Both corrupt the aperture's function as gate.
+  </div>
+  
+  <div class="callout-magenta callout">
+    <strong>A healthy aperture knows:</strong> "I am a through, not a from. Truth flows through me — I don't generate it. I convert energy to power — I don't create the energy. My job is faithful transmission, not origination."
+  </div>
+  
+  <h3>Why This Matters</h3>
+  
+  <div class="card">
+    <p>The aperture-as-gate principle explains:</p>
+    <ul style="margin-left: 1.5rem;">
+      <li><strong>Consciousness:</strong> Not the source of experience, but the gate through which experience flows</li>
+      <li><strong>Free will:</strong> Not creation from nothing, but selection from infinite potential</li>
+      <li><strong>Narcissistic pathology:</strong> The geometric error of mistaking the gate for the source</li>
+      <li><strong>Authentic communication:</strong> Faithful transmission vs. corrupted relay</li>
+      <li><strong>Healing:</strong> Restoring the aperture's transparency, not fixing the source</li>
+    </ul>
+  </div>
+</section>
+
+<!-- THE EQUATIONS -->
+<section id="equations">
+  <h2>The Equations</h2>
+  
+  <h3>Master Equation</h3>
+  
+  <div class="equation">
+    Φ' = <span class="boundary">☀</span> ∘ <span class="aperture">i</span> ∘ <span class="phi">⊛</span>[Φ]
+  </div>
+  
+  <p class="center muted">Read right-to-left: convergence → aperture rotation → emergence</p>
+  
+  <div class="grid-2 mt-2">
+    <div class="card">
+      <div class="card-header">Operators</div>
+      <table>
+        <tr><td><code>⊛</code></td><td>Convergence (field → aperture)</td></tr>
+        <tr><td><code>i</code></td><td>Aperture rotation (e<sup>iπβ</sup>)</td></tr>
+        <tr><td><code>☀</code></td><td>Emergence (aperture → field)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header">The Journey in Symbols</div>
+      <div class="equation equation-small" style="text-align: center;">
+        Φ<sub>∞</sub> →<span class="phi">⊛</span>→ i →<span class="boundary">☀</span>→ ⊙
+      </div>
+      <p class="muted" style="margin-top:8px; font-size:0.85rem;">Convergence gathers field toward aperture. Aperture rotates (gates). Emergence expresses outward toward boundary.</p>
+    </div>
+  </div>
+
+  <h3>The Coupled Dynamical System</h3>
+  
+  <p>The master equation expands into six coupled differential equations:</p>
+  
+  <div class="card">
+    <pre><code><span class="phi">∂Φ/∂t</span> = D∇²Φ − γΦ + Vψ              <span class="muted">(field evolution)</span>
+
+<span class="aperture">z</span> = U*Φ                               <span class="muted">(convergence)</span>
+
+<span class="aperture">z̃</span> = e<sup>iπβ</sup>z                              <span class="muted">(aperture rotation)</span>
+
+<span class="aperture">∂ψ/∂t</span> = −αψ + tanh(z̃)                 <span class="muted">(aperture dynamics)</span>
+
+<span class="boundary">∂c/∂t</span> = −λc + f(β)⊙c + g(β)⊙H(z)      <span class="muted">(memory/boundary)</span>
+
+<span class="gold">∂β/∂t</span> = κ(|z|/(|z|+|ψ|+ε) − β)        <span class="muted">(opening feedback)</span></code></pre>
+  </div>
+  
+  <h3>The Dual Fractal Relations</h3>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">Aperture (Progress)</div>
+      <div class="equation equation-small">
+        D<sub>aperture</sub> = 1 + β
+      </div>
+      <p class="muted">As β increases, more has opened.<br>Base 1D (sequence) + opening progress.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">Field (Remaining)</div>
+      <div class="equation equation-small">
+        D<sub>field</sub> = 2 − β
+      </div>
+      <p class="muted">As β increases, less remains to traverse.<br>Base 2D (plane) − opening progress.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FORMALIZATION -->
+<section id="formalization">
+  <h2>Hilbert Space Formalization</h2>
+  
+  <p>The circumpunct maps directly onto quantum operator formalism.</p>
+  
+  <h3>Operator Form</h3>
+  
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header">• Aperture Operator</div>
+      <div class="equation equation-small" style="text-align: center;">
+        Â(β) = e<sup>iπβ</sup>
+      </div>
+      <p class="muted">Unitary phase gate. Injects discrete choice as phase-structure.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">Φ Field Operator</div>
+      <div class="equation equation-small" style="text-align: center;">
+        Û(t) = e<sup>−iĤt</sup>
+      </div>
+      <p class="muted">Continuous evolution. The relation engine where phase/amplitude interfere and cohere.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">○ Boundary Operator</div>
+      <div class="equation equation-small" style="text-align: center;">
+        B̂ = Σ<sub>k</sub> Π<sub>k</sub>
+      </div>
+      <p class="muted">Projection / closure. Produces observable outcome. Implements inside vs outside.</p>
+    </div>
+  </div>
+  
+  <h3>Full Circumpunct Update (One Cycle)</h3>
+  
+  <div class="equation">
+    |ψ'⟩ = B̂ · Û(t) · Â(β) |ψ⟩
+  </div>
+  
+  <p class="center muted">Aperture injects choice → Field spreads/relates → Boundary closes into stable interface</p>
+  
+  <h3>Hilbert Space Factorization</h3>
+  
+  <div class="card">
+    <p>The circumpunct as a structured partition of degrees of freedom:</p>
+    <div class="equation">
+      ℋ ≅ ℋ<sub>•</sub> ⊗ ℋ<sub>Φ</sub> ⊗ ℋ<sub>○</sub>
+    </div>
+    <table>
+      <tr><td><strong>ℋ<sub>•</sub></strong></td><td>Aperture DOF</td><td>Minimal decision/gate (qubit-like)</td></tr>
+      <tr><td><strong>ℋ<sub>Φ</sub></strong></td><td>Field DOF</td><td>Coherent relational (phases, superpositions, interference)</td></tr>
+      <tr><td><strong>ℋ<sub>○</sub></strong></td><td>Boundary DOF</td><td>Interface (constraints, environment coupling, readout)</td></tr>
+    </table>
+  </div>
+  
+  <h3>Conservation Law (Hilbert Space Version)</h3>
+  
+  <div class="axiom-box">
+    <div class="axiom">ΔC<sub>•</sub> + ΔC<sub>Φ</sub> = ΔC<sub>○</sub></div>
+    <p class="muted" style="margin-top: 1rem;">where C = log dim(ℋ) is the capacity</p>
+  </div>
+  
+  <p>Increasing boundary/interface capacity requires increasing either decision resolution (aperture space) or relational richness (field space).</p>
+  
+  <div class="callout">
+    <strong>No free emergence:</strong> You can't increase what the boundary can stably express unless you pay for it in gate capacity and/or coherent relational capacity.
+  </div>
+</section>
+
+<!-- THE DIMENSION THEOREM -->
+<section id="theorem">
+  <h2>The Dimension Theorem</h2>
+  
+  <div class="axiom-box">
+    <div class="axiom">Dimension is not assumed — it is forced by the triad's functional irreducibility.</div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">Theorem (Minimum Dimensional Realization)</div>
+    <p>Any system implementing the circumpunct triad must realize, at minimum: <strong>1D for aperture</strong>, <strong>2D for field</strong>, <strong>3D for boundary</strong> — in the sense of minimal degrees required for each role to be non-degenerate.</p>
+  </div>
+  
+  <h3>Proof</h3>
+  
+  <div class="card">
+    <p><strong>(1) Aperture ⇒ 1D minimum</strong></p>
+    <p>An aperture is a sequence of discrete decisions. Sequencing requires an order parameter. The minimal structure supporting order is a <strong>line</strong>.</p>
+    <div class="equation equation-small" style="text-align: center;">
+      • ⇒ ordered sequence ⇒ 1D
+    </div>
+  </div>
+  
+  <div class="card">
+    <p><strong>(2) Field ⇒ 2D minimum</strong></p>
+    <p>A field must carry magnitude + phase (complex amplitude). Phase is angular: an angle requires a plane. The minimal representation of amplitude + phase is <strong>2D</strong> (polar coordinates).</p>
+    <div class="equation equation-small" style="text-align: center;">
+      Φ ⇒ (r, θ) ⇒ 2D
+    </div>
+  </div>
+  
+  <div class="card">
+    <p><strong>(3) Boundary ⇒ 3D minimum</strong></p>
+    <p>A boundary must enact inside/outside closure around the field. Closing a 2D field into a separable inside/outside requires one extra dimension.</p>
+    <div class="equation equation-small" style="text-align: center;">
+      ○ ⇒ closure of 2D field ⇒ 3D
+    </div>
+  </div>
+  
+  <div class="axiom-box">
+    <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><strong>Therefore:</strong></p>
+    <div class="equation" style="margin:0; padding: 1rem; background:none; border:none;">
+      1D → 2D → 3D
+    </div>
+    <p class="muted">The dimensional ladder is forced by the circumpunct structure. ∎</p>
+  </div>
+  
+  <div class="callout-green callout">
+    <strong>Corollary:</strong> The Conservation of Traversal (D<sub>aperture</sub> + D<sub>field</sub> = D<sub>boundary</sub>) follows directly. The base dimensions (1 + 2 = 3) are not postulated — they are derived from the functional requirements of the triad.
+  </div>
+</section>
+
+<!-- THE EVIDENCE -->
+<section id="evidence">
+  <h2>The Evidence</h2>
+  
+  <h3>Experiment 1: D(β) = 2 − β Validation</h3>
+  
+  <div class="card">
+    <p><strong>Method:</strong> Box-counting on space-time texture |Φ(x,t)| with sliding windows. Compared measured D(t) to controller β(t).</p>
+    
+    <p><strong>Result:</strong> Correlation r = +0.54 for D = 2 − β (positive correlation confirmed).</p>
+    
+    <p><strong>Interpretation:</strong> The opening parameter β is encoded in the fractal geometry of the field texture. β is observable, geometric — it shows how far the aperture has opened through the field.</p>
+  </div>
+  
+  <img src="fractal_validation.png" class="result-image" alt="Fractal validation results">
+  <p class="image-caption">Figure 1: Fractal dimension D(t) correlates with 2 − β(t) with r = +0.54</p>
+  
+  <h3>Experiment 2: Conservation of Traversal Test</h3>
+  
+  <div class="card">
+    <p><strong>Method:</strong> Improved estimators — 3D PCA embedding for aperture, multi-threshold union mask for field. Measured D<sub>aperture</sub> + D<sub>field</sub> in sliding windows.</p>
+    
+    <table>
+      <tr><th>Version</th><th>D<sub>sum</sub></th><th>Error from 3.0</th><th>Key Change</th></tr>
+      <tr><td>Original</td><td>2.58 ± 0.06</td><td>0.42</td><td>2D aperture, single threshold</td></tr>
+      <tr><td>Improved</td><td><strong>2.77 ± 0.04</strong></td><td><strong>0.23</strong></td><td>3D aperture, multi-threshold</td></tr>
+      <tr><td>Theoretical</td><td>3.00</td><td>0</td><td>Ideal measurement</td></tr>
+    </table>
+    
+    <p class="mt-2"><strong>Key finding:</strong> The sum is MORE STABLE than individual terms (std = 0.04 vs 0.032, 0.018). This is the signature of a conservation law.</p>
+  </div>
+  
+  <img src="conservation_law_improved.png" class="result-image" alt="Conservation law results">
+  <p class="image-caption">Figure 2: D<sub>aperture</sub> + D<sub>field</sub> approaches 3.0 as measurement improves (45% error reduction)</p>
+  
+  <div class="callout">
+    <strong>What the improvement shows:</strong> The sum moved TOWARD the theoretical value when measurement fidelity increased. Better geometry → closer to 3. The remaining gap is measurement bias, not physics failure.
+  </div>
+</section>
+
+<!-- FALSIFICATION -->
+<section id="falsification">
+  <h2>Falsification Criteria</h2>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">The Hypothesis Fails If</div>
+      <ul style="margin-left: 1rem;">
+        <li>Correlation r(β̂, β) ≈ 0 across seeds and parameters</li>
+        <li>Effect only appears for one fragile threshold/window</li>
+        <li>Randomizing U,V matrices produces same result</li>
+        <li>Better estimators move sum AWAY from 3</li>
+        <li>Sum is NOT more stable than individual terms</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header">The Hypothesis Survives If</div>
+      <ul style="margin-left: 1rem;">
+        <li>Positive trend persists across thresholds, windows, seeds</li>
+        <li>Expected failure modes are interpretable</li>
+        <li>Effect size increases with richer dynamics</li>
+        <li>Better estimators move sum TOWARD 3</li>
+        <li>Sum stability exceeds individual term stability</li>
+      </ul>
+    </div>
+  </div>
+  
+  <h3>Experiments Required</h3>
+  
+  <div class="card">
+    <table>
+      <tr><th>Experiment</th><th>What it tests</th></tr>
+      <tr><td>E1: Parameter sweep</td><td>Vary γ, α, κ — correlation should persist across stable regimes</td></tr>
+      <tr><td>E2: Threshold sensitivity</td><td>Test quantiles 0.75–0.95 — trend should persist with different offsets</td></tr>
+      <tr><td>E3: Alternative estimators</td><td>Higuchi dimension, spectral slope — consistency across methods</td></tr>
+      <tr><td>E4: Random controls</td><td>Randomize U,V — effect should disappear or change character</td></tr>
+    </table>
+  </div>
+  
+  <div class="callout-blue callout">
+    <strong>The Standard:</strong> Anyone can run the code, verify the results, and attempt to break the hypothesis. That makes it science.
+  </div>
+</section>
+
+<!-- APPENDIX: DIMENSIONAL LADDER -->
+<section id="appendix" class="appendix">
+  <h2>Appendix: Dimensional Architecture</h2>
+  
+  <div class="callout">
+    <strong>Note:</strong> The following is interpretive framework — a way to organize predictions and guide future work. It is NOT part of the empirical claims above. Evaluate it separately from the Conservation of Traversal, which stands on its own evidence.
+  </div>
+  
+  <h3>Two Kinds of Dimension</h3>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header dim-structure">Integer — Structure</div>
+      <p>What <strong>IS</strong>. The braid. Products of time. Nouns.</p>
+      <p>0, 1, 2, 3, 4, 5, 6...</p>
+    </div>
+    <div class="card">
+      <div class="card-header dim-process">Fractal — Process</div>
+      <p>What <strong>HAPPENS</strong>. The braiding. Time itself. Verbs.</p>
+      <p>0.5, 1.5, 2.5, 3.5...</p>
+    </div>
+  </div>
+  
+  <h3>The Four Layers</h3>
+  
+  <div class="card">
+    <table>
+      <tr><th>n</th><th>Layer</th><th>• Aperture</th><th>Φ Field</th><th>○ Boundary</th></tr>
+      <tr><td>0</td><td>Spatial</td><td class="dim-process">0.5D → 1D</td><td class="dim-structure">2D</td><td class="dim-structure">3D</td></tr>
+      <tr><td>1</td><td>Temporal</td><td class="dim-process">3.5D → 4D</td><td class="dim-structure">5D</td><td class="dim-structure">6D</td></tr>
+      <tr><td>2</td><td>Meta</td><td class="dim-process">6.5D → 7D</td><td class="dim-structure">8D</td><td class="dim-structure">9D</td></tr>
+      <tr><td>3</td><td>Meta²</td><td class="dim-process">9.5D → 10D</td><td class="dim-structure">11D</td><td class="dim-structure">12D</td></tr>
+    </table>
+  </div>
+  
+  <h3>Key Relations</h3>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">D = 1.5 at Halfway</div>
+      <p>At β = 0.5 (halfway through the journey):</p>
+      <ul style="margin-left: 1rem;">
+        <li>D<sub>aperture</sub> = 1 + 0.5 = 1.5 (progress)</li>
+        <li>D<sub>field</sub> = 2 − 0.5 = 1.5 (remaining)</li>
+      </ul>
+      <p class="muted">Both show identical fractal dimension. Progress equals remaining. The consciousness threshold.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">Nesting Equation</div>
+      <div class="equation equation-small">
+        •<sub>n+1</sub> = ⊙<sub>n</sub>
+      </div>
+      <p class="muted">Previous whole becomes next center. Your arrival is their departure point. All the way down.</p>
+    </div>
+  </div>
+  
+  <h3>Empirically Supported</h3>
+  
+  <div class="card">
+    <table>
+      <tr><th>Prediction</th><th>Status</th></tr>
+      <tr><td>D ≈ 1.5 at β = 0.5 (halfway)</td><td>✓ Confirmed (simulation)</td></tr>
+      <tr><td>D(β) = 2 − β correlation</td><td>✓ r = +0.54 (Jan 2026)</td></tr>
+      <tr><td>D<sub>aperture</sub> + D<sub>field</sub> = D<sub>boundary</sub></td><td>✓ Sum stable, approaches 3</td></tr>
+    </table>
+  </div>
+  
+  <h3>Not Yet Validated</h3>
+  
+  <div class="card">
+    <table>
+      <tr><th>Claim</th><th>Status</th></tr>
+      <tr><td>64 = Standard Model particles</td><td>Hypothesis (requires physics validation)</td></tr>
+      <tr><td>10D = superstrings</td><td>Interpretive mapping</td></tr>
+      <tr><td>Fine structure α<sup>−1</sup> derivation</td><td>~0.3% off (requires refinement)</td></tr>
+    </table>
+  </div>
+  
+  <h3>Convergent Frameworks</h3>
+  
+  <div class="callout-blue callout">
+    <strong>Independent Discovery:</strong> Scale-Time Theory (STT, André Dupke, 2025–2026) arrives at structurally isomorphic conclusions from different starting points — suggesting we're both pointing at the same underlying pattern.
+  </div>
+  
+  <div class="card">
+    <table>
+      <tr><th>Circumpunct</th><th>Scale-Time Theory</th><th>Shared Insight</th></tr>
+      <tr><td>• Aperture (0.5D)</td><td>Source (puncture)</td><td>Singular crossing point</td></tr>
+      <tr><td>Φ Field (2D)</td><td>Scale-plane (2D)</td><td>2D substrate is fundamental</td></tr>
+      <tr><td>○ Boundary (3D)</td><td>PSR (readout regime)</td><td>Where observables emerge</td></tr>
+      <tr><td>D<sub>•</sub> + D<sub>Φ</sub> = D<sub>○</sub></td><td>k = dA/dτ (conserved)</td><td>Conservation law governs flow</td></tr>
+      <tr><td>χ = ±1 (binary)</td><td>ℛ<sub>±</sub> (two residues)</td><td>Fundamental binary polarity</td></tr>
+      <tr><td>D<sub>H</sub> = 2 − β</td><td>D<sub>H</sub> = 2 + δ</td><td>Fractal structure around 2D</td></tr>
+      <tr><td>ρ = ω/α</td><td>OSR = ν<sub>loc</sub>/ν<sub>dyn</sub></td><td>Ratio parameter for regime transitions</td></tr>
+    </table>
+    
+    <p class="mt-2 muted">Convergent evolution in theoretical physics. The probability of this being coincidence is extremely low.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;">⊙</p>
+  <p><strong>The Conservation of Traversal</strong></p>
+  <p style="font-size: 1.2rem; margin: 1rem 0;">• → Φ → ○</p>
+  <p>progress + remaining = destination</p>
+  <p style="margin-top: 0.5rem;">truth in → truth or lie out</p>
+  <p style="margin-top: 0.5rem;">energy in → power out</p>
+  <p style="margin-top: 1rem;">D<sub>aperture</sub> + D<sub>field</sub> = D<sub>boundary</sub></p>
+  <p class="muted mt-2">Circumpunct Framework v6.0 — Ashman Roonz — January 2026</p>
+  <p class="muted mt-2" style="font-style: italic;">The aperture is a through, not a from.</p>
+</footer>
+
+<script>
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth'
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

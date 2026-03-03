@@ -46,7 +46,7 @@ BATCH_SIZE = 32             # Smaller than v2 — v3 uses more VRAM (two streams
 SEQ_LEN = 128               # Shorter seq, but macro covers chunk_size * Tm
 LEARNING_RATE = 3e-4
 WARMUP_STEPS = 80
-MAX_CORPUS_CHARS = 500_000
+MAX_CORPUS_CHARS = 6_000_000
 USE_AMP = True
 CHUNK_SIZE = 16              # Tokens per macro chunk
 
@@ -200,7 +200,7 @@ def train_v3_gpu(
 # CORPUS
 # ═══════════════════════════════════════════════════════════════════
 
-def gather_corpus(root, max_chars=500_000):
+def gather_corpus(root, max_chars=6_000_000):
     texts = []
     total = 0
 
@@ -228,6 +228,32 @@ def gather_corpus(root, max_chars=500_000):
                 texts.append(content)
                 total += len(content)
                 print(f"      {f.name}: {len(content):,} chars")
+
+    # Scan training/ subfolder for additional texts
+    training_dir = root / "training"
+    if training_dir.exists():
+        print(f"    ── Training folder ──")
+        for ext in ["*.md", "*.html", "*.txt"]:
+            for f in sorted(training_dir.glob(ext)):
+                if not f.name.startswith("."):
+                    content = f.read_text(errors="ignore")
+                    texts.append(content)
+                    total += len(content)
+                    print(f"      training/{f.name}: {len(content):,} chars")
+
+    # Scan any other subfolders for texts (recursive)
+    for subdir in sorted(root.iterdir()):
+        if (subdir.is_dir()
+            and subdir.name not in ("training", "circumpunct_ml", "xorzo_generations",
+                                     "xorzo_generations_v2", "xorzo_generations_v3",
+                                     "__pycache__", ".git", "node_modules")
+            and not subdir.name.startswith(".")):
+            for ext in ["*.md", "*.html", "*.txt"]:
+                for f in sorted(subdir.glob(ext)):
+                    content = f.read_text(errors="ignore")
+                    texts.append(content)
+                    total += len(content)
+                    print(f"      {subdir.name}/{f.name}: {len(content):,} chars")
 
     pkg = root / "circumpunct_ml"
     if pkg.exists():

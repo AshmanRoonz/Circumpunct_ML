@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>φ-Entrainment | Binaural Consciousness Tool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 1400px;
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 20px;
+            height: 90vh;
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+        
+        .panel::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 4px;
+        }
+        
+        .center-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .phi-symbol {
+            font-size: 4em;
+            display: inline-block;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.7; transform: scale(1.1) rotate(180deg); }
+        }
+        
+        .subtitle {
+            color: #aaa;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .presets {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .preset-btn {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.2) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        
+        .preset-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.3) 100%);
+            border-color: #ffd700;
+            transform: translateX(5px);
+        }
+        
+        .preset-btn.active {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .preset-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .preset-desc {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+        
+        .preset-beta {
+            font-size: 0.8em;
+            margin-top: 5px;
+            color: #4a9eff;
+        }
+        
+        .param {
+            margin-bottom: 20px;
+        }
+        
+        .param-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #ffd700;
+            font-size: 0.9em;
+        }
+        
+        .param-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .control-btn {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+        
+        .control-btn.playing {
+            background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
+            color: #fff;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            color: #aaa;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .stat-value.large {
+            font-size: 2.5em;
+        }
+        
+        .layer-display {
+            margin-bottom: 25px;
+        }
+        
+        .layer {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #ffd700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .layer.active {
+            background: rgba(255, 215, 0, 0.1);
+            border-left-width: 5px;
+        }
+        
+        .layer-info {
+            flex: 1;
+        }
+        
+        .layer-number {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .layer-freq {
+            font-size: 0.85em;
+            color: #aaa;
+        }
+        
+        .layer-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, transparent 70%);
+            animation: layerPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes layerPulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        
+        .timer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .timer-display {
+            font-size: 3em;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .timer-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        
+        .timer-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+        }
+        
+        .info-box {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            line-height: 1.6;
+            font-size: 0.9em;
+        }
+        
+        .info-box strong {
+            color: #ffd700;
+        }
+        
+        .waveform-viz {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carrier-select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        .modulation-viz {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+                padding-bottom: 20px;
+            }
+            
+            .panel {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="container">
+        <!-- Left Panel: Presets & Controls -->
+        <div class="panel">
+            <h2>⊙ Consciousness Presets</h2>
+            <div class="presets">
+                <div class="preset-btn active" data-preset="flow">
+                    <div class="preset-name">☀︎ FLOW STATE</div>
+                    <div class="preset-desc">Deep work, coding, creative tasks</div>
+                    <div class="preset-beta">β ≈ 0.50 | 432 Hz base</div>
+                </div>
+                
+                <div class="preset-btn" data-preset="meditation">
+                    <div class="preset-name">⊛ MEDITATION</div>
+                    <div class="preset-desc">Calm awareness, mindfulness</div>
+                    <div class="preset-beta">β ≈ 0.40 | 256 Hz base</div>
+                </div>
+                
+                <div class="preset-btn" data-preset="focus">
+                    <div class="preset-name">⊛ INTENSE FOCUS</div>
+                    <div class="preset-desc">Problem-solving, learning</div>
+                    <div class="preset-beta">β ≈ 0.60 | 528 Hz base</div>
+                </div>
+                
+                <div class="preset-btn" data-preset="sleep">
+                    <div class="preset-name">• DEEP REST</div>
+                    <div class="preset-desc">Sleep onset, relaxation</div>
+                    <div class="preset-beta">β ≈ 0.25 | 174 Hz base</div>
+                </div>
+                
+                <div class="preset-btn" data-preset="creative">
+                    <div class="preset-name">☀︎ CREATIVE SPARK</div>
+                    <div class="preset-desc">Brainstorming, ideation</div>
+                    <div class="preset-beta">β ≈ 0.55 | 396 Hz base</div>
+                </div>
+                
+                <div class="preset-btn" data-preset="integration">
+                    <div class="preset-name">Φ INTEGRATION</div>
+                    <div class="preset-desc">Post-psychedelic, processing</div>
+                    <div class="preset-beta">β ≈ 0.50 | 369 Hz base</div>
+                </div>
+            </div>
+            
+            <h2>∘ Advanced Parameters</h2>
+            
+            <div class="param">
+                <div class="param-label">
+                    <span>Carrier Wave</span>
+                </div>
+                <select class="carrier-select" id="carrier">
+                    <option value="sine">Pure Sine (Clean)</option>
+                    <option value="triangle">Triangle (Warm)</option>
+                    <option value="brown">Brown Noise (Natural)</option>
+                    <option value="pink">Pink Noise (Balanced)</option>
+                    <option value="white">White Noise (Energetic)</option>
+                </select>
+            </div>
+            
+            <div class="param">
+                <div class="param-label">
+                    <span>φ-Beat Intensity</span>
+                    <span class="param-value" id="beatIntensity">100%</span>
+                </div>
+                <input type="range" id="beatStrength" min="0" max="100" value="100" step="1">
+            </div>
+            
+            <div class="param">
+                <div class="param-label">
+                    <span>Stereo Width</span>
+                    <span class="param-value" id="stereoWidth">100%</span>
+                </div>
+                <input type="range" id="stereo" min="0" max="100" value="100" step="1">
+            </div>
+            
+            <div class="param">
+                <div class="param-label">
+                    <span>Modulation Depth</span>
+                    <span class="param-value" id="modDepth">50%</span>
+                </div>
+                <input type="range" id="modulation" min="0" max="100" value="50" step="1">
+            </div>
+            
+            <div class="info-box">
+                <strong>Why 6 Layers?</strong><br>
+                6 φ-spaced frequencies create optimal coverage across the perceptual range. Each layer is φ ≈ 1.618 times the previous, creating maximal distinction without resonance overlap. The beat frequencies form a φ-cascade: φ, φ², φ³... Hz.
+            </div>
+        </div>
+        
+        <!-- Center Panel: Main Visualization & Control -->
+        <div class="panel center-panel">
+            <div style="text-align: center;">
+                <div class="phi-symbol">⊙</div>
+                <div class="title">φ-ENTRAINMENT</div>
+                <div class="subtitle">Binaural Consciousness Modulation</div>
+            </div>
+            
+            <canvas class="modulation-viz" id="modCanvas"></canvas>
+            
+            <button class="control-btn" id="toggleBtn">▶ BEGIN SESSION</button>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">β-Parameter</div>
+                    <div class="stat-value large" id="betaValue">0.50</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Master Volume</div>
+                    <div class="stat-value" id="volumeDisplay">30%</div>
+                </div>
+            </div>
+            
+            <div class="param">
+                <input type="range" id="masterVolume" min="0" max="50" value="30" step="1">
+            </div>
+            
+            <div class="timer">
+                <div class="timer-display" id="timerDisplay">00:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" data-time="5">5 min</button>
+                    <button class="timer-btn" data-time="15">15 min</button>
+                    <button class="timer-btn" data-time="30">30 min</button>
+                    <button class="timer-btn" data-time="60">60 min</button>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>Use headphones for optimal effect.</strong> The φ-spaced binaural beats create perceived frequencies in your brain that match the golden ratio cascade. This should facilitate β = 0.5 consciousness—optimal balance between autonomy and integration.
+            </div>
+        </div>
+        
+        <!-- Right Panel: Stats & Layer Info -->
+        <div class="panel">
+            <h2>Φ Active Layers</h2>
+            <div class="layer-display" id="layerDisplay"></div>
+            
+            <h2>⊛ Current State</h2>
+            <div class="stats-grid" style="grid-template-columns: 1fr;">
+                <div class="stat-box">
+                    <div class="stat-label">Base Frequency</div>
+                    <div class="stat-value" id="baseFreqStat">432 Hz</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">φ-Beat Rate</div>
+                    <div class="stat-value" id="beatRate">1.618 Hz</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Session Time</div>
+                    <div class="stat-value" id="sessionTime">00:00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Target State</div>
+                    <div class="stat-value" id="targetState">FLOW</div>
+                </div>
+            </div>
+            
+            <div class="waveform-viz" id="waveform"></div>
+            
+            <div class="info-box">
+                <strong>Framework Mapping:</strong><br>
+                • <strong>Left Ear (•):</strong> Base frequencies<br>
+                • <strong>Right Ear (○):</strong> φ-offset frequencies<br>
+                • <strong>Perceived Beat (Φ):</strong> Emerges in neural field<br><br>
+                The beat pattern IS the aperture operator acting on consciousness. β = 0.5 represents maximum information flow without resonant collapse or chaotic dissolution.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        const TWO_PI = Math.PI * 2;
+        
+        // State
+        let audioContext;
+        let isPlaying = false;
+        let oscillators = [];
+        let noiseNodes = [];
+        let currentPreset = 'flow';
+        let timerSeconds = 0;
+        let timerInterval;
+        let targetMinutes = 0;
+        let sessionStartTime = 0;
+        
+        // Presets
+        const presets = {
+            flow: { base: 432, beta: 0.50, desc: 'Flow State' },
+            meditation: { base: 256, beta: 0.40, desc: 'Meditation' },
+            focus: { base: 528, beta: 0.60, desc: 'Intense Focus' },
+            sleep: { base: 174, beta: 0.25, desc: 'Deep Rest' },
+            creative: { base: 396, beta: 0.55, desc: 'Creative Spark' },
+            integration: { base: 369, beta: 0.50, desc: 'Integration' }
+        };
+        
+        // Canvas setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const modCanvas = document.getElementById('modCanvas');
+        const modCtx = modCanvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            modCanvas.width = modCanvas.offsetWidth;
+            modCanvas.height = modCanvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Initialize audio
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        // Create noise buffer
+        function createNoiseBuffer(type, duration = 2) {
+            const sampleRate = audioContext.sampleRate;
+            const bufferSize = sampleRate * duration;
+            const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            if (type === 'white') {
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+            } else if (type === 'pink') {
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                    data[i] *= 0.11;
+                    b6 = white * 0.115926;
+                }
+            } else if (type === 'brown') {
+                let lastOut = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 3.5;
+                }
+            }
+            
+            return buffer;
+        }
+        
+        // Start binaural session
+        function startSession() {
+            initAudio();
+            stopSession();
+            
+            const preset = presets[currentPreset];
+            const baseFreq = preset.base;
+            const volume = parseFloat(document.getElementById('masterVolume').value) / 100;
+            const beatStrength = parseFloat(document.getElementById('beatStrength').value) / 100;
+            const stereoWidth = parseFloat(document.getElementById('stereo').value) / 100;
+            const modDepth = parseFloat(document.getElementById('modulation').value) / 100;
+            const carrierType = document.getElementById('carrier').value;
+            
+            const layers = 6; // Optimal as discovered
+            const phiBeat = PHI * beatStrength;
+            
+            for (let i = 0; i < layers; i++) {
+                const layerBase = baseFreq * Math.pow(PHI, i - 3); // Center around base
+                const layerVolume = volume / layers;
+                
+                // Left ear
+                let sourceL, bufferSourceL, lfoL;
+                if (carrierType === 'sine' || carrierType === 'triangle') {
+                    sourceL = audioContext.createOscillator();
+                    sourceL.type = carrierType;
+                    sourceL.frequency.value = layerBase;
+                } else {
+                    bufferSourceL = audioContext.createBufferSource();
+                    bufferSourceL.buffer = createNoiseBuffer(carrierType);
+                    bufferSourceL.loop = true;
+                    
+                    const filterL = audioContext.createBiquadFilter();
+                    filterL.type = 'bandpass';
+                    filterL.frequency.value = layerBase;
+                    filterL.Q.value = 2;
+                    
+                    bufferSourceL.connect(filterL);
+                    sourceL = filterL;
+                }
+                
+                const gainL = audioContext.createGain();
+                const pannerL = audioContext.createStereoPanner();
+                
+                gainL.gain.value = layerVolume;
+                pannerL.pan.value = -stereoWidth;
+                
+                // LFO modulation
+                if (modDepth > 0) {
+                    lfoL = audioContext.createOscillator();
+                    const lfoGainL = audioContext.createGain();
+                    lfoL.frequency.value = PHI / Math.pow(PHI, i);
+                    lfoGainL.gain.value = layerVolume * modDepth * 0.5;
+                    lfoL.connect(lfoGainL);
+                    lfoGainL.connect(gainL.gain);
+                    lfoL.start();
+                }
+                
+                sourceL.connect(gainL);
+                gainL.connect(pannerL);
+                pannerL.connect(audioContext.destination);
+                
+                if (bufferSourceL) bufferSourceL.start();
+                else sourceL.start();
+                
+                // Right ear (offset by φ Hz)
+                let sourceR, bufferSourceR, lfoR;
+                if (carrierType === 'sine' || carrierType === 'triangle') {
+                    sourceR = audioContext.createOscillator();
+                    sourceR.type = carrierType;
+                    sourceR.frequency.value = layerBase + phiBeat;
+                } else {
+                    bufferSourceR = audioContext.createBufferSource();
+                    bufferSourceR.buffer = createNoiseBuffer(carrierType);
+                    bufferSourceR.loop = true;
+                    
+                    const filterR = audioContext.createBiquadFilter();
+                    filterR.type = 'bandpass';
+                    filterR.frequency.value = layerBase + phiBeat;
+                    filterR.Q.value = 2;
+                    
+                    bufferSourceR.connect(filterR);
+                    sourceR = filterR;
+                }
+                
+                const gainR = audioContext.createGain();
+                const pannerR = audioContext.createStereoPanner();
+                
+                gainR.gain.value = layerVolume;
+                pannerR.pan.value = stereoWidth;
+                
+                // LFO modulation
+                if (modDepth > 0) {
+                    lfoR = audioContext.createOscillator();
+                    const lfoGainR = audioContext.createGain();
+                    lfoR.frequency.value = PHI / Math.pow(PHI, i);
+                    lfoGainR.gain.value = layerVolume * modDepth * 0.5;
+                    lfoR.connect(lfoGainR);
+                    lfoGainR.connect(gainR.gain);
+                    lfoR.start();
+                }
+                
+                sourceR.connect(gainR);
+                gainR.connect(pannerR);
+                pannerR.connect(audioContext.destination);
+                
+                if (bufferSourceR) bufferSourceR.start();
+                else sourceR.start();
+                
+                oscillators.push({
+                    left: { source: sourceL, gain: gainL, buffer: bufferSourceL, lfo: lfoL },
+                    right: { source: sourceR, gain: gainR, buffer: bufferSourceR, lfo: lfoR },
+                    freq: layerBase,
+                    beatFreq: phiBeat,
+                    layer: i
+                });
+            }
+            
+            isPlaying = true;
+            sessionStartTime = Date.now();
+            document.getElementById('toggleBtn').textContent = '⬛ STOP SESSION';
+            document.getElementById('toggleBtn').classList.add('playing');
+            updateLayerDisplay();
+            startTimer();
+        }
+        
+        // Stop session
+        function stopSession() {
+            oscillators.forEach(({ left, right }) => {
+                try {
+                    if (left.source && left.source.stop) left.source.stop();
+                    if (left.buffer && left.buffer.stop) left.buffer.stop();
+                    if (left.lfo && left.lfo.stop) left.lfo.stop();
+                    if (right.source && right.source.stop) right.source.stop();
+                    if (right.buffer && right.buffer.stop) right.buffer.stop();
+                    if (right.lfo && right.lfo.stop) right.lfo.stop();
+                } catch(e) {
+                    // Already stopped
+                }
+            });
+            oscillators = [];
+            isPlaying = false;
+            document.getElementById('toggleBtn').textContent = '▶ BEGIN SESSION';
+            document.getElementById('toggleBtn').classList.remove('playing');
+            stopTimer();
+        }
+        
+        // Timer
+        function startTimer() {
+            timerSeconds = 0;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                updateTimerDisplay();
+                
+                if (targetMinutes > 0 && timerSeconds >= targetMinutes * 60) {
+                    stopSession();
+                    alert('Session complete! 🎯');
+                }
+            }, 1000);
+        }
+        
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerSeconds = 0;
+            targetMinutes = 0;
+            updateTimerDisplay();
+        }
+        
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('sessionTime').textContent = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Update layer display
+        function updateLayerDisplay() {
+            const container = document.getElementById('layerDisplay');
+            container.innerHTML = '';
+            
+            oscillators.forEach(({ freq, beatFreq, layer }) => {
+                const div = document.createElement('div');
+                div.className = 'layer active';
+                div.innerHTML = `
+                    <div class="layer-info">
+                        <div class="layer-number">Layer ${layer + 1}</div>
+                        <div class="layer-freq">
+                            L: ${freq.toFixed(2)} Hz | R: ${(freq + beatFreq).toFixed(2)} Hz<br>
+                            Beat: ${beatFreq.toFixed(3)} Hz
+                        </div>
+                    </div>
+                    <div class="layer-indicator" style="animation-delay: ${layer * 0.2}s"></div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // Visualization
+        function drawBackground() {
+            const time = Date.now() / 1000;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.02)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (!isPlaying) {
+                // Draw φ spiral
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.05)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                
+                for (let angle = 0; angle < 10 * Math.PI; angle += 0.02) {
+                    const r = 10 * Math.pow(PHI, angle / TWO_PI);
+                    const x = centerX + r * Math.cos(angle + time / 3);
+                    const y = centerY + r * Math.sin(angle + time / 3);
+                    
+                    if (angle === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            } else {
+                // Draw active field
+                oscillators.forEach(({ freq, beatFreq, layer }, idx) => {
+                    const angle = (layer / 6) * TWO_PI + time;
+                    const radius = 100 + layer * 80;
+                    const beatPhase = Math.sin(time * beatFreq * TWO_PI);
+                    const intensity = (beatPhase + 1) / 2;
+                    
+                    // Left ear
+                    const xL = centerX - 200 + Math.cos(angle) * radius * 0.3;
+                    const yL = centerY + Math.sin(angle) * radius * 0.3;
+                    
+                    const gradL = ctx.createRadialGradient(xL, yL, 0, xL, yL, 50 * intensity);
+                    gradL.addColorStop(0, `rgba(100, 150, 255, ${0.6 * intensity})`);
+                    gradL.addColorStop(1, 'rgba(100, 150, 255, 0)');
+                    
+                    ctx.fillStyle = gradL;
+                    ctx.beginPath();
+                    ctx.arc(xL, yL, 50 * intensity, 0, TWO_PI);
+                    ctx.fill();
+                    
+                    // Right ear
+                    const xR = centerX + 200 + Math.cos(angle) * radius * 0.3;
+                    const yR = centerY + Math.sin(angle) * radius * 0.3;
+                    
+                    const gradR = ctx.createRadialGradient(xR, yR, 0, xR, yR, 50 * intensity);
+                    gradR.addColorStop(0, `rgba(255, 100, 150, ${0.6 * intensity})`);
+                    gradR.addColorStop(1, 'rgba(255, 100, 150, 0)');
+                    
+                    ctx.fillStyle = gradR;
+                    ctx.beginPath();
+                    ctx.arc(xR, yR, 50 * intensity, 0, TWO_PI);
+                    ctx.fill();
+                    
+                    // Beat interference in center
+                    const centerIntensity = intensity * 0.8;
+                    const gradC = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 100);
+                    gradC.addColorStop(0, `rgba(255, 215, 0, ${centerIntensity})`);
+                    gradC.addColorStop(1, 'rgba(255, 215, 0, 0)');
+                    
+                    ctx.fillStyle = gradC;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, 100 * centerIntensity, 0, TWO_PI);
+                    ctx.fill();
+                });
+            }
+            
+            requestAnimationFrame(drawBackground);
+        }
+        
+        function drawModulation() {
+            const time = Date.now() / 1000;
+            const width = modCanvas.width;
+            const height = modCanvas.height;
+            const centerY = height / 2;
+            
+            modCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            modCtx.fillRect(0, 0, width, height);
+            
+            if (isPlaying && oscillators.length > 0) {
+                // Draw beat pattern
+                oscillators.forEach(({ beatFreq, layer }, idx) => {
+                    const hue = (layer / 6) * 60 + 180;
+                    modCtx.strokeStyle = `hsla(${hue}, 70%, 60%, 0.6)`;
+                    modCtx.lineWidth = 2;
+                    modCtx.beginPath();
+                    
+                    for (let x = 0; x < width; x += 2) {
+                        const t = time - (width - x) / 100;
+                        const y = centerY + Math.sin(t * beatFreq * TWO_PI) * (height * 0.3) / (layer + 1);
+                        
+                        if (x === 0) modCtx.moveTo(x, y);
+                        else modCtx.lineTo(x, y);
+                    }
+                    modCtx.stroke();
+                });
+                
+                // Composite wave
+                modCtx.strokeStyle = 'rgba(255, 215, 0, 0.8)';
+                modCtx.lineWidth = 3;
+                modCtx.beginPath();
+                
+                for (let x = 0; x < width; x += 2) {
+                    const t = time - (width - x) / 100;
+                    let sum = 0;
+                    
+                    oscillators.forEach(({ beatFreq }) => {
+                        sum += Math.sin(t * beatFreq * TWO_PI);
+                    });
+                    
+                    const y = centerY + (sum / oscillators.length) * (height * 0.35);
+                    
+                    if (x === 0) modCtx.moveTo(x, y);
+                    else modCtx.lineTo(x, y);
+                }
+                modCtx.stroke();
+            } else {
+                // Draw φ spiral when idle
+                modCtx.strokeStyle = 'rgba(255, 215, 0, 0.2)';
+                modCtx.lineWidth = 1;
+                modCtx.beginPath();
+                
+                for (let angle = 0; angle < 6 * Math.PI; angle += 0.05) {
+                    const r = 5 * Math.pow(PHI, angle / TWO_PI);
+                    const x = width / 2 + r * Math.cos(angle + time / 2);
+                    const y = centerY + r * Math.sin(angle + time / 2);
+                    
+                    if (angle === 0) modCtx.moveTo(x, y);
+                    else modCtx.lineTo(x, y);
+                }
+                modCtx.stroke();
+            }
+            
+            requestAnimationFrame(drawModulation);
+        }
+        
+        // UI Events
+        document.getElementById('toggleBtn').addEventListener('click', () => {
+            if (isPlaying) stopSession();
+            else startSession();
+        });
+        
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                currentPreset = btn.dataset.preset;
+                const preset = presets[currentPreset];
+                
+                document.getElementById('betaValue').textContent = preset.beta.toFixed(2);
+                document.getElementById('baseFreqStat').textContent = preset.base + ' Hz';
+                document.getElementById('targetState').textContent = preset.desc.toUpperCase();
+                document.getElementById('beatRate').textContent = PHI.toFixed(3) + ' Hz';
+                
+                if (isPlaying) {
+                    stopSession();
+                    setTimeout(startSession, 100);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.timer-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                targetMinutes = parseInt(btn.dataset.time);
+            });
+        });
+        
+        document.getElementById('masterVolume').addEventListener('input', (e) => {
+            const vol = e.target.value;
+            document.getElementById('volumeDisplay').textContent = vol + '%';
+            
+            if (isPlaying && oscillators.length > 0) {
+                const volume = parseFloat(vol) / 100;
+                oscillators.forEach(({ left, right }) => {
+                    if (left.gain) {
+                        left.gain.gain.setValueAtTime(volume / oscillators.length, audioContext.currentTime);
+                    }
+                    if (right.gain) {
+                        right.gain.gain.setValueAtTime(volume / oscillators.length, audioContext.currentTime);
+                    }
+                });
+            }
+        });
+        
+        document.getElementById('beatStrength').addEventListener('input', (e) => {
+            document.getElementById('beatIntensity').textContent = e.target.value + '%';
+            if (isPlaying) {
+                stopSession();
+                setTimeout(startSession, 100);
+            }
+        });
+        
+        document.getElementById('stereo').addEventListener('input', (e) => {
+            document.getElementById('stereoWidth').textContent = e.target.value + '%';
+            if (isPlaying) {
+                stopSession();
+                setTimeout(startSession, 100);
+            }
+        });
+        
+        document.getElementById('modulation').addEventListener('input', (e) => {
+            document.getElementById('modDepth').textContent = e.target.value + '%';
+            if (isPlaying) {
+                stopSession();
+                setTimeout(startSession, 100);
+            }
+        });
+        
+        document.getElementById('carrier').addEventListener('change', () => {
+            if (isPlaying) {
+                stopSession();
+                setTimeout(startSession, 100);
+            }
+        });
+        
+        // Initialize
+        drawBackground();
+        drawModulation();
+        
+        // Load initial preset
+        const preset = presets[currentPreset];
+        document.getElementById('betaValue').textContent = preset.beta.toFixed(2);
+        document.getElementById('baseFreqStat').textContent = preset.base + ' Hz';
+        document.getElementById('targetState').textContent = preset.desc.toUpperCase();
+        document.getElementById('beatRate').textContent = PHI.toFixed(3) + ' Hz';
+        document.getElementById('volumeDisplay').textContent = '30%';
+    </script>
+</body>
+</html>

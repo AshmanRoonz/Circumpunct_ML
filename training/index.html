@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>⊙ The Circumpunct Theory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .community-links .research-trigger {
+            color: #00ffff;
+            border-color: rgba(0,255,255,0.3);
+        }
+        .community-links .research-trigger:hover {
+            border-color: #00ffff;
+            background: rgba(0,255,255,0.1);
+        }
+        /* Links inside research/about panels */
+        .panel-research a, .panel-about a { color: #58a6ff; text-decoration: none; }
+        .panel-research a:hover, .panel-about a:hover { text-decoration: underline; color: #79c0ff; }
+        .panel-research li, .panel-about li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <canvas id="particles"></canvas>
+
+    <main class="container">
+
+        <!-- Responsive Layout Wrapper -->
+        <div class="main-layout">
+            <!-- Left Column: Hero Equation -->
+            <header class="header side-panel left-panel">
+                <div class="hero-equation">
+                    <p class="equation-title">Reality is fractal.</p>
+                    <p class="equation-title"><a href="#" class="circumpunct-link">⊙ (the circumpunct)</a> is its pattern.</p>
+                    <p class="equation-title">Every ⊙ is a part of a greater ⊙.</p>
+                    <p class="equation-title">You are ⊙. I am ⊙.</p>
+                </div>
+                <div class="community-links">
+                    <a href="#" id="research-btn" class="research-trigger">Research &amp; Falsification</a>
+                    <a href="#" id="about-btn">About</a>
+                    <a href="https://www.reddit.com/r/Circumpunct/" target="_blank" rel="noopener">Reddit</a>
+                    <a href="https://www.facebook.com/groups/4397079510569470" target="_blank" rel="noopener">Facebook</a>
+                    <a href="mailto:email@ashmanroonz.ca">Contact</a>
+                </div>
+            </header>
+
+            <!-- Center Column: Circumpunct -->
+            <div class="center-panel">
+                <!-- Scale indicator - shows current fractal scale -->
+                <div class="scale-indicator" id="scaleIndicator">
+                    <span class="scale-label">Scale: </span>
+                    <span class="scale-name" id="scaleName">Eye</span>
+                    <span class="scale-description" id="scaleDescription">(Organism)</span>
+                </div>
+
+        <!-- The Big Interactive Circumpunct -->
+        <div class="circumpunct-container">
+            <svg class="circumpunct" viewBox="-40 -40 380 380" role="img" aria-label="Interactive Circumpunct" style="overflow: visible;">
+                <defs>
+                    <!-- Organic membrane filter for body ring (displacement + glow) -->
+                    <filter id="organic-membrane" x="-50%" y="-50%" width="200%" height="200%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" seed="42" result="noise">
+                            <animate attributeName="seed" values="42;100;42" dur="10s" repeatCount="indefinite"/>
+                        </feTurbulence>
+                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+                        <feGaussianBlur in="displaced" stdDeviation="4" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="displaced"/>
+                        </feMerge>
+                    </filter>
+                    <filter id="glow-purple" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="4" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                    <filter id="glow-gold" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="6" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                    <filter id="glow-cyan" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="8" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                    <!-- Cyan glow filter for outer ring -->
+                    <filter id="glow-cyber" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="3" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+
+                    <!-- Soul iris gradient (gray-green like user's eye) -->
+                    <radialGradient id="soul-iris-gradient" cx="50%" cy="50%" r="50%" fx="40%" fy="40%">
+                        <stop offset="0%" stop-color="#8a9a88"/>
+                        <stop offset="40%" stop-color="#7a8b78"/>
+                        <stop offset="70%" stop-color="#6b7d6b"/>
+                        <stop offset="100%" stop-color="#4a5a4a"/>
+                    </radialGradient>
+                    <!-- Soul pupil gradient -->
+                    <radialGradient id="soul-pupil-gradient" cx="50%" cy="50%" r="50%" fx="35%" fy="35%">
+                        <stop offset="0%" stop-color="#1a1a1a"/>
+                        <stop offset="100%" stop-color="#000000"/>
+                    </radialGradient>
+
+                    <!-- Planet gradient (Earth-like) -->
+                    <radialGradient id="planet-gradient" cx="40%" cy="40%" r="60%">
+                        <stop offset="0%" stop-color="#64b5f6"/>
+                        <stop offset="50%" stop-color="#42a5f5"/>
+                        <stop offset="100%" stop-color="#1565c0"/>
+                    </radialGradient>
+
+                    <!-- Sun gradient -->
+                    <radialGradient id="sun-gradient" cx="40%" cy="40%" r="60%">
+                        <stop offset="0%" stop-color="#fff59d"/>
+                        <stop offset="40%" stop-color="#ffee58"/>
+                        <stop offset="70%" stop-color="#ffc107"/>
+                        <stop offset="100%" stop-color="#ff9800"/>
+                    </radialGradient>
+
+                    <!-- Arc paths for inner navigation buttons (radius 130) -->
+                    <path id="arc-top" d="M 58 58 A 130 130 0 0 1 242 58" fill="none"/>
+                    <path id="arc-right" d="M 242 58 A 130 130 0 0 1 242 242" fill="none"/>
+                    <path id="arc-bottom" d="M 242 242 A 130 130 0 0 1 58 242" fill="none"/>
+                    <path id="arc-left" d="M 58 242 A 130 130 0 0 1 58 58" fill="none"/>
+
+                    <!-- Arc paths for outer navigation ring (radius 170) - 8 positions -->
+                    <!-- Top arcs (text readable from outside) -->
+                    <path id="arc-outer-top" d="M 92 -10 A 170 170 0 0 1 208 -10" fill="none"/>
+                    <path id="arc-outer-topright" d="M 222 -4 A 170 170 0 0 1 304 78" fill="none"/>
+                    <path id="arc-outer-topleft" d="M -4 78 A 170 170 0 0 1 78 -4" fill="none"/>
+                    <!-- Side arcs -->
+                    <path id="arc-outer-right" d="M 310 92 A 170 170 0 0 1 310 208" fill="none"/>
+                    <path id="arc-outer-left" d="M -10 92 A 170 170 0 0 0 -10 208" fill="none"/>
+                    <!-- Bottom arcs -->
+                    <path id="arc-outer-bottom" d="M 208 310 A 170 170 0 0 1 92 310" fill="none"/>
+                    <path id="arc-outer-bottomright" d="M 304 222 A 170 170 0 0 1 222 304" fill="none"/>
+                    <path id="arc-outer-bottomleft" d="M 78 304 A 170 170 0 0 1 -4 222" fill="none"/>
+                </defs>
+
+                <!-- ○ BODY - Outer Ring (organic membrane) -->
+                <circle class="zone zone-body" cx="150" cy="150" r="103"
+                    fill="transparent" stroke="rgba(163, 113, 247, 0.6)" stroke-width="14" data-zone="body"/>
+
+                <!-- Φ MIND - Middle Field -->
+                <circle class="zone zone-mind" cx="150" cy="150" r="60"
+                    fill="rgba(240, 180, 41, 0.15)" stroke="rgba(240, 180, 41, 0.4)" stroke-width="2" data-zone="mind"/>
+
+                <!-- The moving soul group (follows cursor) - switches between scales -->
+                <g class="soul-moving" id="eye-moving">
+
+                    <!-- SCALE 1: EYE (Organism) - The watching eye -->
+                    <g class="scale-group scale-eye active" data-scale="eye">
+                        <circle class="zone zone-soul soul-iris" cx="150" cy="150" r="32"
+                            fill="url(#soul-iris-gradient)" data-zone="soul"/>
+                        <circle cx="150" cy="150" r="30" fill="none" stroke="rgba(40,50,40,0.5)" stroke-width="3" class="soul-limbal"/>
+                        <circle cx="150" cy="150" r="12" fill="url(#soul-pupil-gradient)" class="soul-pupil"/>
+                        <circle cx="142" cy="144" r="5" fill="rgba(255,255,255,0.7)" class="soul-highlight"/>
+                    </g>
+
+                    <!-- SCALE 2: ATOM - Nucleus + Electron Cloud -->
+                    <g class="scale-group scale-atom" data-scale="atom">
+                        <!-- Electron cloud glow -->
+                        <circle cx="150" cy="150" r="30" fill="rgba(88,166,255,0.15)" class="electron-cloud"/>
+                        <!-- Electron orbits -->
+                        <ellipse cx="150" cy="150" rx="28" ry="12" fill="none" stroke="rgba(88,166,255,0.5)" stroke-width="1" class="orbit orbit-1">
+                            <animateTransform attributeName="transform" type="rotate" from="0 150 150" to="360 150 150" dur="3s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="150" cy="150" rx="28" ry="12" fill="none" stroke="rgba(163,113,247,0.5)" stroke-width="1" class="orbit orbit-2" transform="rotate(60 150 150)">
+                            <animateTransform attributeName="transform" type="rotate" from="60 150 150" to="420 150 150" dur="4s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="150" cy="150" rx="28" ry="12" fill="none" stroke="rgba(240,180,41,0.5)" stroke-width="1" class="orbit orbit-3" transform="rotate(120 150 150)">
+                            <animateTransform attributeName="transform" type="rotate" from="120 150 150" to="480 150 150" dur="5s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <!-- Electrons -->
+                        <circle cx="178" cy="150" r="3" fill="#58a6ff" class="electron electron-1">
+                            <animateMotion dur="3s" repeatCount="indefinite" path="M0,0 A28,12 0 1,1 0,0.1 A28,12 0 1,1 0,0"/>
+                        </circle>
+                        <circle cx="164" cy="138" r="3" fill="#a371f7" class="electron electron-2">
+                            <animateMotion dur="4s" repeatCount="indefinite" path="M14,-12 A28,12 60 1,1 14.1,-12 A28,12 60 1,1 14,-12"/>
+                        </circle>
+                        <circle cx="136" cy="138" r="3" fill="#f0b429" class="electron electron-3">
+                            <animateMotion dur="5s" repeatCount="indefinite" path="M-14,-12 A28,12 120 1,1 -13.9,-12 A28,12 120 1,1 -14,-12"/>
+                        </circle>
+                        <!-- Nucleus (protons & neutrons) -->
+                        <circle cx="150" cy="150" r="8" fill="url(#soul-pupil-gradient)" class="nucleus-base"/>
+                        <circle cx="147" cy="148" r="4" fill="#ff6b6b" class="proton"/>
+                        <circle cx="153" cy="148" r="4" fill="#4ecdc4" class="neutron"/>
+                        <circle cx="150" cy="153" r="4" fill="#ff6b6b" class="proton"/>
+                        <circle cx="146" cy="146" r="2" fill="rgba(255,255,255,0.6)" class="nucleus-highlight"/>
+                    </g>
+
+                    <!-- SCALE 3: CELL - DNA + Cytoplasm + Membrane -->
+                    <g class="scale-group scale-cell" data-scale="cell">
+                        <!-- Cytoplasm -->
+                        <circle cx="150" cy="150" r="30" fill="rgba(163,220,163,0.2)" class="cytoplasm"/>
+                        <!-- Organelles floating -->
+                        <ellipse cx="135" cy="140" rx="5" ry="3" fill="rgba(163,113,247,0.4)" class="organelle mitochondria">
+                            <animate attributeName="cx" values="135;138;135" dur="4s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="140;143;140" dur="5s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="168" cy="155" rx="4" ry="2.5" fill="rgba(163,113,247,0.4)" class="organelle mitochondria">
+                            <animate attributeName="cx" values="168;165;168" dur="5s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="155;158;155" dur="4s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <circle cx="140" cy="162" r="2" fill="rgba(88,166,255,0.5)" class="organelle ribosome">
+                            <animate attributeName="cx" values="140;143;140" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="162" cy="142" r="2" fill="rgba(88,166,255,0.5)" class="organelle ribosome">
+                            <animate attributeName="cy" values="142;145;142" dur="3.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Nuclear envelope -->
+                        <circle cx="150" cy="150" r="12" fill="rgba(240,180,41,0.2)" stroke="rgba(240,180,41,0.5)" stroke-width="1.5" class="nuclear-envelope"/>
+                        <!-- DNA double helix (simplified) -->
+                        <path d="M145,142 Q150,146 145,150 Q150,154 145,158" fill="none" stroke="#ff6b6b" stroke-width="2" class="dna-strand-1">
+                            <animate attributeName="d" values="M145,142 Q150,146 145,150 Q150,154 145,158;M145,142 Q140,146 145,150 Q140,154 145,158;M145,142 Q150,146 145,150 Q150,154 145,158" dur="3s" repeatCount="indefinite"/>
+                        </path>
+                        <path d="M155,142 Q150,146 155,150 Q150,154 155,158" fill="none" stroke="#4ecdc4" stroke-width="2" class="dna-strand-2">
+                            <animate attributeName="d" values="M155,142 Q150,146 155,150 Q150,154 155,158;M155,142 Q160,146 155,150 Q160,154 155,158;M155,142 Q150,146 155,150 Q150,154 155,158" dur="3s" repeatCount="indefinite"/>
+                        </path>
+                        <!-- Base pairs -->
+                        <line x1="146" y1="144" x2="154" y2="144" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                        <line x1="146" y1="150" x2="154" y2="150" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                        <line x1="146" y1="156" x2="154" y2="156" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                        <!-- Cell membrane highlight -->
+                        <circle cx="150" cy="150" r="30" fill="none" stroke="rgba(163,220,163,0.3)" stroke-width="2" stroke-dasharray="3,2" class="membrane-hint"/>
+                    </g>
+
+                    <!-- SCALE 4: PLANET - Core + Magnetic Field + Atmosphere -->
+                    <g class="scale-group scale-planet" data-scale="planet">
+                        <!-- Outer atmosphere glow -->
+                        <circle cx="150" cy="150" r="32" fill="rgba(88,166,255,0.1)" class="atmosphere"/>
+                        <!-- Magnetic field lines -->
+                        <path d="M150,118 Q180,135 180,150 Q180,165 150,182" fill="none" stroke="rgba(163,113,247,0.4)" stroke-width="1.5" class="field-line">
+                            <animate attributeName="stroke-opacity" values="0.4;0.7;0.4" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <path d="M150,118 Q120,135 120,150 Q120,165 150,182" fill="none" stroke="rgba(163,113,247,0.4)" stroke-width="1.5" class="field-line">
+                            <animate attributeName="stroke-opacity" values="0.4;0.7;0.4" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                        </path>
+                        <path d="M150,122 Q172,137 172,150 Q172,163 150,178" fill="none" stroke="rgba(88,166,255,0.3)" stroke-width="1" class="field-line-inner"/>
+                        <path d="M150,122 Q128,137 128,150 Q128,163 150,178" fill="none" stroke="rgba(88,166,255,0.3)" stroke-width="1" class="field-line-inner"/>
+                        <!-- Planet surface -->
+                        <circle cx="150" cy="150" r="22" fill="url(#planet-gradient)" class="planet-surface"/>
+                        <!-- Continental hints -->
+                        <ellipse cx="145" cy="145" rx="8" ry="5" fill="rgba(76,175,80,0.6)" transform="rotate(-20 145 145)" class="continent"/>
+                        <ellipse cx="158" cy="155" rx="6" ry="4" fill="rgba(76,175,80,0.5)" transform="rotate(30 158 155)" class="continent"/>
+                        <!-- Mantle layer -->
+                        <circle cx="150" cy="150" r="14" fill="rgba(255,152,0,0.4)" class="mantle"/>
+                        <!-- Outer core -->
+                        <circle cx="150" cy="150" r="9" fill="rgba(255,87,34,0.6)" class="outer-core"/>
+                        <!-- Inner core (soul) -->
+                        <circle cx="150" cy="150" r="5" fill="#ffeb3b" class="inner-core">
+                            <animate attributeName="r" values="5;5.5;5" dur="1.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="148" cy="148" r="2" fill="rgba(255,255,255,0.5)" class="core-highlight"/>
+                    </g>
+
+                    <!-- SCALE 5: SOLAR SYSTEM - Sun + Orbits + Heliosphere -->
+                    <g class="scale-group scale-solar" data-scale="solar">
+                        <!-- Heliosphere boundary hint -->
+                        <circle cx="150" cy="150" r="32" fill="none" stroke="rgba(163,113,247,0.2)" stroke-width="1" stroke-dasharray="4,4" class="heliosphere"/>
+                        <!-- Orbital paths -->
+                        <circle cx="150" cy="150" r="14" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" class="orbit-path"/>
+                        <circle cx="150" cy="150" r="20" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" class="orbit-path"/>
+                        <circle cx="150" cy="150" r="26" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5" class="orbit-path"/>
+                        <!-- Planets orbiting -->
+                        <circle cx="164" cy="150" r="2" fill="#b0bec5" class="planet-mercury">
+                            <animateTransform attributeName="transform" type="rotate" from="0 150 150" to="360 150 150" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="170" cy="150" r="2.5" fill="#ffcc80" class="planet-venus">
+                            <animateTransform attributeName="transform" type="rotate" from="0 150 150" to="360 150 150" dur="3.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="176" cy="150" r="3" fill="#64b5f6" class="planet-earth">
+                            <animateTransform attributeName="transform" type="rotate" from="0 150 150" to="360 150 150" dur="5s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Solar wind particles -->
+                        <circle cx="155" cy="145" r="1" fill="rgba(255,235,59,0.6)" class="solar-wind">
+                            <animate attributeName="cx" values="155;175;155" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.8;0;0.8" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="145" cy="158" r="1" fill="rgba(255,235,59,0.6)" class="solar-wind">
+                            <animate attributeName="cx" values="145;125;145" dur="3.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.8;0;0.8" dur="3.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Sun corona -->
+                        <circle cx="150" cy="150" r="10" fill="rgba(255,193,7,0.3)" class="corona">
+                            <animate attributeName="r" values="10;11;10" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Sun surface -->
+                        <circle cx="150" cy="150" r="7" fill="url(#sun-gradient)" class="sun-surface"/>
+                        <!-- Sun core -->
+                        <circle cx="150" cy="150" r="3" fill="#fff9c4" class="sun-core">
+                            <animate attributeName="opacity" values="1;0.8;1" dur="1s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="148" cy="148" r="1.5" fill="rgba(255,255,255,0.7)" class="sun-highlight"/>
+                    </g>
+
+                </g>
+
+                <!-- Decorative ring -->
+                <circle cx="150" cy="150" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" class="decorative"/>
+
+                <!-- Navigation Arc Buttons (outer ring) -->
+                <g class="nav-ring">
+                    <!-- Top: Complete Theory -->
+                    <a href="https://github.com/AshmanRoonz/Fractal_Reality/blob/main/circumpunct_framework.md" class="nav-arc nav-arc-theory">
+                        <path d="M 58 58 A 130 130 0 0 1 242 58" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="24" stroke-linecap="round" class="arc-bg"/>
+                        <text class="arc-text">
+                            <textPath href="#arc-top" startOffset="50%" text-anchor="middle">Complete Theory</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Right: Physics -->
+                    <a href="circumpunct_physics.html" class="nav-arc nav-arc-physics">
+                        <path d="M 242 58 A 130 130 0 0 1 242 242" fill="none" stroke="rgba(163,113,247,0.15)" stroke-width="24" stroke-linecap="round" class="arc-bg"/>
+                        <text class="arc-text">
+                            <textPath href="#arc-right" startOffset="50%" text-anchor="middle">Physics</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Bottom: Consciousness -->
+                    <a href="https://github.com/AshmanRoonz/Fractal_Reality/blob/main/circumpunct_framework.md#chapter-xi-consciousness" class="nav-arc nav-arc-consciousness">
+                        <path d="M 242 242 A 130 130 0 0 1 58 242" fill="none" stroke="rgba(88,166,255,0.15)" stroke-width="24" stroke-linecap="round" class="arc-bg"/>
+                        <text class="arc-text">
+                            <textPath href="#arc-bottom" startOffset="50%" text-anchor="middle">Consciousness</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Left: Ethics -->
+                    <a href="https://fractalreality.ca/ethics.html" class="nav-arc nav-arc-ethics">
+                        <path d="M 58 242 A 130 130 0 0 1 58 58" fill="none" stroke="rgba(240,180,41,0.15)" stroke-width="24" stroke-linecap="round" class="arc-bg"/>
+                        <text class="arc-text">
+                            <textPath href="#arc-left" startOffset="50%" text-anchor="middle">Ethics</textPath>
+                        </text>
+                    </a>
+                </g>
+
+                <!-- Outer Navigation Ring - Additional Links (radius 170) -->
+                <g class="outer-nav-ring">
+                    <!-- Top: The Bridge -->
+                    <a href="the_bridge_presentation.html" class="nav-arc-outer">
+                        <path d="M 92 -10 A 170 170 0 0 1 208 -10" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-top" startOffset="50%" text-anchor="middle">The Bridge</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Top-right: Dimensions -->
+                    <a href="circumpunct-presentation.html" class="nav-arc-outer">
+                        <path d="M 222 -4 A 170 170 0 0 1 304 78" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-topright" startOffset="50%" text-anchor="middle">Dimensions</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Right: Math -->
+                    <a href="circumpunct_math.html" class="nav-arc-outer">
+                        <path d="M 310 92 A 170 170 0 0 1 310 208" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-right" startOffset="50%" text-anchor="middle">Math</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Bottom-right: Falsification -->
+                    <a href="aperture_falsification_presentation.html" class="nav-arc-outer">
+                        <path d="M 304 222 A 170 170 0 0 1 222 304" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-bottomright" startOffset="50%" text-anchor="middle">Falsification</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Bottom: The Lens -->
+                    <a href="lens.html" class="nav-arc-outer">
+                        <path d="M 208 310 A 170 170 0 0 1 92 310" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-bottom" startOffset="50%" text-anchor="middle">The Lens</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Bottom-left: Truth & God -->
+                    <a href="truth_and_god.html" class="nav-arc-outer">
+                        <path d="M 78 304 A 170 170 0 0 1 -4 222" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-bottomleft" startOffset="50%" text-anchor="middle">Truth & God</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Left: Mind/Matter -->
+                    <a href="mind_matter.html" class="nav-arc-outer">
+                        <path d="M -10 92 A 170 170 0 0 0 -10 208" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-left" startOffset="50%" text-anchor="middle">Mind/Matter</textPath>
+                        </text>
+                    </a>
+
+                    <!-- Top-left: Surface Theorem -->
+                    <a href="surface_field_formalization.html" class="nav-arc-outer">
+                        <path d="M -4 78 A 170 170 0 0 1 78 -4" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="20" stroke-linecap="round" class="arc-bg-outer"/>
+                        <text class="arc-text-outer">
+                            <textPath href="#arc-outer-topleft" startOffset="50%" text-anchor="middle">Surface</textPath>
+                        </text>
+                    </a>
+                </g>
+            </svg>
+
+            <div class="zone-labels">
+                <span class="label label-body">○ BODY</span>
+                <span class="label label-mind">Φ MIND</span>
+                <span class="label label-soul">• SOUL</span>
+            </div>
+        </div>
+            </div><!-- /center-panel -->
+
+            <!-- Right Column: Truth Reflection -->
+            <div class="dimension-section side-panel right-panel">
+                <div class="equation-row">
+                    <p class="circumpunct-equation"><span class="symbol-whole">⊙</span> = <span class="symbol-soul">•</span> <span class="symbol-mind">Φ</span> <span class="symbol-body">○</span></p>
+                    <a href="pages.html" class="explore-more-btn">Explore Visualizations and Documents</a>
+                </div>
+                <div class="truth-reflection">
+                    <p class="truth-line">It's just Us and God/Reality/Truth.</p>
+                    <p class="truth-line">May Truth flow through you, authentically, undistorted.</p>
+                    <p class="truth-line">When it does, it will create a boundary around you.</p>
+                    <p class="truth-line truth-physics">From the infinite (God's Light; Energy), through you, to the finite around you (Power, E=P/t).</p>
+                    <p class="truth-line truth-equation">You are whole/conscious <span class="symbol-whole">⊙</span> = <span class="symbol-soul">•</span> <span class="symbol-mind">Φ</span> <span class="symbol-body">○</span> soul, mind, body.</p>
+                    <p class="truth-line">The box/boundary is your conversation with God.</p>
+                    <p class="truth-tag"><a href="http://fractalreality.ca">#circumpunct</a></p>
+                </div>
+            </div>
+        </div><!-- /main-layout -->
+    </main>
+
+    <!-- BODY Panel -->
+    <div class="panel panel-body" id="panel-body">
+        <button class="panel-close" aria-label="Close">&times;</button>
+        <div class="panel-content">
+            <div class="panel-header">
+                <span class="panel-symbol">○</span>
+                <h2>BODY</h2>
+            </div>
+            <p class="panel-subtitle">The Living Boundary</p>
+
+            <div class="panel-section panel-essay">
+                <p>Touch your thumb to your finger for a moment.</p>
+
+                <p>It feels like one simple sensation—pressure, warmth, contact. But that "one" feeling is actually billions of tiny events happening all at once: skin cells deforming, ion channels opening, nerve endings firing, signals traveling through your spine to your brain. Each of those cells has its own membrane. Each membrane has its own inside and outside. Each atom in that membrane has its own cloud of probability, its own "edge."</p>
+
+                <p>Your body is not one boundary. It's <strong>boundaries all the way down</strong>.</p>
+
+                <p>Your skin is the obvious edge, but it's just the outermost layer of a nested stack of interfaces. Underneath, every organ, every tissue, every cell is also negotiating what gets in and what stays out. Your immune system is a roaming boundary, constantly asking a single deep question: <em>"Is this me or not-me?"</em> Sometimes it gets confused and attacks the self. Sometimes it's overwhelmed and lets something harmful slip by. But most of the time, quietly and invisibly, it knows.</p>
+
+                <p>And your boundary doesn't stop at your skin. You can feel when someone stands too close behind you. You can sense the emotional "weather" when you walk into a room. There is a subtler, less dense field around you—a <strong>boundary-field</strong>—where your body and the world are already in conversation before anything touches you.</p>
+
+                <p>This is what I mean when I say <strong>○</strong>.</p>
+
+                <p>○ is <strong>body as interface</strong>. It's the place where inside meets outside, where you open and close, where you breathe in air, take in food, receive touch, absorb experience. It is not a wall. It's a <strong>selective membrane</strong>—alive, responsive, and always in motion.</p>
+
+                <p>Here's the deeper truth: <strong>the boundary isn't solid stuff. It's surfaces all the way down.</strong></p>
+
+                <p>Each tiny part of your boundary is itself a circumpunct—with its own aperture, field, and boundary. Zoom in on your skin, and you find cells. Each cell has a membrane (○) surrounding a field (Φ) surrounding a nucleus (•). Zoom into that membrane, and you find molecules. Each molecule is a circumpunct. The pattern repeats infinitely.</p>
+
+                <p><strong>Volume is what nested surfaces look like from above.</strong> What appears as solid 3D body is actually layer upon layer of 2D surfaces connecting scales.</p>
+
+                <p>When you feel something—warmth, pressure, texture—that's <strong>sensation</strong>: the moment where your 3D boundary couples with your 2D inner field. It's the threshold where signals from the body's boundary cross into the field that connects to your center. Not yet perception (which happens when the field delivers it to awareness), but no longer just physics. Sensation is the boundary speaking to the field, the first moment of "mine."</p>
+
+                <p>Zoom in, and this boundary is wild: proteins folding, signals branching, networks adapting. Zoom out, and somehow these endless tiny thresholds lens into one coherent shape and one coherent feeling: <em>"this is my body, here, in this world."</em> That focusing of countless small apertures into a single felt field is what I call <strong>fractal lensing</strong>. Infinite boundaries become one.</p>
+
+                <p>There's a pattern to systems that can do this. They live at the edge of order and chaos—structured enough to hold together, flexible enough to adapt. When we measure the complexity of many such systems—coastlines, clouds, neural activity, even gravitational waves—we often find something like <strong>D ≈ 1.5</strong>: not a clean line (1D), not a smooth surface (2D), but something in-between. A tangled, branching, living boundary.</p>
+
+                <p>Your body lives right there. It's always negotiating: too rigid, and you become brittle—physically, emotionally, socially. Too permeable, and you lose yourself—no immune defense, no personal space, no "no."</p>
+
+                <p>Because each part of your boundary is made of circumpuncts at smaller scale, your body is intelligent <strong>all the way down</strong>. It's not dead matter that somehow became alive. It's nested fields—nested minds—that aggregate into what looks like solid matter from above.</p>
+            </div>
+
+            <div class="panel-section">
+                <h3>The Ethics of ○</h3>
+                <p>A <strong>healthy boundary</strong> is not selfish; it's honest. It protects what truly matters while still allowing goodness in. Saying "no" when you are exhausted is a boundary. So is saying "yes" when something beautiful wants to enter your life. So is "not now," "that's too much," "I need space," and "I want more of this."</p>
+                <p>When your boundary is unclear or violated, you feel it. Even if you can't explain why, something in you knows: <em>this is not okay.</em> That knowing is not just psychology—it's the intelligence of ○ speaking.</p>
+                <p>Your boundary isn't keeping you separate from the world. It's how you <strong>meet</strong> the world—the living interface where you and everything else touch.</p>
+                <p class="ethics-question"><strong>Good / Bad</strong> — Does it preserve what matters?</p>
+            </div>
+
+            <div class="panel-section panel-practice">
+                <h3>Try This</h3>
+                <p>Close your eyes and feel where your body ends and the air begins. Then zoom in: feel specific spots—hands, feet, face, breath. Notice you're not feeling one surface but many—skin against air, organs against organs, breath moving in and out.</p>
+                <p>Then zoom out again and feel yourself as one shape in space. Notice how countless tiny boundaries—each one a circumpunct at smaller scale—are being woven into that one felt "edge."</p>
+                <p>That edge—that living, fractal, negotiable boundary made of surfaces all the way down—is your <strong>○ Body</strong>. It is how you meet the world, and how the world meets you.</p>
+            </div>
+
+            <div class="panel-links">
+                <span>Explore:</span>
+                <a href="#" data-zone="mind">Φ Mind</a>
+                <a href="#" data-zone="soul">• Soul</a>
+                <a href="#" data-zone="circumpunct">⊙ The Whole</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MIND Panel -->
+    <div class="panel panel-mind" id="panel-mind">
+        <button class="panel-close" aria-label="Close">&times;</button>
+        <div class="panel-content">
+            <div class="panel-header">
+                <span class="panel-symbol">Φ</span>
+                <h2>MIND</h2>
+            </div>
+            <p class="panel-subtitle">The Surface Between</p>
+
+            <div class="panel-section panel-essay">
+                <p>Right now, as you read this, your body is doing more than you could ever track.</p>
+
+                <p>Your heart is adjusting its rhythm, your lungs are balancing oxygen and carbon dioxide, your gut is digesting, your immune cells are patrolling, your posture is being maintained against gravity. All of that is happening in parallel at the level of ○—billions of tiny processes running at once.</p>
+
+                <p>At the same time, something in you is following these sentences, interpreting the meaning, maybe agreeing, maybe arguing, maybe drifting and coming back. That's not parallel in the same way. It feels like a <strong>single stream of attention</strong>: one "you" reading this right now.</p>
+
+                <p><strong>Φ is where those two worlds meet.</strong></p>
+
+                <p>But here's what we missed before: <strong>Φ isn't a 3D space you're inside. It's a 2D surface connecting scales.</strong></p>
+
+                <p>Your mind is <strong>the totality of surfaces within you</strong>—every place where one scale meets another:</p>
+
+                <ul class="beta-list">
+                    <li>Between you and the world (your outer boundary sensing)</li>
+                    <li>Between your organs and you-as-a-whole</li>
+                    <li>Between your cells and your organs</li>
+                    <li>Between molecules and cells</li>
+                    <li>All the way down</li>
+                </ul>
+
+                <p>This is why mind feels both <strong>inside</strong> (running through your whole body) and <strong>surrounding</strong> (wrapping you with perception). Because it does both. Mind isn't located in one place—it's the <strong>relating itself</strong> between scales.</p>
+
+                <p>Mind is non-local. It's not a thing you have; it's the <strong>connecting</strong> that's already happening.</p>
+
+                <p>When sensation becomes perception—when that pressure on your thumb becomes <em>your</em> experience—something is crossing from the objective world into subjective awareness. That crossing happens at the <strong>2D surface</strong> where your boundary's signals meet your center's attention. This threshold is what the framework calls <strong>i</strong>: the rotation from "out there" to "in here."</p>
+
+                <p>The field isn't just thoughts or feelings. It's the <strong>living medium</strong> where signals from the body flow in, where awareness from the center flows out, and where the two blend into conscious experience.</p>
+
+                <p>One way to understand Φ is through balance. There's always a flow of <strong>input</strong> from the body and world (sensations, signals, stimuli) and a flow of <strong>output</strong> from the center (intentions, choices, interpretations). The balance between these flows is <strong>β</strong>.</p>
+
+                <ul class="beta-list">
+                    <li>When β is around <strong>0.5</strong>, input and output are in healthy proportion. You're listening and responding. Neither overwhelmed nor shut down.</li>
+                    <li>When β drops low, you may feel flooded—too much coming in, not enough capacity to integrate or answer.</li>
+                    <li>When β climbs high, you may feel like you're pushing and forcing—doing a lot, but not really taking anything new in.</li>
+                </ul>
+
+                <p>You can feel this in ordinary life.</p>
+
+                <p>When you first learn to ride a bike, your center is doing a lot of work—conscious corrections, intense focus. The field is overloaded with top-down signals; β is skewed. Over time, your body learns the pattern. The skill moves into ○. Riding becomes almost effortless. The field rebalances, and β moves closer to that sweet middle. You can ride and talk at the same time.</p>
+
+                <p>In <strong>flow states</strong>, the field feels smooth and open. Your body's wisdom and your center's intention line up. You're not micromanaging yourself, and you're not checked out either. People describe it as "it was just happening through me." That's β near balance—enough structure to direct, enough openness to receive.</p>
+
+                <p>In <strong>anxiety</strong>, the field feels contracted and noisy. Your center spins scenarios; your body holds tension; β repeatedly spikes and crashes. You might loop through the same thoughts without resolution, or bounce between over-control and collapse. The field is out of tune.</p>
+
+                <p>The good news: <strong>Φ is trainable</strong>.</p>
+
+                <p>You can practice feeling when you're over-tilted one way or another. Too much input? Step back, simplify, reduce what's hitting your boundary. Too much output? Soften, listen more deeply to your body, your environment, and other people. Little adjustments in behavior, rest, and attention can bring β closer to a sustainable range.</p>
+
+                <p>There's one more piece: <strong>the field is analog, but the aperture is digital.</strong></p>
+
+                <p>Your intentions, your awareness—these flow continuously through Φ. But at the aperture (•), there's always a binary moment: <em>yes or no, open or closed, this or that.</em> The continuous signal of mind rides on the discrete decisions of the aperture. Like how a smooth wave travels as pulses across neurons. Analog riding on digital.</p>
+
+                <p>This is why β = 0.5 matters so much. At balance, the binary gating and the continuous flow work together. You need both—the selection (digital) and the signal (analog). That's consciousness.</p>
+            </div>
+
+            <div class="panel-section">
+                <h3>The Ethics of Φ</h3>
+                <p>Ethically, Φ is where <strong>right action</strong> lives.</p>
+                <p>○ asks, "Does this preserve what matters?"<br>
+                • asks, "Is this true?"<br>
+                Φ asks, "<strong>Is this balanced?</strong>"</p>
+                <p>Are you listening as much as you speak? Giving as much as you demand? Resting as much as you work? In relationships, in work, in self-talk—Φ notices when the exchange is lopsided.</p>
+                <p class="ethics-question"><strong>Right / Wrong</strong> — Is the action balanced?</p>
+            </div>
+
+            <div class="panel-section panel-practice">
+                <h3>Try This</h3>
+                <p>Sit comfortably. Notice your body breathing by itself. That's ○. Now notice that you're noticing. That reflective awareness is flowing from •. Then feel the <strong>space in which both are happening</strong>—the subtle, clear "in-between" that holds both body and awareness. That's Φ.</p>
+                <p>But don't think of it as empty space. Feel it as <strong>connection</strong>—the relating between your center and your boundary, between you and your nested parts, between you and the larger whole you're part of.</p>
+                <p>That surface—that living, responsive, balancing medium connecting scales—is your <strong>Φ Mind</strong>. It is how inside and outside learn to move together.</p>
+            </div>
+
+            <div class="panel-links">
+                <span>Explore:</span>
+                <a href="#" data-zone="body">○ Body</a>
+                <a href="#" data-zone="soul">• Soul</a>
+                <a href="#" data-zone="circumpunct">⊙ The Whole</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOUL Panel -->
+    <div class="panel panel-soul" id="panel-soul">
+        <button class="panel-close" aria-label="Close">&times;</button>
+        <div class="panel-content">
+            <div class="panel-header">
+                <span class="panel-symbol">•</span>
+                <h2>SOUL</h2>
+            </div>
+            <p class="panel-subtitle">Focus · Orientation · The Still Point</p>
+
+            <div class="panel-section panel-essay">
+                <p>Pause for a moment and let the words fall away.</p>
+
+                <p>Even when you're not thinking anything in particular, even when your emotions are quiet, there is still something undeniably here. A simple presence. A bare <em>"I am."</em> Not "I am this" or "I am that"—just the felt fact of being.</p>
+
+                <p>That is what I mean by <strong>•</strong>.</p>
+
+                <p><strong>The aperture is your focus.</strong> Where attention is. The still point that orients. It doesn't move through experience—it orients, and everything else flows through based on where it's aimed. Focus has direction (inward/outward) and target (what resonates). The imaginary unit <em>i</em> captures the 90° rotation between these orientations.</p>
+
+                <p>But here's what we missed before: <strong>• isn't a thing. It's a through.</strong></p>
+
+                <p>The aperture is not a point sitting there. It's the <strong>act of crossing</strong>—the present moment where something deeper flows into your field, and where your field opens back into something deeper. It's a verb, not a noun. A process, not an object.</p>
+
+                <p>You can't have an aperture in isolation. By definition, a "through" requires both a source and a destination. An aperture without two sides to connect isn't an aperture at all. This is why nesting isn't optional—it's geometrically necessary. <strong>You cannot be • without being nested inside something greater.</strong></p>
+
+                <p>Think of • as the tip of a power line running into the past:</p>
+
+                <p style="font-family: monospace; text-align: center; margin: 1.5rem 0; color: #4ecdc4;">
+                    ground ◯ ···· past ←————————• now<br>
+                    <span style="font-size: 0.85rem; color: #888;">(0D/∞D)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1D braid&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.5D aperture</span>
+                </p>
+
+                <p>The <strong>0.5D aperture</strong> is the eternal NOW—the present act of crossing. Not a location but a moment. The continuously-arriving present where choice happens, where awareness touches experience, where the infinite field selects one particular path.</p>
+
+                <p>The <strong>1D braid</strong> is the trail it leaves behind—the sequence of moments already crossed. Your history. Your memory. The accumulated structure of every "yes" and "no" you've made.</p>
+
+                <p>The <strong>0D/∞D ground</strong> is what it crosses FROM—infinite potentiality, the source, what some call God or the infinite field. Zero dimensions (no particular location) equals infinite dimensions (all possible locations). The ground is both nothing and everything.</p>
+
+                <p>Time flows backward into •. The future arrives at the aperture and becomes past. You're not moving forward through time—time is flowing through you, and at •, you're the gate that decides what passes.</p>
+
+                <p>This is why • is both timeless and temporal. Bodies change completely over a lifetime. Memories blur, identities shift, beliefs come and go. And yet, when you remember being a child, there's a sense that <em>the one who was there then is the same one who is here now</em>. Not the same story, not the same body, but the same <strong>crossing point</strong>.</p>
+
+                <p>The center doesn't move through time in the same way its contents do. It's always NOW, always at the 0.5D threshold. The view changes; the crossing remains.</p>
+
+                <p>Many traditions point at this:</p>
+                <ul>
+                    <li>As <strong>soul</strong>, the immortal part.</li>
+                    <li>As <strong>ātman</strong>, the inner witness.</li>
+                    <li>As <strong>Buddha-nature</strong>, the awake mind.</li>
+                    <li>As the <strong>inner light</strong>, the spark of divinity.</li>
+                </ul>
+
+                <p>I'm not interested in arguing which label is right. What matters is the direct recognition: there is an aspect of you that is <strong>aware of</strong> every thought, emotion, and sensation, but is not identical to any of them. That aspect is the crossing itself—the aperture where awareness meets what it's aware of.</p>
+
+                <p>At the same time, • is not separate from ○ and Φ. It is not a ghost trapped in a body or a pilot inside a machine. <strong>Without a body, • has nowhere to look from. Without a field, nothing appears to it. Without a source to flow from, nothing crosses through.</strong></p>
+
+                <p>Soul is the <strong>center of a living system</strong>—the crossing point where the infinite field meets your particular field, where the deeper center meets your mind, where the eternal NOW becomes your experience.</p>
+
+                <p>You are not <em>the</em> source (that would be inflation). You are <em>an</em> aperture—a particular crossing where the source flows through. This is not diminishment. It's liberation. You don't have to generate everything from nothing. You're already connected, already flowing, already nested in something infinitely larger.</p>
+            </div>
+
+            <div class="panel-section">
+                <h3>The Ethics of •</h3>
+                <p>Because • sits at the crossing point of experience, it's also where the deepest kind of honesty lives. This is where you can ask yourself, "What's actually true here?"—beneath the story you want to be true, beneath the justification, beneath the fear.</p>
+                <p>At the aperture, there's always a binary moment: <em>yes or no, open or closed, this or that.</em> Every choice you make is the aperture deciding what passes through and what doesn't.</p>
+                <p>From •, you can ask four questions before you act:</p>
+                <ol class="ethics-questions">
+                    <li><strong>Is it true?</strong> (Does this match reality, as best I can tell?)</li>
+                    <li><strong>Is it good?</strong> (Does this protect and nourish what matters at the boundary?)</li>
+                    <li><strong>Is it right?</strong> (Is the action balanced and proportionate in the field?)</li>
+                    <li><strong>Do we agree?</strong> (Is there real consent and resonance between wholes?)</li>
+                </ol>
+                <p>Truth lives at •, but on its own it's not enough. Truth can be wielded harshly. So • needs ○, Φ, and ⊙ to complete the picture.</p>
+                <p class="ethics-question"><strong>True / False</strong> — Does it correspond to reality?</p>
+            </div>
+
+            <div class="panel-section panel-practice">
+                <h3>Try This</h3>
+                <p>Close your eyes. Notice your breath. Notice that there is awareness of the breath. Then, gently, turn attention back toward that awareness itself—not the objects in it, but the <strong>fact that knowing is happening</strong>. Don't chase it as an idea. Just rest as that.</p>
+                <p>Feel it not as a point but as a <strong>crossing</strong>—where something deeper meets your experience, where the infinite becomes particular, where the future arrives and becomes past.</p>
+                <p>Thoughts will come. Sensations will change. But the crossing itself—the eternal NOW, the basic "I am here, aware"—remains. That's •.</p>
+                <p>This center—that quiet, lucid crossing point—is your <strong>• Soul</strong>. Not a separate world from your life, but the living threshold where the infinite source flows into the one you're already living.</p>
+            </div>
+
+            <div class="panel-links">
+                <span>Explore:</span>
+                <a href="#" data-zone="body">○ Body</a>
+                <a href="#" data-zone="mind">Φ Mind</a>
+                <a href="#" data-zone="circumpunct">⊙ The Whole</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CIRCUMPUNCT Panel -->
+    <div class="panel panel-circumpunct" id="panel-circumpunct">
+        <button class="panel-close" aria-label="Close">&times;</button>
+        <div class="panel-content">
+            <div class="panel-header">
+                <span class="panel-symbol">⊙</span>
+                <h2>CIRCUMPUNCT</h2>
+            </div>
+            <p class="panel-subtitle">The Whole You</p>
+
+            <div class="panel-section panel-essay">
+                <p>We've named three aspects: ○ body, Φ mind, • soul. But in lived experience, you're never just one at a time.</p>
+
+                <p>When you reach for a cup of coffee, ○ feels the handle, Φ coordinates the movement and expectation, • is the silent "I" doing the reaching. It's one action, one moment, one being. That unified being is what I call <strong>⊙</strong>.</p>
+
+                <p>⊙ is the <strong>circumpunct</strong>: a circle with a point at the center. It looks simple, but it encodes an entire metaphysics. And here's what we missed before: <strong>the circumpunct doesn't HAVE an interface—it IS interface.</strong> Three interfaces woven together.</p>
+
+                <p>Your body (○) isn't just matter sitting there—it's the living boundary where your inner field meets the world. Your mind (Φ) isn't just thoughts—it's the living surface between your deepest focus and your body. Your soul (•) isn't just attention—it's the living aperture <strong>through which</strong> something deeper flows into your mind. <strong>Every part of you is already doing the work of interface.</strong></p>
+
+                <p>You can't peel these apart in reality. There is no • without some kind of ○ to look through and some kind of Φ for things to appear in. There is no ○ that is truly "yours" without some center that experiences it as "my body." There is no Φ without something to connect and somewhere to be held.</p>
+
+                <p>So instead of thinking, "I have a body, I have a mind, I have a soul," you can think, "<strong>I am ⊙</strong>: a whole being whose body, mind, and soul are three faces of the same process."</p>
+
+                <p>This also solves an old philosophical tug-of-war.</p>
+
+                <p><strong>Monism</strong> says, "All is one." <strong>Atomism</strong> says, "All is many." The circumpunct says: <strong>parts are fractals of their wholes—all the way down and all the way up.</strong> There is no top. There is no bottom. You are both fully yourself and fully a member of larger wholes—family, culture, ecosystem, cosmos. God isn't a circumpunct at the top. God is what circumpunct IS: the pattern running identically at every scale.</p>
+
+                <p>When two people meet, it's not just two bodies bumping or two ideas clashing. It's ⊙ meeting ⊙. Boundaries touch (○↔○), fields resonate (Φ↔Φ), centers recognize each other (•↔•). Agreement, when it's real, happens at this level of whole-to-whole contact.</p>
+
+                <p>That's why "agreement" in this framework isn't about forcing sameness. It's about <strong>resonance between wholes</strong>.</p>
+            </div>
+
+            <div class="panel-section">
+                <h3>The Steelman</h3>
+                <p>To practice this, there's a powerful move called the <strong>steelman</strong>. Before you reject someone's perspective, you try to reconstruct the strongest, most coherent version of what they're saying—seeing their values (○), their reasoning (Φ), and their core concern (•) as generously as possible. Only then do you decide where you truly agree or disagree.</p>
+                <p>This is seeing the other as ⊙, not as a cardboard opponent.</p>
+            </div>
+
+            <div class="panel-section">
+                <h3>Your Own Wholeness</h3>
+                <p>Finally, there's a personal dimension: your own relationship with yourself.</p>
+                <p>Most of us spend a lot of time feeling fragmented—body wanting one thing, mind saying another, soul whispering something else from underneath. We chase wholeness as if it were something far away. But from the circumpunct view, <strong>wholeness is already the structure.</strong> You don't have to create ⊙; you have to notice it.</p>
+            </div>
+
+            <div class="panel-section">
+                <h3>The Nesting IS the Connection</h3>
+                <p>We were looking for a bridge. A connector. Something between the part and the whole. But there's no special tunnel. No separate connector hiding between things. <strong>The connection is the nesting itself.</strong></p>
+                <p>You are inside a greater circumpunct. Your boundary—itself made of circumpuncts at smaller scale—touches its field. Your field (a 2D surface connecting scales) exists within its field. Your center opens through your field to its center. <strong>You are inside, therefore you are connected.</strong></p>
+                <p>But here's the rule: <strong>centers cannot interact directly—only through fields.</strong> Your soul (•) doesn't touch the greater soul directly; it touches it through the nested fields that connect you. This is why mind matters. This is why relationship matters. The field is how centers meet.</p>
+                <p>Each part of you corresponds to a part of the greater whole: your soul (•) mirrors the greater center, your mind (Φ) moves within the greater field, your body (○) is creation touching creation. This is what "made in the image" means—not a picture, but a structure.</p>
+            </div>
+
+            <div class="panel-section panel-practice">
+                <h3>Try This</h3>
+                <p>Sit quietly. Feel your body as one shape (○). Notice the living surface of connection where thoughts, feelings, and sensations arise (Φ)—not empty space but the relating itself between your center and your boundary. Sense the quiet center that's aware of all of this (•). Then, instead of focusing on any one, soften your attention to hold all three at once.</p>
+                <p>The seamless unity you glimpse there—that's <strong>⊙</strong>. That's the whole you.</p>
+                <p>You are a whole with parts, and a part of larger wholes. You have a center and a boundary and a field, and they are not at war—they are the way your existence is braided together.</p>
+                <p class="closing-thought"><strong>You are not on your way to being ⊙. You are ⊙, right now, reading these words.</strong></p>
+                <p>The rest of the journey is simply learning to live from that wholeness on purpose.</p>
+            </div>
+
+            <div class="panel-links">
+                <span>Explore:</span>
+                <a href="#" data-zone="body">○ Body</a>
+                <a href="#" data-zone="mind">Φ Mind</a>
+                <a href="#" data-zone="soul">• Soul</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESEARCH & FALSIFICATION Panel (popup — content in DOM for scrapers) -->
+    <div class="panel panel-research" id="panel-research">
+        <button class="panel-close" aria-label="Close">&times;</button>
+        <div class="panel-content">
+            <div class="panel-header">
+                <span class="panel-symbol" style="color:#00ffff;">⊙</span>
+                <h2>Research &amp; Falsification</h2>
+            </div>
+            <p class="panel-subtitle">Formal mathematics, quantitative predictions, and falsification criteria</p>
+
+            <div class="panel-section panel-essay">
+                <p>The Circumpunct Framework is a geometric formalization built on a single structural claim: <strong>parts are fractals of their wholes</strong>. Every system at every scale exhibits the same triadic architecture — an aperture that selects (•), a field that mediates (Φ), and a boundary that interfaces (○). The framework's expression is <strong>⊙ = Φ(•, ○)</strong>.</p>
+
+                <p>This is not metaphor. The framework generates specific, quantitative, falsifiable predictions:</p>
+
+                <ul>
+                    <li><strong>Physics:</strong> Zero-parameter derivation of the fine structure constant (α) and particle mass ratios from fractal geometry at D = 1.5. Derivation of the Schrödinger equation from kernel convolution. Einstein field equations from coarse-grained braid structure.</li>
+                    <li><strong>Consciousness:</strong> Resolution of the binding problem through aperture dynamics — awareness modeled as a fractal lens, not an emergent epiphenomenon. Specific predictions about the relationship between aperture width and perceptual integration.</li>
+                    <li><strong>Pathology:</strong> Narcissism formalized as belief-corruption protocol ("Noble Lie virus") that weaponizes functional love against resonant love. Predicts specific recovery trajectories based on aperture restoration.</li>
+                    <li><strong>Empirical Test:</strong> Copper electrowinning experiments designed to test the ρ = ω/α parameter's predictions about crystal morphology at different frequency regimes.</li>
+                </ul>
+            </div>
+
+            <div class="panel-section">
+                <h3>Falsification Criteria</h3>
+                <p>If the predicted fractal dimension relationships do not hold in empirical crystal growth data, or if the derived constants diverge from measured values beyond specified error bounds, the framework is falsified.</p>
+            </div>
+
+            <div class="panel-section">
+                <h3>Papers &amp; Formalizations</h3>
+                <ul>
+                    <li><a href="https://github.com/AshmanRoonz/Fractal_Reality/blob/main/circumpunct_framework_physicists.md">Circumpunct Framework: Mathematical Formulation for Peer Review</a> — Explicit derivations, operator definitions, and testable predictions. No metaphors.</li>
+                    <li><a href="https://github.com/AshmanRoonz/Fractal_Reality/blob/main/circumpunct_framework.md">Complete Theoretical Framework</a> — Full treatment across physics, consciousness, ethics, and pathology.</li>
+                    <li><a href="aperture_falsification_presentation.html">Falsification Protocol &amp; Experimental Design</a></li>
+                    <li><a href="methodological_status.html">Methodological Status &amp; Validation</a></li>
+                    <li><a href="circumpunct_physics.html">Interactive Physics Explorer</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT Panel (popup) -->
+    <div class="panel panel-about" id="panel-about">
+        <button class="panel-close" aria-label="Close">&times;</button>
+        <div class="panel-content">
+            <div class="panel-header">
+                <span class="panel-symbol" style="color:#8b949e;">⊙</span>
+                <h2>About the Researcher</h2>
+            </div>
+
+            <div class="panel-section panel-essay">
+                <p>Ashman Roonz is an independent researcher with a Bachelor of Science degree and fifteen years of field experience as an Educational Assistant, where he developed observational models of pathological pattern transmission in children. He is currently pursuing a Master's in Counselling Psychology and maintains active academic connections at the University of Toronto.</p>
+                <p>The Circumpunct Framework has been in continuous development for fifteen years, with formal mathematical treatment and falsification criteria developed in collaboration with AI systems as a proof-of-concept for human-synthetic intelligence cooperation.</p>
+                <p>Contact: <a href="mailto:email@ashmanroonz.ca">email@ashmanroonz.ca</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/circumpunct.js"></script>
+
+    <!-- Research & About panel triggers (hooks into existing panel system) -->
+    <script>
+    (function() {
+        // Reuse the existing backdrop created by circumpunct.js
+        function getBackdrop() { return document.querySelector('.backdrop'); }
+
+        function closeAllPanels() {
+            document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('open'); });
+            var bd = getBackdrop(); if (bd) bd.classList.remove('show');
+        }
+
+        function openPanel(id) {
+            closeAllPanels();
+            var panel = document.getElementById(id);
+            if (!panel) return;
+            panel.classList.add('open');
+            var bd = getBackdrop(); if (bd) bd.classList.add('show');
+            panel.scrollTop = 0;
+        }
+
+        document.getElementById('research-btn').addEventListener('click', function(e) { e.preventDefault(); openPanel('panel-research'); });
+        document.getElementById('about-btn').addEventListener('click', function(e) { e.preventDefault(); openPanel('panel-about'); });
+
+        // Close buttons
+        document.querySelectorAll('#panel-research .panel-close, #panel-about .panel-close').forEach(function(btn) {
+            btn.addEventListener('click', closeAllPanels);
+        });
+    })();
+    </script>
+</body>
+</html>

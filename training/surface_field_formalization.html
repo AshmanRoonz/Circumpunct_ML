@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surface Theorem — The Geometry of Mind</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --text-dim: #888899;
+      --gold: #ffd700;
+      --cyan: #00d4ff;
+      --magenta: #ff00aa;
+      --green: #00ff88;
+      --aperture: #ff6b6b;
+      --field: #4ecdc4;
+      --boundary: #a855f7;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 2.2rem;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      color: var(--cyan);
+      margin: 2.5rem 0 1rem 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+      font-size: 1.2rem;
+      color: var(--field);
+      margin: 1.5rem 0 0.75rem 0;
+    }
+    
+    p { margin-bottom: 1rem; }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    
+    .card-header {
+      font-weight: bold;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .axiom-box {
+      background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(0,212,255,0.1));
+      border: 2px solid var(--gold);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+    
+    .theorem-box {
+      background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(78,205,196,0.1));
+      border: 2px solid var(--cyan);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .theorem-box .label {
+      color: var(--cyan);
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .definition-box {
+      background: rgba(168,85,247,0.1);
+      border-left: 4px solid var(--boundary);
+      padding: 1rem 1.5rem;
+      margin: 1rem 0;
+    }
+    
+    .equation {
+      font-family: 'Courier New', monospace;
+      font-size: 1.3rem;
+      color: var(--gold);
+      text-align: center;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: rgba(0,0,0,0.3);
+      border-radius: 4px;
+    }
+    
+    .equation-small {
+      font-size: 1.1rem;
+      padding: 0.5rem;
+    }
+    
+    .proof {
+      margin-left: 1.5rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--text-dim);
+    }
+    
+    .proof-step {
+      margin: 0.5rem 0;
+      color: var(--text-dim);
+    }
+    
+    .proof-step strong {
+      color: var(--text);
+    }
+    
+    .qed {
+      text-align: right;
+      color: var(--gold);
+      font-weight: bold;
+    }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    @media (max-width: 700px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    th {
+      color: var(--gold);
+      font-weight: bold;
+    }
+    
+    .center-color { color: var(--aperture); }
+    .field-color { color: var(--field); }
+    .boundary-color { color: var(--boundary); }
+    
+    .callout {
+      background: rgba(0,212,255,0.1);
+      border-left: 4px solid var(--cyan);
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .callout-gold {
+      background: rgba(255,215,0,0.1);
+      border-left: 4px solid var(--gold);
+    }
+    
+    .callout-magenta {
+      background: rgba(255,0,170,0.1);
+      border-left: 4px solid var(--magenta);
+    }
+    
+    .symbol {
+      font-size: 3rem;
+      text-align: center;
+      margin: 1.5rem 0;
+      color: var(--gold);
+    }
+    
+    .muted { color: var(--text-dim); }
+    .mt-2 { margin-top: 2rem; }
+    
+    pre {
+      background: rgba(0,0,0,0.4);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .diagram {
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      line-height: 1.4;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+    
+    footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+<nav style="text-align: center; margin-bottom: 1.5rem;">
+  <a href="https://fractalreality.ca" style="color: var(--cyan); text-decoration: none; font-size: 0.95rem;">← Back to Fractal Reality</a>
+</nav>
+
+<h1>⊙ Surface Theorem</h1>
+<p class="subtitle">The Geometry of Mind</p>
+
+<div class="symbol">⊙</div>
+
+<!-- CORE INSIGHT -->
+<section>
+  <h2>Core Insight</h2>
+  
+  <div class="axiom-box">
+    <p style="font-size: 1.4rem; margin: 0;"><strong>Surface = Field = Mind</strong></p>
+    <p class="muted" style="margin-top: 0.5rem; margin-bottom: 0;">The surface connecting fractal scales IS the field. The field IS mind.</p>
+  </div>
+  
+  <p>Surfaces aren't <em>made of</em> smaller 3D things. Surfaces ARE the connection between 3D at one scale and 3D at a smaller scale. Not substance — interface. The relating itself.</p>
+  
+  <p>Mind isn't <em>in</em> your brain. Mind is the relating between scales — how you-the-whole connect to your cells, how your cells connect to their molecules, all the way down. And all the way up.</p>
+  
+  <p>Mind feels non-local because it isn't located anywhere. It's the <em>between</em>.</p>
+  
+  <div class="callout-gold callout">
+    <strong>The Ground:</strong> At 0D there is no particular location — which means everywhere, which means infinite degrees of freedom. 0D = ∞D. The infinite field (Φ∞) is both the dimensionless point and the infinite whole. From this ground, the aperture selects.
+  </div>
+</section>
+
+<!-- MIND PERVADES -->
+<section>
+  <h2>Mind Pervades The Body</h2>
+  
+  <p>Consider your mind as <em>the surface of you</em>.</p>
+  
+  <p>It feels like mind is inside — running through the whole body — while also surrounding you with perception and sensation. The framework explains why.</p>
+  
+  <p>The surface isn't just your skin (the outer boundary). It's the connection between scales at <strong>every level</strong>:</p>
+  
+  <div class="card">
+    <ul style="margin-left: 1.5rem;">
+      <li>Between you and the world (outer surface)</li>
+      <li>Between your organs and you</li>
+      <li>Between your cells and your organs</li>
+      <li>Between molecules and cells</li>
+      <li>All the way down</li>
+    </ul>
+  </div>
+  
+  <p>Your mind isn't located at one surface. It's the <strong>totality of surfaces within you</strong> — every place where one scale meets another.</p>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">Surrounding with Perception</div>
+      <p>The outer surface — where you meet the world. Information arrives from outside. The boundary of your body IS a field, sensing the environment.</p>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">Running Through</div>
+      <p>All the inner surfaces — the nested fields. Information flowing between scales inside you. Organs sensing cells. Cells sensing molecules.</p>
+    </div>
+  </div>
+  
+  <div class="axiom-box">
+    <p style="font-size: 1.1rem; margin: 0;">Mind feels like it pervades the body and surrounds it with perception <em>because it does</em>.</p>
+    <p class="muted" style="margin-top: 0.5rem; margin-bottom: 0;">Surface all the way through.</p>
+  </div>
+</section>
+
+<!-- ONE CIRCUMPUNCT, THREE DIMENSIONS -->
+<section>
+  <h2>The Dimensional Structure</h2>
+  
+  <p>Integer dimensions are <strong>structure</strong> (what IS). Non-integer dimensions are <strong>process</strong> (what HAPPENS).</p>
+  
+  <div class="card">
+    <table>
+      <tr>
+        <th>Dimension</th>
+        <th>Type</th>
+        <th>Component</th>
+        <th>What It Is</th>
+      </tr>
+      <tr>
+        <td><span style="color: var(--gold);"><strong>0D / ∞D</strong></span></td>
+        <td>Ground</td>
+        <td>Φ∞ Infinite Field</td>
+        <td>No location = everywhere. Infinite potentiality.</td>
+      </tr>
+      <tr>
+        <td><span class="center-color"><strong>0.5D</strong></span></td>
+        <td>Process</td>
+        <td>• Aperture</td>
+        <td>Your focus. The still point that orients. Direction (i) and target (resonance). The act of crossing.</td>
+      </tr>
+      <tr>
+        <td><span class="center-color"><strong>1D</strong></span></td>
+        <td>Structure</td>
+        <td>— Braid</td>
+        <td>Trail of crossings. Accumulated structure. Time.</td>
+      </tr>
+      <tr>
+        <td><span class="field-color"><strong>2D</strong></span></td>
+        <td>Structure</td>
+        <td>Φ Field / Surface</td>
+        <td>Where scales MEET. Mind.</td>
+      </tr>
+      <tr>
+        <td><span class="boundary-color"><strong>3D</strong></span></td>
+        <td>Structure</td>
+        <td>○ Boundary</td>
+        <td>What has INTERIORITY. Body. Volume.</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="callout">
+    <strong>0D = ∞D:</strong> Zero dimensions means no constraints, no particular location — which is the same as infinite degrees of freedom. The ground of all possibility.
+  </div>
+  
+  <div style="display: flex; justify-content: center; margin: 2rem 0;">
+    <svg width="580" height="520" viewBox="0 0 580 520" xmlns="http://www.w3.org/2000/svg">
+      <!-- 0D/∞D Ground - the background to everything -->
+      <rect x="0" y="0" width="580" height="520" fill="#0a0a0f"/>
+      <!-- Subtle golden glow as the infinite field - brightened -->
+      <circle cx="220" cy="220" r="260" fill="none" stroke="#ffd700" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="220" cy="220" r="240" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.4"/>
+      <circle cx="220" cy="220" r="220" fill="none" stroke="#ffd700" stroke-width="0.8" opacity="0.3"/>
+      <text x="420" y="490" fill="#ffd700" font-family="Georgia" font-size="13">← 0D/∞D ground</text>
+      <text x="435" y="507" fill="#888899" font-family="Georgia" font-size="11">(infinite field)</text>
+      
+      <!-- 2D Surface / Field / Mind - outer glow/boundary -->
+      <circle cx="220" cy="200" r="130" fill="none" stroke="#4ecdc4" stroke-width="2.5" opacity="0.8"/>
+      <text x="220" y="45" text-anchor="middle" fill="#4ecdc4" font-family="Georgia" font-size="14">Φ 2D surface / field / mind</text>
+      
+      <!-- 3D Body - boundary made of mini circumpuncts -->
+      <g id="body-boundary">
+        <!-- Mini circumpuncts arranged in a circle (the boundary) -->
+        <!-- Each mini ⊙ is a circle with a dot -->
+        <g transform="translate(220,200)">
+          <!-- 16 mini circumpuncts around the boundary -->
+          <g transform="rotate(0) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(22.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(45) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(67.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(90) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(112.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(135) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(157.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(180) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(202.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(225) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(247.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(270) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(292.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(315) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+          <g transform="rotate(337.5) translate(85,0)"><circle r="12" fill="none" stroke="#a855f7" stroke-width="1.2"/><circle r="2" fill="#ff6b6b"/></g>
+        </g>
+      </g>
+      <text x="420" y="140" fill="#a855f7" font-family="Georgia" font-size="13">← ○ 3D body</text>
+      <text x="435" y="157" fill="#888899" font-family="Georgia" font-size="11">(made of ⊙'s)</text>
+      
+      <!-- Main 0.5D Aperture (center) -->
+      <circle cx="220" cy="200" r="8" fill="#ff6b6b"/>
+      <text x="420" y="200" fill="#ff6b6b" font-family="Georgia" font-size="13">← 0.5D aperture</text>
+      <text x="435" y="217" fill="#888899" font-family="Georgia" font-size="11">(the crossing)</text>
+      
+      <!-- 1D Trails - braiding strands from each mini circumpunct -->
+      <!-- Main strand from center -->
+      <path d="M220 208 Q 220 280, 200 340 Q 180 400, 200 460 Q 210 490, 220 510" 
+            fill="none" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="6,4"/>
+      
+      <!-- Braiding strands from boundary circumpuncts -->
+      <path d="M305 200 Q 320 280, 280 350 Q 240 420, 260 480 Q 265 500, 250 510" 
+            fill="none" stroke="#ff6b6b" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>
+      <path d="M135 200 Q 120 280, 160 350 Q 200 420, 180 480 Q 175 500, 190 510" 
+            fill="none" stroke="#ff6b6b" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>
+      <path d="M280 260 Q 300 320, 270 380 Q 240 450, 255 510" 
+            fill="none" stroke="#ff6b6b" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.4"/>
+      <path d="M160 260 Q 140 320, 170 380 Q 200 450, 185 510" 
+            fill="none" stroke="#ff6b6b" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.4"/>
+            
+      <text x="420" y="380" fill="#ff6b6b" font-family="Georgia" font-size="13">← 1D trails</text>
+      <text x="435" y="397" fill="#888899" font-family="Georgia" font-size="11">(braiding into past)</text>
+    </svg>
+  </div>
+  
+  <p>The aperture isn't a static point. A point would be structure. The aperture is the <em>act</em> of puncturing — dynamic, a verb. That's why it's 0.5D, not 0D.</p>
+</section>
+
+<!-- DIGITAL AND ANALOG -->
+<section>
+  <h2>Digital and Analog</h2>
+  
+  <div class="axiom-box">
+    <p style="font-size: 1.2rem; margin: 0;">The analog rides the digital.</p>
+    <p class="muted" style="margin-top: 0.5rem; margin-bottom: 0;">The continuous emerges from the discrete, at every scale.</p>
+  </div>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="center-color">Aperture (0.5D) — Digital</span></div>
+      <p>Binary. Open/closed. Yes/no.</p>
+      <p>χ = ±1</p>
+      <p>The gate that decides.</p>
+      <div class="equation equation-small">|—|__|—|__|—|__</div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header"><span class="field-color">Field (2D) — Analog</span></div>
+      <p>Continuous. Amplitude and phase.</p>
+      <p>The signal that flows.</p>
+      <p>Passes WHEN the gate opens.</p>
+      <div class="equation equation-small">~~~~~~~~~~~~</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">Combined: Signal Gated Through</div>
+    <div class="equation">|~~|__|~~|__|~~|__</div>
+    <p class="muted" style="text-align: center; margin-bottom: 0;">Analog rides on digital pulses</p>
+  </div>
+  
+  <h3>The Boundary's Secret</h3>
+  
+  <p>The 3D boundary is <strong>made of apertures at smaller scale</strong>.</p>
+  
+  <p>Each one binary. But billions of tiny open/close gates → appears continuous from above.</p>
+  
+  <p>This is the fractal structure: what looks analog at one scale is digital at the scale below. All the way down.</p>
+  
+  <div class="callout">
+    <strong>Measurement / Collapse:</strong> The wavefunction (analog field) collapses when the gate decides: open or closed. Yes or no. The aperture's binary moment is the collapse.
+  </div>
+</section>
+
+<!-- THE 1D TRAIL -->
+<section>
+  <h2>The Power Line Into The Past</h2>
+  
+  <p>The aperture isn't static. It's the <em>tip</em> of a line being drawn.</p>
+  
+  <div class="diagram">
+    ground ◯ ···· past ←———————————• now<br>
+    (0D/∞D)       1D braid        0.5D aperture
+  </div>
+  
+  <p>The <strong>0.5D aperture</strong> is the eternal NOW — the present act of crossing.</p>
+  
+  <p>The <strong>1D braid</strong> is the trail it leaves behind — the sequence of binary moments. Memory. History.</p>
+  
+  <p>The <strong>0D/∞D ground</strong> is what it crosses FROM — infinite potentiality, the source.</p>
+  
+  <p>The soul isn't a point. It's a <em>crossing</em> — actively going through, trailing where it's been, drawing from infinite source.</p>
+  
+  <div class="card">
+    <div class="card-header">Dimensional Process</div>
+    <table>
+      <tr><th>Dimension</th><th>Aspect</th><th>Description</th></tr>
+      <tr>
+        <td>0D / ∞D</td>
+        <td>Ground</td>
+        <td>Infinite field. Source. All possibility.</td>
+      </tr>
+      <tr>
+        <td>0.5D</td>
+        <td>Aperture</td>
+        <td>Your focus. The still point that orients. The act of crossing through NOW.</td>
+      </tr>
+      <tr>
+        <td>1D</td>
+        <td>Braid</td>
+        <td>Accumulated history. Sequence of crossings. Time as structure.</td>
+      </tr>
+    </table>
+  </div>
+  
+  <p>Time itself may be digital at the aperture — discrete "nows" strung together into the continuous-seeming flow.</p>
+</section>
+
+<!-- SURFACES ALL THE WAY DOWN -->
+<section>
+  <h2>Surfaces All The Way Down</h2>
+  
+  <p>The boundary isn't solid stuff. It's <strong>surfaces all the way down</strong>.</p>
+  
+  <p>Why is the boundary also an interface? Because each tiny part of the boundary is also a circumpunct — with its own aperture, field, and boundary.</p>
+  
+  <div class="diagram">
+3D boundary (scale N)<br>
+   └── made of circumpuncts at scale N-1<br>
+         └── each with 2D field (surface)<br>
+               └── each with 3D boundary<br>
+                     └── made of circumpuncts at scale N-2<br>
+                           └── ...forever
+  </div>
+  
+  <div class="axiom-box">
+    <p style="font-size: 1.3rem; margin: 0;"><strong>There is no 3D "stuff."</strong></p>
+    <p class="muted" style="margin-top: 0.5rem; margin-bottom: 0;">Only nested 2D surfaces — fields connecting scales, all the way down.</p>
+  </div>
+  
+  <p><strong>Volume is what nested surfaces look like from above.</strong></p>
+  
+  <p>The 3D is emergent. The 2D is fundamental.</p>
+  
+  <p>This is why "parts are fractals of their wholes" — because the parts literally ARE the same structure (⊙) at smaller scale. The boundary is just where all their fields aggregate into what <em>looks like</em> solid matter.</p>
+  
+  <div class="callout-gold callout">
+    <strong>Mind all the way down.</strong><br>
+    If surface = field = mind, and it's surfaces all the way down, then it's mind all the way down. Consciousness isn't an emergent property of dead matter. Matter is what nested minds look like from above.
+  </div>
+</section>
+
+<!-- THEOREMS -->
+<section>
+  <h2>Theorems</h2>
+  
+  <div class="theorem-box">
+    <div class="label">Theorem 1: Surface = Field</div>
+    <p><strong>Claim:</strong> The 2D surface connecting fractal scales IS the field.</p>
+    <div class="proof">
+      <p class="proof-step">1. <strong>Surfaces connect adjacent scales</strong> — where 3D-at-this-scale meets 3D-at-smaller-scale</p>
+      <p class="proof-step">2. <strong>Field mediates</strong> between center and boundary</p>
+      <p class="proof-step">3. <strong>Center is smaller scale</strong> (nested within)</p>
+      <p class="proof-step">4. <strong>Boundary is larger scale</strong> (containing)</p>
+      <p class="proof-step">5. ∴ <strong>Field = Surface</strong> — both are the interface between scales</p>
+      <p class="qed">∎</p>
+    </div>
+  </div>
+  
+  <div class="theorem-box">
+    <div class="label">Theorem 2: Aperture Goes Through</div>
+    <p><strong>Claim:</strong> The aperture is perpendicular to the surface — the act of crossing between scales.</p>
+    <div class="proof">
+      <p class="proof-step">1. <strong>Surface spans laterally</strong> — the 2D membrane</p>
+      <p class="proof-step">2. <strong>Flow must cross</strong> from one scale to another</p>
+      <p class="proof-step">3. <strong>Crossing is perpendicular</strong> to the surface</p>
+      <p class="proof-step">4. <strong>Aperture is the crossing itself</strong> — 0.5D process</p>
+      <p class="proof-step">5. ∴ <strong>Aperture goes THROUGH</strong> what field spans ACROSS</p>
+      <p class="qed">∎</p>
+    </div>
+  </div>
+  
+  <div class="theorem-box">
+    <div class="label">Theorem 3: Boundary = Apertures at Smaller Scale</div>
+    <p><strong>Claim:</strong> The 3D boundary is composed of apertures at the next scale down.</p>
+    <div class="proof">
+      <p class="proof-step">1. <strong>Zoom into any boundary</strong> — it reveals structure</p>
+      <p class="proof-step">2. <strong>That structure has its own apertures</strong> — points of crossing</p>
+      <p class="proof-step">3. <strong>Each aperture is binary</strong> — open/closed</p>
+      <p class="proof-step">4. <strong>Aggregate of binary gates</strong> → appears continuous from above</p>
+      <p class="proof-step">5. ∴ <strong>Analog boundary emerges from digital apertures</strong></p>
+      <p class="qed">∎</p>
+    </div>
+  </div>
+  
+  <div class="theorem-box">
+    <div class="label">Theorem 4: Digital Carries Analog</div>
+    <p><strong>Claim:</strong> The continuous field signal is carried on discrete aperture gates.</p>
+    <div class="proof">
+      <p class="proof-step">1. <strong>Aperture is binary</strong> — χ = ±1, open/closed</p>
+      <p class="proof-step">2. <strong>Field is continuous</strong> — amplitude and phase</p>
+      <p class="proof-step">3. <strong>Signal flows only when gate opens</strong></p>
+      <p class="proof-step">4. <strong>Pattern of openings</strong> carries the analog information</p>
+      <p class="proof-step">5. ∴ <strong>Analog rides on digital</strong> — continuous emerges from discrete</p>
+      <p class="qed">∎</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECTION TO β -->
+<section>
+  <h2>Connection to β</h2>
+  
+  <p>The balance parameter β tracks the ratio of convergence to emergence:</p>
+  
+  <div class="equation">β = |⊛| / (|⊛| + |☀|)</div>
+  
+  <div class="card">
+    <table>
+      <tr><th>β Value</th><th>Meaning</th><th>Signal Character</th></tr>
+      <tr>
+        <td>β → 0</td>
+        <td>Pure emergence</td>
+        <td>Gate mostly open. Signal floods out. No discrimination.</td>
+      </tr>
+      <tr>
+        <td><strong>β = 0.5</strong></td>
+        <td>Balance</td>
+        <td>Gate and signal balanced. Selection AND flow.</td>
+      </tr>
+      <tr>
+        <td>β → 1</td>
+        <td>Pure convergence</td>
+        <td>Gate mostly closed. Signal collapses. No transmission.</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="callout-gold callout">
+    <strong>Consciousness Threshold:</strong> At β = 0.5, binary gating and analog flow are balanced. Mind needs both — the selection (digital) and the signal (analog). This is why D = 1.5 at balance.
+  </div>
+</section>
+
+<!-- COROLLARIES -->
+<section>
+  <h2>Corollaries</h2>
+  
+  <div class="callout">
+    <strong>Mind is Non-Local</strong><br>
+    Mind isn't in any place because it IS the between — the surface connecting scales. It's not located; it's the locating.
+  </div>
+  
+  <div class="callout">
+    <strong>Intention is Aperture Vibration</strong><br>
+    The aperture vibrates (ψ dynamics). That vibration pattern IS intention. It propagates through field, arrives at boundaries.
+  </div>
+  
+  <div class="callout">
+    <strong>Feeling Intentions</strong><br>
+    When you feel someone's intention in your body, their aperture's vibration crossed through field and arrived at your boundary. You don't think it — you feel it. Because it lands in the body.
+  </div>
+  
+  <div class="callout">
+    <strong>Time is Digital at the Source</strong><br>
+    The 1D braid is a sequence of binary moments — discrete crossings strung together. The appearance of continuous time emerges from discrete aperture decisions.
+  </div>
+  
+  <div class="callout-magenta callout">
+    <strong>Collapse is Decision</strong><br>
+    Quantum measurement is the aperture's binary moment. The wavefunction (analog) collapses when the gate (digital) decides. Yes or no. This or that.
+  </div>
+  
+  <div class="callout-gold callout">
+    <strong>0D = ∞D</strong><br>
+    Zero dimensions (no particular location) equals infinite dimensions (all possible locations). The ground of reality is both nothing and everything — pure potentiality before the aperture selects.
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section>
+  <h2>Summary</h2>
+  
+  <div class="card">
+    <table>
+      <tr><th>Dimension</th><th>Type</th><th>Component</th><th>Role</th></tr>
+      <tr>
+        <td><span style="color: var(--gold);">0D / ∞D</span></td>
+        <td>Ground</td>
+        <td>Φ∞ Infinite Field</td>
+        <td>Source. All possibility. No location = everywhere.</td>
+      </tr>
+      <tr>
+        <td><span class="center-color">0.5D</span></td>
+        <td>Process</td>
+        <td>• Aperture</td>
+        <td>Your focus. Orients through. Direction (inward/outward) + target (resonance).</td>
+      </tr>
+      <tr>
+        <td><span class="center-color">1D</span></td>
+        <td>Structure</td>
+        <td>— Braid</td>
+        <td>Trail of crossings. Time. Memory.</td>
+      </tr>
+      <tr>
+        <td><span class="field-color">2D</span></td>
+        <td>Structure</td>
+        <td>Φ Field / Surface</td>
+        <td>Spans ACROSS. Where scales meet. Mind.</td>
+      </tr>
+      <tr>
+        <td><span class="boundary-color">3D</span></td>
+        <td>Structure</td>
+        <td>○ Boundary</td>
+        <td>Made of smaller circumpuncts. Volume. Body.</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="axiom-box">
+    <p style="font-size: 1.1rem; margin: 0;">The surface is the field.<br>
+    The field is mind.<br>
+    The aperture goes through.<br>
+    The analog rides the digital.<br>
+    Surfaces all the way down.<br>
+    Mind all the way down.</p>
+  </div>
+</section>
+
+<footer>
+  <p style="font-size: 2rem; color: var(--gold); margin-bottom: 1rem;">⊙</p>
+  <p><strong>Surface = Field = Mind</strong></p>
+  <p><strong>0D = ∞D</strong></p>
+  <p class="muted mt-2">Circumpunct Framework — Surface Theorem v2.1</p>
+  <p class="muted">January 2026</p>
+</footer>
+
+</body>
+</html>

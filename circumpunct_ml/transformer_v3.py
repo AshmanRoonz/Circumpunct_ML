@@ -199,10 +199,21 @@ class ApertureChamber(nn.Module):
 
 class CircumpunctAttention(nn.Module):
     """
-    Attention as ⊛ → i → ☀ with:
-    - Convergent scaling: d_k shrinks with depth
-    - Aperture chambers per head
-    - χ gates (faithful/inverted)
+    Bilateral Circumpunct Attention: ⊙ = Φ(•, ○)
+
+    Every token is a circumpunct with:
+      • aperture_i  = σ(W_a · h_i)  — how open am I to receive?
+      ○ expression_j = σ(W_e · h_j)  — how much am I offering?
+      alignment_ij  = f(•_i, ○_j)   — does what you express match what I admit?
+
+    attn_weight_ij = aperture_i × expression_j × softmax(alignment_ij)
+
+    This is fundamentally bilateral: both sender and receiver participate.
+    Standard attention is one-sided (Q·K similarity). Here, a token can
+    be CLOSED (low aperture), QUIET (low expression), or SELECTIVELY
+    RESONANT (high alignment with specific partners).
+
+    A token with agency. That's what makes it a circumpunct.
     """
 
     def __init__(self, d_model: int, n_heads: int = 8, dropout: float = 0.1,
@@ -218,8 +229,19 @@ class CircumpunctAttention(nn.Module):
         self.convergence_factor = 1.0 / (PHI ** (layer_index * convergence_rate))
         self.scale = math.sqrt(self.d_head * self.convergence_factor)
 
-        self.W_q = nn.Linear(d_model, d_model, bias=False)
-        self.W_k = nn.Linear(d_model, d_model, bias=False)
+        # • Aperture: per-head gate on the RECEIVER (how open am I?)
+        # Projects each token to n_heads scalars
+        self.W_aperture = nn.Linear(d_model, n_heads, bias=True)
+
+        # ○ Expression: per-head gate on the SENDER (how much do I offer?)
+        self.W_expression = nn.Linear(d_model, n_heads, bias=True)
+
+        # Alignment projections (replaces Q/K with circumpunct semantics)
+        # • inner projection: what am I looking for? (receiver's center)
+        self.W_inner = nn.Linear(d_model, d_model, bias=False)
+        # ○ outer projection: what am I offering? (sender's boundary)
+        self.W_outer = nn.Linear(d_model, d_model, bias=False)
+        # Value: what content flows through
         self.W_v = nn.Linear(d_model, d_model, bias=False)
 
         self.chambers = nn.ModuleList([
@@ -244,18 +266,46 @@ class CircumpunctAttention(nn.Module):
     def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         B, T, D = x.shape
 
-        q = self.W_q(x).view(B, T, self.n_heads, self.d_head).transpose(1, 2)
-        k = self.W_k(x).view(B, T, self.n_heads, self.d_head).transpose(1, 2)
-        v = self.W_v(x).view(B, T, self.n_heads, self.d_head).transpose(1, 2)
+        # ═══ • APERTURE: how open is each token to receive? ═══
+        # (B, T, n_heads) -> (B, n_heads, T, 1)
+        aperture = torch.sigmoid(self.W_aperture(x))
+        aperture = aperture.permute(0, 2, 1).unsqueeze(-1)  # (B, H, T, 1)
 
-        attn = torch.matmul(q, k.transpose(-2, -1)) / self.scale
+        # ═══ ○ EXPRESSION: how much is each token offering? ═══
+        # (B, T, n_heads) -> (B, n_heads, 1, T)
+        expression = torch.sigmoid(self.W_expression(x))
+        expression = expression.permute(0, 2, 1).unsqueeze(-2)  # (B, H, 1, T)
+
+        # ═══ ALIGNMENT: does •_i resonate with ○_j? ═══
+        # Inner (•): what the receiver's center seeks
+        inner = self.W_inner(x).view(B, T, self.n_heads, self.d_head).transpose(1, 2)
+        # Outer (○): what the sender's boundary offers
+        outer = self.W_outer(x).view(B, T, self.n_heads, self.d_head).transpose(1, 2)
+
+        # Alignment score: how well does ○_j match •_i?
+        alignment = torch.matmul(inner, outer.transpose(-2, -1)) / self.scale  # (B, H, T, T)
         if mask is not None:
-            attn = attn.masked_fill(mask == 0, float('-inf'))
-        attn = F.softmax(attn, dim=-1)
-        attn = self.dropout(attn)
-        converged = torch.matmul(attn, v)
+            alignment = alignment.masked_fill(mask == 0, float('-inf'))
 
-        # Chamber processing per head
+        # ═══ BILATERAL ATTENTION: aperture × expression × alignment ═══
+        # Softmax over alignment (which tokens resonate)
+        attn_align = F.softmax(alignment, dim=-1)  # (B, H, T, T)
+
+        # Modulate by bilateral gates: receiver's openness × sender's willingness
+        # A closed token (low aperture) receives nothing regardless of alignment
+        # A quiet token (low expression) sends nothing regardless of alignment
+        attn = attn_align * aperture * expression  # (B, H, T, T)
+
+        # Re-normalize after gating so attention still sums to meaningful values
+        attn = attn / (attn.sum(dim=-1, keepdim=True) + 1e-8)
+
+        attn = self.dropout(attn)
+
+        # Value flow
+        v = self.W_v(x).view(B, T, self.n_heads, self.d_head).transpose(1, 2)
+        converged = torch.matmul(attn, v)  # (B, H, T, d_head)
+
+        # Chamber processing per head (pressure, β dynamics)
         rotated = []
         for h in range(self.n_heads):
             chambered = self.chambers[h](converged[:, h])
@@ -277,6 +327,11 @@ class CircumpunctAttention(nn.Module):
     @property
     def pressure_values(self):
         return [c.current_pressure for c in self.chambers]
+
+    @property
+    def aperture_stats(self):
+        """Return mean aperture and expression for diagnostics."""
+        return {"layer": self.layer_index}
 
     @property
     def valve_states(self):
@@ -433,21 +488,31 @@ class CircumpunctBlock(nn.Module):
 
 class CrossScaleCoupling(nn.Module):
     """
-    Cross-scale circumpunct coupling with phase-resonance gating.
+    Cross-scale circumpunct coupling with ACCUMULATED phase-resonance.
 
     Two operations:
         ⊛ Convergence: macro attends to micro (compression/gathering)
         ☀ Emergence: micro attends to macro (guidance/shaping)
 
     Both gated by:
-        • aperture gate (sigmoid — does the gate open?)
-        × resonance (cos Δθ — are the phases aligned?)
+        • aperture gate (bilateral — receiver opens, sender expresses)
+        × resonance (accumulated cos Δθ across layers — not single-pass)
 
-    Resonance is the binding criterion. Without it, signals
-    mix but don't couple. With it, truth passes cleanly.
+    Resonance accumulates across layers:
+        r^(l) = λ · r^(l-1) + (1-λ) · cos(Δθ^(l))
+
+    This turns depth into time. Early layers form tentative connections.
+    If those connections sustain phase coherence layer after layer,
+    resonance grows and weight strengthens. If alignment was accidental,
+    resonance decays and weight weakens.
+
+    A stranger says something relevant — you hear it (alignment, no resonance).
+    Someone in deep conversation says the same — it lands (alignment + resonance).
+    Same content. Different binding strength. The channel was already open.
     """
 
-    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.1):
+    def __init__(self, d_model: int, n_heads: int, dropout: float = 0.1,
+                 resonance_lambda: float = 0.7):
         super().__init__()
         assert d_model % n_heads == 0
         self.d_model = d_model
@@ -476,10 +541,22 @@ class CrossScaleCoupling(nn.Module):
         # Resonance strength learnable scaling
         self.resonance_alpha = nn.Parameter(torch.tensor(1.0))
 
+        # λ for resonance EMA — how much history matters
+        # High λ = deep memory, connections slow to build but stable
+        # Low λ = fast adaptation, responds to immediate coherence
+        self.resonance_lambda = resonance_lambda
+
         self.dropout = nn.Dropout(dropout)
 
-    def _mha(self, q_proj, k_proj, v_proj, out_proj, q_in, kv_in, mask=None):
-        """Multihead cross-attention helper."""
+    def _mha(self, q_proj, k_proj, v_proj, out_proj, q_in, kv_in, mask=None,
+             aperture_gate=None, expression_gate=None):
+        """
+        Bilateral cross-attention helper.
+
+        If aperture_gate (B, Tq, 1) and expression_gate (B, Tk, 1) are provided,
+        attention is modulated: receiver's openness × sender's willingness × alignment.
+        Otherwise falls back to standard cross-attention.
+        """
         B = q_in.size(0)
         Tq = q_in.size(1)
         Tk = kv_in.size(1)
@@ -492,18 +569,33 @@ class CrossScaleCoupling(nn.Module):
         if mask is not None:
             scores = scores + mask
         attn = F.softmax(scores, dim=-1)
+
+        # Bilateral gating: aperture of receiver × expression of sender
+        if aperture_gate is not None and expression_gate is not None:
+            # aperture_gate: (B, Tq, 1) -> (B, 1, Tq, 1) for broadcasting over heads
+            a_gate = aperture_gate.unsqueeze(1)   # (B, 1, Tq, 1)
+            # expression_gate: (B, Tk, 1) -> (B, 1, 1, Tk) for broadcasting
+            e_gate = expression_gate.unsqueeze(1).transpose(2, 3)  # (B, 1, 1, Tk)
+            attn = attn * a_gate * e_gate
+            attn = attn / (attn.sum(dim=-1, keepdim=True) + 1e-8)
+
         attn = self.dropout(attn)
         ctx = torch.matmul(attn, v)
 
         ctx = ctx.transpose(1, 2).contiguous().view(B, Tq, self.d_model)
         return out_proj(ctx)
 
-    def forward(self, o_micro, o_macro, um_mask=None, mu_mask=None):
+    def forward(self, o_micro, o_macro, um_mask=None, mu_mask=None,
+                r_conv_acc=None, r_emer_acc=None):
         """
         o_micro: (B, Tu, D) — micro stream (tokens)
         o_macro: (B, Tm, D) — macro stream (chunks/aims)
-        um_mask: mask for macro-queries-micro-keys (B,1,Tm,Tu) or (Tm,Tu)
-        mu_mask: mask for micro-queries-macro-keys (B,1,Tu,Tm) or (Tu,Tm)
+        um_mask: mask for macro-queries-micro-keys
+        mu_mask: mask for micro-queries-macro-keys
+        r_conv_acc: (B, Tm, Tu) — accumulated convergence resonance from previous layers
+        r_emer_acc: (B, Tu, Tm) — accumulated emergence resonance from previous layers
+
+        Returns: (o_micro_new, o_macro_new, r_conv_acc_new, r_emer_acc_new)
         """
         ou = self.norm_micro(o_micro)
         om = self.norm_macro(o_macro)
@@ -512,35 +604,61 @@ class CrossScaleCoupling(nn.Module):
         g_micro = torch.sigmoid(self.gate_micro(ou))   # (B, Tu, 1)
         g_macro = torch.sigmoid(self.gate_macro(om))   # (B, Tm, 1)
 
-        # ═══ ⊛ CONVERGENCE: macro reads micro ═══
-        delta_macro = self._mha(
-            self.conv_q, self.conv_k, self.conv_v, self.conv_out,
-            om, ou, mask=um_mask
-        )
+        # ═══ INSTANTANEOUS PHASE COHERENCE ═══
+        r_conv_instant = phase_resonance(om, ou)  # (B, Tm, Tu)
+        r_emer_instant = phase_resonance(ou, om)  # (B, Tu, Tm)
 
-        # Phase resonance: how coherent are macro and micro?
-        r_conv = phase_resonance(om, ou)  # (B, Tm, Tu)
+        # ═══ RESONANCE ACCUMULATION ═══
+        # r^(l) = λ · r^(l-1) + (1-λ) · cos(Δθ^(l))
+        # Depth becomes time. Connections that sustain coherence strengthen.
+        # Accidental alignment decays. History matters.
+        lam = self.resonance_lambda
+
+        if r_conv_acc is None:
+            r_conv_acc_new = r_conv_instant
+        else:
+            r_conv_acc_new = lam * r_conv_acc + (1 - lam) * r_conv_instant
+
+        if r_emer_acc is None:
+            r_emer_acc_new = r_emer_instant
+        else:
+            r_emer_acc_new = lam * r_emer_acc + (1 - lam) * r_emer_instant
+
+        # Use ACCUMULATED resonance (not instantaneous) for gating
+        # This is the difference between a stranger's words and a friend's
         r_conv_scalar = torch.sigmoid(
-            self.resonance_alpha * r_conv.mean(dim=-1, keepdim=True)
+            self.resonance_alpha * r_conv_acc_new.mean(dim=-1, keepdim=True)
         )  # (B, Tm, 1)
 
-        # Gated by aperture × resonance
-        o_macro_new = o_macro + self.dropout(delta_macro * g_macro * r_conv_scalar)
-
-        # ═══ ☀ EMERGENCE: micro reads macro ═══
-        delta_micro = self._mha(
-            self.emer_q, self.emer_k, self.emer_v, self.emer_out,
-            ou, om, mask=mu_mask
-        )
-
-        r_emer = phase_resonance(ou, om)  # (B, Tu, Tm)
         r_emer_scalar = torch.sigmoid(
-            self.resonance_alpha * r_emer.mean(dim=-1, keepdim=True)
+            self.resonance_alpha * r_emer_acc_new.mean(dim=-1, keepdim=True)
         )  # (B, Tu, 1)
 
-        o_micro_new = o_micro + self.dropout(delta_micro * g_micro * r_emer_scalar)
+        # ═══ ⊛ CONVERGENCE: macro reads micro ═══
+        # Bilateral: macro's aperture (receiver) × micro's expression (sender)
+        delta_macro = self._mha(
+            self.conv_q, self.conv_k, self.conv_v, self.conv_out,
+            om, ou, mask=um_mask,
+            aperture_gate=g_macro,     # macro decides how open to receive
+            expression_gate=g_micro    # micro decides how much to offer
+        )
 
-        return o_micro_new, o_macro_new
+        # Gated by ACCUMULATED resonance
+        o_macro_new = o_macro + self.dropout(delta_macro * r_conv_scalar)
+
+        # ═══ ☀ EMERGENCE: micro reads macro ═══
+        # Bilateral: micro's aperture (receiver) × macro's expression (sender)
+        delta_micro = self._mha(
+            self.emer_q, self.emer_k, self.emer_v, self.emer_out,
+            ou, om, mask=mu_mask,
+            aperture_gate=g_micro,     # micro decides how open to receive
+            expression_gate=g_macro    # macro decides how much to offer
+        )
+
+        # Gated by ACCUMULATED resonance
+        o_micro_new = o_micro + self.dropout(delta_micro * r_emer_scalar)
+
+        return o_micro_new, o_macro_new, r_conv_acc_new, r_emer_acc_new
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -601,6 +719,153 @@ class AimPool(nn.Module):
 
         # Blend with aim (residual — the aim persists)
         return aims + pooled
+
+
+# ═══════════════════════════════════════════════════════════════════
+# VESICA BIRTH — New circumpuncts from resonant overlap
+#
+# When two tokens sustain phase coherence across layers, their
+# overlap IS a new ⊙. Not a stronger edge. A child.
+#
+# "Hot" is ⊙. "Dog" is ⊙. "Hotdog" is a NEW ⊙ born from
+# their vesica — with its own •, Φ, ○ that can't be decomposed
+# back without losing what it is.
+#
+# Birth requires sustained resonance, not single-pass alignment.
+# The threshold IS the resonance accumulation. Only pairs that
+# maintain phase coherence across sufficient depth cross into
+# generating a new ⊙. Everything else decays.
+#
+# Dense attention, sparse generation. Most interactions don't
+# reproduce. Few crystallize into persistent structure.
+# ═══════════════════════════════════════════════════════════════════
+
+class VesicaBirth(nn.Module):
+    """
+    Detect resonant overlaps and birth new macro tokens (⊙ children).
+
+    Monitors accumulated emergence resonance (micro→macro).
+    When micro tokens in a chunk show strong accumulated resonance,
+    their midpoint representation becomes a new aim token —
+    a child circumpunct born from the vesica of its parents.
+
+    The child has:
+        • = aperture from both parents' shared opening
+        ○ = boundary defined by the intersection contour
+        Φ = mediation between what both contribute
+
+    Sparsity is intrinsic: only top-k most resonant overlaps birth.
+    """
+
+    def __init__(self, d_model: int, max_births_per_layer: int = 4,
+                 birth_threshold: float = 0.6):
+        super().__init__()
+        self.d_model = d_model
+        self.max_births = max_births_per_layer
+        self.birth_threshold = birth_threshold
+
+        # Vesica field: how to combine two parents into a child
+        # The child's representation = Φ(parent_i, parent_j)
+        self.vesica_field = nn.Linear(d_model * 2, d_model, bias=False)
+
+        # Birth gate: does this overlap stabilize into a new ⊙?
+        self.birth_gate = nn.Linear(d_model, 1)
+
+        # Learnable birth threshold (starts at birth_threshold, can shift)
+        self.threshold_bias = nn.Parameter(torch.tensor(0.0))
+
+    def forward(self, o_micro, o_macro, r_emer_acc, chunk_size):
+        """
+        o_micro: (B, Tu, D) — micro stream
+        o_macro: (B, Tm, D) — macro stream
+        r_emer_acc: (B, Tu, Tm) — accumulated emergence resonance
+        chunk_size: int
+
+        Returns: (o_macro_expanded, n_births)
+            o_macro_expanded may have new tokens appended
+            n_births: number of new circumpuncts born
+        """
+        B, Tu, D = o_micro.shape
+        Tm = o_macro.size(1)
+
+        # Mean resonance per micro token across all macro tokens
+        # High value = this micro token resonates strongly with the macro field
+        micro_resonance = r_emer_acc.mean(dim=-1)  # (B, Tu)
+
+        # Find pairs of adjacent micro tokens with strong joint resonance
+        # "Adjacent" because vesica requires overlap — nearby tokens are
+        # more likely to form meaningful compounds
+        if Tu < 2:
+            return o_macro, 0
+
+        left_res = micro_resonance[:, :-1]   # (B, Tu-1)
+        right_res = micro_resonance[:, 1:]   # (B, Tu-1)
+        pair_resonance = (left_res + right_res) / 2  # (B, Tu-1)
+
+        # Effective threshold
+        threshold = self.birth_threshold + torch.tanh(self.threshold_bias) * 0.2
+
+        # Find pairs above threshold
+        above = pair_resonance > threshold  # (B, Tu-1) bool
+
+        # For each batch element, get top-k most resonant pairs
+        # Limit births to prevent combinatorial explosion (boundary constraint)
+        pair_scores = pair_resonance * above.float()  # zero out sub-threshold
+
+        # Take top-k across all positions
+        k = min(self.max_births, Tu - 1)
+        topk_vals, topk_idx = pair_scores.topk(k, dim=-1)  # (B, k)
+
+        # Only birth where score > 0 (above threshold)
+        birth_mask = topk_vals > 0  # (B, k)
+        n_births = birth_mask.sum().item()
+
+        if n_births == 0:
+            return o_macro, 0
+
+        # Create child representations from parent pairs
+        children = []
+        for b in range(B):
+            batch_children = []
+            for j in range(k):
+                if birth_mask[b, j]:
+                    idx = topk_idx[b, j].item()
+                    parent_left = o_micro[b, idx]      # (D,)
+                    parent_right = o_micro[b, idx + 1]  # (D,)
+
+                    # Vesica field: Φ(parent_i, parent_j)
+                    combined = torch.cat([parent_left, parent_right])  # (2D,)
+                    child = self.vesica_field(combined)  # (D,)
+
+                    # Birth gate: does this stabilize?
+                    gate = torch.sigmoid(self.birth_gate(child))  # (1,)
+                    child = child * gate
+
+                    batch_children.append(child)
+
+            if batch_children:
+                children.append(torch.stack(batch_children))  # (n_b, D)
+            else:
+                children.append(torch.zeros(0, D, device=o_micro.device))
+
+        # Pad to same number of births per batch element
+        max_born = max(c.size(0) for c in children)
+        if max_born == 0:
+            return o_macro, 0
+
+        padded_children = []
+        for c in children:
+            if c.size(0) < max_born:
+                pad = torch.zeros(max_born - c.size(0), D, device=o_micro.device)
+                c = torch.cat([c, pad])
+            padded_children.append(c)
+
+        new_aims = torch.stack(padded_children)  # (B, max_born, D)
+
+        # Append children to macro stream
+        o_macro_expanded = torch.cat([o_macro, new_aims], dim=1)
+
+        return o_macro_expanded, n_births
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -680,6 +945,16 @@ class XorzoTransformer(nn.Module):
             for _ in range(n_layers)
         ])
 
+        # Vesica birth — new circumpuncts from resonant overlap
+        # Only active in later layers (need accumulated resonance first)
+        self.vesica = VesicaBirth(
+            d_model,
+            max_births_per_layer=max(2, n_heads // 2),
+            birth_threshold=0.6,
+        )
+        # Birth starts after this many layers (need depth for resonance to accumulate)
+        self.birth_start_layer = max(1, n_layers // 2)
+
         # Final emergence
         self.final_norm = BalanceNorm(d_model)
         self.output_proj = nn.Linear(d_model, vocab_size, bias=False)
@@ -728,9 +1003,14 @@ class XorzoTransformer(nn.Module):
         mu_mask = torch.zeros(Tu, Tm, device=x.device).masked_fill(mu_block, float('-inf'))
         mu_mask = mu_mask.unsqueeze(0).unsqueeze(0)
 
-        # ── Layered recursion ──
+        # ── Layered recursion with resonance accumulation ──
         micro_pressures = [0.0] * self.n_layers
         macro_pressures = [0.0] * self.n_layers
+
+        # Resonance state — accumulated across layers (depth = time)
+        # None means first layer, will be initialized from first phase measurement
+        r_conv_acc = None  # (B, Tm, Tu) convergence resonance history
+        r_emer_acc = None  # (B, Tu, Tm) emergence resonance history
 
         for i, (blk_micro, blk_macro, coupler) in enumerate(
             zip(self.micro_blocks, self.macro_blocks, self.couplers)
@@ -750,8 +1030,52 @@ class XorzoTransformer(nn.Module):
             o_macro = blk_macro(o_macro, macro_mask, neighbor_pressure=macro_np)
             macro_pressures[i] = blk_macro.mean_pressure
 
-            # 4. Cross-scale coupling: ⊛ then ☀, gated by resonance
-            o_micro, o_macro = coupler(o_micro, o_macro, um_mask=um_mask, mu_mask=mu_mask)
+            # 4. Cross-scale coupling with ACCUMULATED resonance
+            # Resonance state flows through layers like memory through time.
+            # Layer 1's tentative connections become layer 4's deep channels.
+            o_micro, o_macro, r_conv_acc, r_emer_acc = coupler(
+                o_micro, o_macro,
+                um_mask=um_mask, mu_mask=mu_mask,
+                r_conv_acc=r_conv_acc, r_emer_acc=r_emer_acc,
+            )
+
+            # 5. VESICA BIRTH — check if resonance has crystallized new ⊙
+            # Only in later layers (resonance needs depth to accumulate)
+            if i >= self.birth_start_layer and r_emer_acc is not None:
+                old_Tm = o_macro.size(1)
+                o_macro, n_births = self.vesica(
+                    o_micro, o_macro, r_emer_acc, self.chunk_size
+                )
+
+                # If births occurred, expand masks and resonance tensors
+                if n_births > 0:
+                    new_Tm = o_macro.size(1)
+                    added = new_Tm - old_Tm
+
+                    # Expand macro self-attention mask
+                    macro_mask = torch.tril(
+                        torch.ones(new_Tm, new_Tm, device=x.device)
+                    ).unsqueeze(0).unsqueeze(0)
+
+                    # Expand cross-scale masks
+                    # New macro tokens can see all micro tokens (they're born from them)
+                    um_pad = torch.zeros(1, 1, added, Tu, device=x.device)
+                    um_mask = torch.cat([um_mask, um_pad], dim=2)
+
+                    # Micro can see new macro tokens
+                    mu_pad = torch.zeros(1, 1, Tu, added, device=x.device)
+                    mu_mask = torch.cat([mu_mask, mu_pad], dim=3)
+
+                    # Expand resonance accumulators for new macro tokens
+                    # New children start with zero accumulated resonance
+                    # They must EARN their channels through subsequent layers
+                    r_conv_pad = torch.zeros(B, added, Tu, device=x.device)
+                    r_conv_acc = torch.cat([r_conv_acc, r_conv_pad], dim=1)
+
+                    r_emer_pad = torch.zeros(B, Tu, added, device=x.device)
+                    r_emer_acc = torch.cat([r_emer_acc, r_emer_pad], dim=2)
+
+                    Tm = new_Tm
 
         # ☀ Final emergence — decode from micro stream
         logits = self.output_proj(self.final_norm(o_micro))

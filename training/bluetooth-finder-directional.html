@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BT Finder - Compass Mode</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            padding: 15px;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            font-size: 1.5rem;
+        }
+        
+        .container { max-width: 500px; margin: 0 auto; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 10px 0;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 8px 0;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #302b63;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+        
+        .room-code {
+            font-size: 2rem;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            letter-spacing: 8px;
+            color: #00d4ff;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px dashed rgba(0, 212, 255, 0.5);
+        }
+        
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status.info { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
+        .status.success { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; }
+        .status.error { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        
+        /* Compass Display */
+        .compass-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border-radius: 50%;
+            border: 3px solid rgba(0, 212, 255, 0.5);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .compass-face {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 280px;
+            height: 280px;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease-out;
+        }
+        
+        .compass-mark {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .compass-mark.n { color: #ff6b6b; }
+        
+        .direction-arrow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            transition: transform 0.3s ease-out;
+        }
+        
+        .arrow-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px #00d4ff);
+        }
+        
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #ffd93d;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ffd93d;
+        }
+        
+        .heading-display {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #00d4ff;
+        }
+        
+        /* Signal Display */
+        .signal-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .signal-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid;
+        }
+        
+        .signal-card.me { border-color: #00d4ff; }
+        .signal-card.other { border-color: #4ecdc4; }
+        .signal-card.winner { 
+            border-color: #ffd93d;
+            background: rgba(255, 211, 61, 0.1);
+            box-shadow: 0 0 20px rgba(255, 211, 61, 0.3);
+        }
+        
+        .signal-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+        
+        .signal-strength {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .direction-hint {
+            background: rgba(255, 211, 61, 0.2);
+            border: 2px solid #ffd93d;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .direction-hint .big-arrow {
+            font-size: 4rem;
+            margin: 10px 0;
+            animation: bounce 1s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .direction-hint .text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd93d;
+        }
+        
+        .instruction-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .warning-box {
+            background: rgba(255, 211, 61, 0.1);
+            border-left: 4px solid #ffd93d;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .device-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .device-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .device-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .device-item.selected {
+            background: rgba(0, 212, 255, 0.2);
+            border-left-color: #4ecdc4;
+        }
+        
+        .role-badge {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 16px;
+            background: rgba(0, 212, 255, 0.3);
+            border: 2px solid #00d4ff;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 100;
+        }
+        
+        .calibration-status {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid;
+        }
+        
+        .calibration-status.ready {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+        
+        .calibration-status.waiting {
+            border-color: #ffd93d;
+            background: rgba(255, 211, 61, 0.1);
+        }
+        
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📡 BT Finder</h1>
+        
+        <!-- Setup Screen -->
+        <div id="setup-screen" class="screen active">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 15px;">Setup</h2>
+                
+                <div class="instruction-box">
+                    <strong>🧭 How This Works:</strong><br>
+                    • Uses phone compass for direction<br>
+                    • Compares signal strength between phones<br>
+                    • Stronger signal = that phone is closer<br>
+                    • Move in direction of stronger phone
+                </div>
+                
+                <input type="text" id="room-input" placeholder="Room Code" maxlength="6">
+                
+                <button class="btn-primary" id="create-btn">Device A (Left Hand)</button>
+                <button class="btn-secondary" id="join-btn">Device B (Right Hand)</button>
+                
+                <div id="setup-status"></div>
+            </div>
+        </div>
+        
+        <!-- Waiting Screen -->
+        <div id="waiting-screen" class="screen">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 15px;">Waiting...</h2>
+                <div class="room-code" id="display-room"></div>
+                <div class="status info">
+                    <div class="loader"></div>
+                    Enter this code on your other phone
+                </div>
+                <button class="btn-danger" id="cancel-btn">Cancel</button>
+            </div>
+        </div>
+        
+        <!-- Calibration Screen -->
+        <div id="calibration-screen" class="screen">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 15px;">Calibration</h2>
+                
+                <div class="instruction-box">
+                    <strong>📱 Point at Other Phone:</strong><br>
+                    1. Hold this phone flat<br>
+                    2. Point the TOP of phone toward other phone<br>
+                    3. Press "I'm Pointing" when aligned<br>
+                    4. Wait for both to confirm
+                </div>
+                
+                <div class="compass-container">
+                    <div class="compass-face" id="calibration-compass">
+                        <div class="compass-mark n" style="top: 10px;">N</div>
+                        <div class="compass-mark" style="bottom: 10px; top: auto;">S</div>
+                        <div class="compass-mark" style="left: 10px; top: 50%; transform: translateY(-50%);">W</div>
+                        <div class="compass-mark" style="right: 10px; left: auto; top: 50%; transform: translateY(-50%);">E</div>
+                    </div>
+                    <div class="direction-arrow" id="calibration-arrow">
+                        <svg class="arrow-svg" viewBox="0 0 60 60">
+                            <path d="M30 5 L35 25 L40 25 L30 55 L20 25 L25 25 Z" fill="#00d4ff"/>
+                        </svg>
+                    </div>
+                    <div class="center-dot"></div>
+                </div>
+                
+                <div class="heading-display" id="heading-display">0°</div>
+                
+                <div class="calibration-status waiting" id="calibration-status">
+                    Waiting to calibrate...
+                </div>
+                
+                <button class="btn-success" id="calibrate-btn">I'm Pointing at Other Phone</button>
+                <button class="btn-danger" id="cancel-calibration-btn">Cancel</button>
+            </div>
+        </div>
+        
+        <!-- Scan Screen -->
+        <div id="scan-screen" class="screen">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 15px;">Find Target</h2>
+                
+                <button class="btn-primary" id="scan-btn">🔍 Scan for Devices</button>
+                
+                <div id="device-list-container" style="display: none;">
+                    <h3 style="margin: 15px 0 10px 0; text-align: center;">Found Devices:</h3>
+                    <div class="device-list" id="device-list"></div>
+                    <button class="btn-secondary" id="select-device-btn" disabled>Select as Target</button>
+                </div>
+                
+                <div id="scan-status"></div>
+                <button class="btn-danger" id="exit-scan-btn">Exit</button>
+            </div>
+        </div>
+        
+        <!-- Tracking Screen -->
+        <div id="tracking-screen" class="screen">
+            <div class="role-badge" id="role-badge">A</div>
+            
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 5px;">Tracking</h2>
+                <p style="text-align: center; opacity: 0.7; font-size: 0.9rem; margin-bottom: 20px;" id="target-name">...</p>
+                
+                <div class="signal-comparison">
+                    <div class="signal-card me" id="my-signal-card">
+                        <div class="signal-label">This Phone</div>
+                        <div class="signal-strength" id="my-strength">0</div>
+                        <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 5px;">Signal Units</div>
+                    </div>
+                    <div class="signal-card other" id="other-signal-card">
+                        <div class="signal-label">Other Phone</div>
+                        <div class="signal-strength" id="other-strength">0</div>
+                        <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 5px;">Signal Units</div>
+                    </div>
+                </div>
+                
+                <div class="direction-hint" id="direction-hint">
+                    <div class="big-arrow" id="hint-arrow">↑</div>
+                    <div class="text" id="hint-text">Calibrating...</div>
+                </div>
+                
+                <div class="compass-container">
+                    <div class="compass-face" id="tracking-compass">
+                        <div class="compass-mark n" style="top: 10px;">N</div>
+                        <div class="compass-mark" style="bottom: 10px; top: auto;">S</div>
+                        <div class="compass-mark" style="left: 10px; top: 50%; transform: translateY(-50%);">W</div>
+                        <div class="compass-mark" style="right: 10px; left: auto; top: 50%; transform: translateY(-50%);">E</div>
+                    </div>
+                    <div class="direction-arrow" id="tracking-arrow">
+                        <svg class="arrow-svg" viewBox="0 0 60 60">
+                            <path d="M30 5 L35 25 L40 25 L30 55 L20 25 L25 25 Z" fill="#00d4ff"/>
+                        </svg>
+                    </div>
+                    <div class="center-dot"></div>
+                </div>
+                
+                <button class="btn-danger" id="stop-btn">Stop Tracking</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============== STATE ==============
+        const state = {
+            roomCode: '',
+            role: null,
+            eventSource: null,
+            targetDevice: null,
+            myHeading: 0,
+            calibrationHeading: null,
+            otherCalibrationHeading: null,
+            relativeAngle: null,
+            mySignal: 0,
+            otherSignal: 0,
+            tracking: false,
+            bluetoothDevice: null
+        };
+
+        const NTFY_SERVER = 'https://ntfy.sh';
+        let compassWatchId = null;
+
+        // ============== UTILITY ==============
+        function generateRoomCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function setStatus(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        // ============== COMPASS ==============
+        function startCompass() {
+            if ('ondeviceorientationabsolute' in window) {
+                window.addEventListener('deviceorientationabsolute', handleOrientation);
+            } else if ('ondeviceorientation' in window) {
+                window.addEventListener('deviceorientation', handleOrientation);
+            } else {
+                alert('Compass not supported on this device');
+                return;
+            }
+            
+            // Request permission on iOS
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientationabsolute', handleOrientation);
+                        }
+                    })
+                    .catch(console.error);
+            }
+        }
+
+        function handleOrientation(event) {
+            let heading = event.alpha || event.webkitCompassHeading || 0;
+            
+            // Normalize heading
+            if (event.webkitCompassHeading) {
+                heading = event.webkitCompassHeading;
+            } else {
+                heading = 360 - heading;
+            }
+            
+            state.myHeading = heading;
+            updateCompassDisplay(heading);
+        }
+
+        function updateCompassDisplay(heading) {
+            const displays = ['calibration-compass', 'tracking-compass'];
+            displays.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.transform = `translate(-50%, -50%) rotate(${-heading}deg)`;
+                }
+            });
+            
+            document.getElementById('heading-display').textContent = `${Math.round(heading)}°`;
+        }
+
+        // ============== BLUETOOTH ==============
+        async function scanBluetooth() {
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ['battery_service']
+                });
+                return device;
+            } catch (error) {
+                setStatus('scan-status', `Error: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        async function connectAndMonitor(device) {
+            try {
+                const server = await device.gatt.connect();
+                
+                // Monitor connection strength by attempting reads
+                setInterval(async () => {
+                    if (!state.tracking) return;
+                    
+                    try {
+                        // Attempt to read battery service as a ping
+                        const batteryService = await server.getPrimaryService('battery_service');
+                        const batteryLevel = await batteryService.getCharacteristic('battery_level');
+                        await batteryLevel.readValue();
+                        
+                        // If successful, increase signal
+                        state.mySignal = Math.min(100, state.mySignal + 5);
+                    } catch (e) {
+                        // If failed, decrease signal
+                        state.mySignal = Math.max(0, state.mySignal - 3);
+                    }
+                    
+                    // Add some variation
+                    state.mySignal += (Math.random() - 0.5) * 10;
+                    state.mySignal = Math.max(0, Math.min(100, state.mySignal));
+                    
+                    updateSignalDisplay();
+                    send({ type: 'signal', strength: Math.round(state.mySignal) });
+                }, 1000);
+                
+                return true;
+            } catch (error) {
+                console.error('Connection error:', error);
+                return false;
+            }
+        }
+
+        function updateSignalDisplay() {
+            document.getElementById('my-strength').textContent = Math.round(state.mySignal);
+            
+            const myCard = document.getElementById('my-signal-card');
+            const otherCard = document.getElementById('other-signal-card');
+            
+            myCard.classList.remove('winner');
+            otherCard.classList.remove('winner');
+            
+            if (state.mySignal > state.otherSignal + 10) {
+                myCard.classList.add('winner');
+                updateDirectionHint('this');
+            } else if (state.otherSignal > state.mySignal + 10) {
+                otherCard.classList.add('winner');
+                updateDirectionHint('other');
+            } else {
+                updateDirectionHint('equal');
+            }
+        }
+
+        function updateDirectionHint(stronger) {
+            const arrow = document.getElementById('hint-arrow');
+            const text = document.getElementById('hint-text');
+            
+            if (stronger === 'this') {
+                arrow.textContent = '👇';
+                text.textContent = 'This phone is closer!';
+                text.style.color = '#00d4ff';
+            } else if (stronger === 'other') {
+                if (state.relativeAngle !== null) {
+                    const compassArrow = getArrowForAngle(state.relativeAngle);
+                    arrow.textContent = compassArrow;
+                    text.textContent = 'Move toward other phone';
+                    text.style.color = '#4ecdc4';
+                } else {
+                    arrow.textContent = '🤷';
+                    text.textContent = 'Other phone is closer';
+                }
+            } else {
+                arrow.textContent = '⚖️';
+                text.textContent = 'Equal distance - keep moving';
+                text.style.color = '#ffd93d';
+            }
+        }
+
+        function getArrowForAngle(angle) {
+            const normalized = ((angle % 360) + 360) % 360;
+            if (normalized < 22.5 || normalized >= 337.5) return '↑';
+            if (normalized < 67.5) return '↗';
+            if (normalized < 112.5) return '→';
+            if (normalized < 157.5) return '↘';
+            if (normalized < 202.5) return '↓';
+            if (normalized < 247.5) return '↙';
+            if (normalized < 292.5) return '←';
+            return '↖';
+        }
+
+        // ============== NETWORK ==============
+        function send(data) {
+            const url = `${NTFY_SERVER}/${state.roomCode}`;
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({ ...data, from: state.role }),
+                headers: { 'Content-Type': 'application/json' }
+            }).catch(err => console.error('Send error:', err));
+        }
+
+        function listen() {
+            const url = `${NTFY_SERVER}/${state.roomCode}/sse`;
+            state.eventSource = new EventSource(url);
+            
+            state.eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.event === 'message') {
+                        handleMessage(JSON.parse(data.message));
+                    }
+                } catch (err) {
+                    console.error('Parse error:', err);
+                }
+            };
+        }
+
+        function handleMessage(msg) {
+            if (msg.from === state.role) return;
+            
+            switch (msg.type) {
+                case 'join':
+                    showScreen('calibration-screen');
+                    startCompass();
+                    break;
+                    
+                case 'calibration':
+                    state.otherCalibrationHeading = msg.heading;
+                    checkCalibration();
+                    break;
+                    
+                case 'target-selected':
+                    state.targetDevice = msg.device;
+                    document.getElementById('target-name').textContent = msg.device.name;
+                    showScreen('tracking-screen');
+                    state.tracking = true;
+                    break;
+                    
+                case 'signal':
+                    state.otherSignal = msg.strength;
+                    document.getElementById('other-strength').textContent = msg.strength;
+                    updateSignalDisplay();
+                    break;
+            }
+        }
+
+        // ============== CALIBRATION ==============
+        function calibrate() {
+            state.calibrationHeading = state.myHeading;
+            send({ type: 'calibration', heading: state.calibrationHeading });
+            
+            const status = document.getElementById('calibration-status');
+            status.className = 'calibration-status waiting';
+            status.textContent = 'Waiting for other phone...';
+            
+            checkCalibration();
+        }
+
+        function checkCalibration() {
+            if (state.calibrationHeading !== null && state.otherCalibrationHeading !== null) {
+                // Calculate relative angle between devices
+                state.relativeAngle = state.otherCalibrationHeading - state.calibrationHeading;
+                
+                const status = document.getElementById('calibration-status');
+                status.className = 'calibration-status ready';
+                status.innerHTML = `✅ Calibrated!<br>Relative angle: ${Math.round(state.relativeAngle)}°`;
+                
+                setTimeout(() => {
+                    showScreen('scan-screen');
+                }, 2000);
+            }
+        }
+
+        // ============== ROOM MANAGEMENT ==============
+        function createRoom() {
+            const input = document.getElementById('room-input').value.trim().toUpperCase();
+            state.roomCode = input || generateRoomCode();
+            state.role = 'A';
+            
+            document.getElementById('display-room').textContent = state.roomCode;
+            document.getElementById('role-badge').textContent = 'A';
+            
+            listen();
+            send({ type: 'create' });
+            showScreen('waiting-screen');
+        }
+
+        function joinRoom() {
+            const input = document.getElementById('room-input').value.trim().toUpperCase();
+            if (!input) {
+                setStatus('setup-status', 'Enter room code', 'error');
+                return;
+            }
+            
+            state.roomCode = input;
+            state.role = 'B';
+            
+            document.getElementById('role-badge').textContent = 'B';
+            
+            listen();
+            send({ type: 'join' });
+            showScreen('calibration-screen');
+            startCompass();
+        }
+
+        // ============== DEVICE SELECTION ==============
+        let selectedDevice = null;
+
+        async function startScan() {
+            const device = await scanBluetooth();
+            if (!device) return;
+            
+            const container = document.getElementById('device-list-container');
+            const list = document.getElementById('device-list');
+            
+            container.style.display = 'block';
+            
+            const item = document.createElement('div');
+            item.className = 'device-item';
+            item.innerHTML = `
+                <div style="font-weight: bold; font-size: 1.1rem;">${device.name || 'Unknown'}</div>
+                <div style="font-size: 0.8rem; opacity: 0.7; font-family: monospace;">${device.id}</div>
+            `;
+            
+            item.onclick = () => {
+                document.querySelectorAll('.device-item').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                selectedDevice = device;
+                document.getElementById('select-device-btn').disabled = false;
+            };
+            
+            list.appendChild(item);
+            setStatus('scan-status', 'Device found!', 'success');
+        }
+
+        async function selectDevice() {
+            if (!selectedDevice) return;
+            
+            state.targetDevice = {
+                name: selectedDevice.name || 'Unknown',
+                id: selectedDevice.id
+            };
+            state.bluetoothDevice = selectedDevice;
+            
+            send({ type: 'target-selected', device: state.targetDevice });
+            document.getElementById('target-name').textContent = state.targetDevice.name;
+            
+            showScreen('tracking-screen');
+            state.tracking = true;
+            
+            // Try to connect and monitor
+            connectAndMonitor(selectedDevice);
+        }
+
+        function stopTracking() {
+            state.tracking = false;
+            if (state.bluetoothDevice && state.bluetoothDevice.gatt.connected) {
+                state.bluetoothDevice.gatt.disconnect();
+            }
+            if (state.eventSource) {
+                state.eventSource.close();
+            }
+            location.reload();
+        }
+
+        // ============== EVENT LISTENERS ==============
+        document.getElementById('create-btn').onclick = createRoom;
+        document.getElementById('join-btn').onclick = joinRoom;
+        document.getElementById('cancel-btn').onclick = () => location.reload();
+        document.getElementById('calibrate-btn').onclick = calibrate;
+        document.getElementById('cancel-calibration-btn').onclick = () => location.reload();
+        document.getElementById('scan-btn').onclick = startScan;
+        document.getElementById('select-device-btn').onclick = selectDevice;
+        document.getElementById('exit-scan-btn').onclick = () => location.reload();
+        document.getElementById('stop-btn').onclick = stopTracking;
+        
+        document.getElementById('room-input').onkeypress = (e) => {
+            if (e.key === 'Enter') createRoom();
+        };
+
+        // Check support
+        if (!navigator.bluetooth) {
+            setStatus('setup-status', 'Web Bluetooth not supported', 'error');
+            document.getElementById('create-btn').disabled = true;
+            document.getElementById('join-btn').disabled = true;
+        }
+    </script>
+</body>
+</html>

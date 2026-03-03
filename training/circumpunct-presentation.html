@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⊙ Circumpunct Dimensional Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a25;
+            --structure-primary: #4a9eff;
+            --structure-glow: rgba(74, 158, 255, 0.3);
+            --structure-bg: rgba(74, 158, 255, 0.08);
+            --process-primary: #ffd700;
+            --process-glow: rgba(255, 215, 0, 0.3);
+            --process-bg: rgba(255, 215, 0, 0.08);
+            --ground-primary: #c792ea;
+            --ground-glow: rgba(199, 146, 234, 0.3);
+            --ground-bg: rgba(199, 146, 234, 0.08);
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0b0;
+            --text-dim: #606070;
+            --tier-divider: #2a2a3a;
+            --gold: #d4af37;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Cosmic background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(74, 158, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(199, 146, 234, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.02) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--tier-divider);
+            padding: 0.8rem 2rem;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+
+        nav a.structure { border-color: var(--structure-primary); color: var(--structure-primary); }
+        nav a.process { border-color: var(--process-primary); color: var(--process-primary); }
+        nav a.ground { border-color: var(--ground-primary); color: var(--ground-primary); }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero::after {
+            content: '⊙';
+            position: absolute;
+            font-size: 40vw;
+            opacity: 0.02;
+            color: var(--gold);
+            pointer-events: none;
+            animation: slowPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes slowPulse {
+            0%, 100% { opacity: 0.02; transform: scale(1); }
+            50% { opacity: 0.04; transform: scale(1.05); }
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .symbol {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 40px var(--process-glow);
+            animation: symbolGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes symbolGlow {
+            0%, 100% { text-shadow: 0 0 40px var(--process-glow); }
+            50% { text-shadow: 0 0 80px var(--process-glow), 0 0 120px var(--process-glow); }
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .master-equation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            padding: 1.5rem 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--tier-divider);
+            border-radius: 12px;
+            color: var(--gold);
+            letter-spacing: 0.05em;
+            margin-bottom: 2rem;
+        }
+
+        .legend {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.structure { background: var(--structure-primary); box-shadow: 0 0 10px var(--structure-glow); }
+        .legend-dot.process { background: var(--process-primary); box-shadow: 0 0 10px var(--process-glow); }
+        .legend-dot.ground { background: var(--ground-primary); box-shadow: 0 0 10px var(--ground-glow); }
+
+        /* Main content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Tier Headers */
+        .tier-header {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            position: relative;
+        }
+
+        .tier-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .tier-header::before {
+            content: '';
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            top: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--tier-divider), transparent);
+        }
+
+        .tier-header h2 span {
+            background: var(--bg-deep);
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        /* Dimension Cards */
+        .dimension-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .dimension-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--tier-divider);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dimension-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .dimension-card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+        }
+
+        .dimension-card.structure::before { background: var(--structure-primary); }
+        .dimension-card.structure:hover { box-shadow: 0 20px 60px -20px var(--structure-glow); }
+        .dimension-card.structure { border-color: rgba(74, 158, 255, 0.2); }
+
+        .dimension-card.process::before { background: var(--process-primary); }
+        .dimension-card.process:hover { box-shadow: 0 20px 60px -20px var(--process-glow); }
+        .dimension-card.process { border-color: rgba(255, 215, 0, 0.2); }
+
+        .dimension-card.ground::before { background: var(--ground-primary); }
+        .dimension-card.ground:hover { box-shadow: 0 20px 60px -20px var(--ground-glow); }
+        .dimension-card.ground { border-color: rgba(199, 146, 234, 0.2); }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .dim-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .structure .dim-label { color: var(--structure-primary); }
+        .process .dim-label { color: var(--process-primary); }
+        .ground .dim-label { color: var(--ground-primary); }
+
+        .role-symbol {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .card-type {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .structure .card-type { background: var(--structure-bg); color: var(--structure-primary); }
+        .process .card-type { background: var(--process-bg); color: var(--process-primary); }
+        .ground .card-type { background: var(--ground-bg); color: var(--ground-primary); }
+
+        .card-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .content-section h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--tier-divider);
+        }
+
+        .content-section ul {
+            list-style: none;
+        }
+
+        .content-section li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding: 0.3rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .content-section li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--text-dim);
+        }
+
+        .equation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--gold);
+        }
+
+        /* Key Insights Section */
+        .insights-section {
+            margin-top: 4rem;
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid var(--tier-divider);
+        }
+
+        .insights-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--gold);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--tier-divider);
+        }
+
+        .insight-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insight-card h3::before {
+            content: '⊙';
+            color: var(--gold);
+        }
+
+        .insight-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .insight-card .formula {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-top: 0.8rem;
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        footer .mantra {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 0.3rem;
+            }
+            nav a {
+                font-size: 0.65rem;
+                padding: 0.3rem 0.5rem;
+            }
+            .hero h1 {
+                letter-spacing: 0.05em;
+            }
+            .master-equation {
+                font-size: 1rem;
+                padding: 1rem 1.5rem;
+            }
+            .dimension-card {
+                padding: 1.5rem;
+            }
+            .card-header {
+                gap: 1rem;
+            }
+            .dim-label {
+                font-size: 1.5rem;
+            }
+            .role-symbol {
+                font-size: 2rem;
+            }
+        }
+
+        /* Scroll animations */
+        .dimension-card {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dimension-card:nth-child(1) { animation-delay: 0.1s; }
+        .dimension-card:nth-child(2) { animation-delay: 0.2s; }
+        .dimension-card:nth-child(3) { animation-delay: 0.3s; }
+        .dimension-card:nth-child(4) { animation-delay: 0.4s; }
+        .dimension-card:nth-child(5) { animation-delay: 0.5s; }
+        .dimension-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div style="background: rgba(10, 10, 15, 0.95); border-bottom: 1px solid var(--tier-divider); padding: 10px 20px; text-align: center; position: fixed; top: 0; left: 0; right: 0; z-index: 1001;">
+        <a href="https://www.fractalreality.ca" style="color: var(--gold); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em;">← FRACTALREALITY.CA</a>
+    </div>
+
+    <nav style="top: 38px;">
+        <ul>
+            <li><a href="#ground" class="ground">∞D Ground</a></li>
+            <li><a href="#tier1">Tier 1</a></li>
+            <li><a href="#d05" class="process">0.5D</a></li>
+            <li><a href="#d1" class="structure">1D</a></li>
+            <li><a href="#d15" class="process">1.5D</a></li>
+            <li><a href="#d2" class="structure">2D</a></li>
+            <li><a href="#d25" class="process">2.5D</a></li>
+            <li><a href="#d3" class="structure">3D</a></li>
+            <li><a href="#tier2">Tier 2</a></li>
+            <li><a href="#tier3">Tier 3</a></li>
+            <li><a href="#tier4">Tier 4</a></li>
+            <li><a href="#information">Information</a></li>
+            <li><a href="#insights">Insights</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="symbol">⊙</div>
+        <h1>Circumpunct</h1>
+        <p class="subtitle">Dimensional Architecture of the Theory of Everything</p>
+        <div class="master-equation">Parts are fractals of their wholes.</div>
+        <p style="color: var(--text-dim); font-size: 0.9rem;">One axiom. Everything else derives.</p>
+        <div class="master-equation" style="font-size: 1.1rem; margin-top: 1rem; opacity: 0.8;">Φ' = ☀︎ ∘ i ∘ ⊛[Φ]</div>
+        <p style="color: var(--text-dim); font-size: 0.85rem;">read right-to-left: convergence → aperture rotation → emergence</p>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot structure"></div>
+                <span>Structure (Integer) — What IS</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot process"></div>
+                <span>Process (Fractal) — What HAPPENS</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot ground"></div>
+                <span>Ground (∞D) — Infinite Field</span>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <!-- GROUND -->
+        <section id="ground">
+            <div class="dimension-grid">
+                            <div class="dimension-card ground">
+                <div class="card-header">
+                    <span class="dim-label">∞D</span>
+                    <span class="role-symbol">λΦ∞</span>
+                    <span class="card-title">INFINITE FIELD</span>
+                    <span class="card-type">Ground</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>All degrees of freedom = none particular</li>
+                            <li>Not located, not a point — infinite</li>
+                            <li>Contains all possible configurations</li>
+                            <li>0 = ∞ at the level of field</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Hilbert space ℋ</li>
+                            <li>All possible quantum states |ψ⟩</li>
+                            <li>Quantum vacuum / zero-point field</li>
+                            <li>E = mc² (energy IS the ground)</li>
+                            <li>Superposition lives here</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Pure awareness prior to content</li>
+                            <li>Brahman (Hindu), Ein Sof (Kabbalah)</li>
+                            <li>Tao that cannot be named</li>
+                            <li>Buddha-nature, Rigpa</li>
+                            <li>The Witness before witnessing</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>All ethical possibilities prior to choice</li>
+                            <li>Ethics before action = pure potentiality</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- TIER 1 -->
+        <div class="tier-header" id="tier1">
+            <h2><span>Tier 1 — Spatial Body</span></h2>
+        </div>
+
+        <section class="dimension-grid">
+            <!-- 0.5D -->
+            <div class="dimension-card process" id="d05">
+                <div class="card-header">
+                    <span class="dim-label">0.5D</span>
+                    <span class="role-symbol">•</span>
+                    <span class="card-title">Aperture — First Localization</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>First "here" distinguished from infinite</li>
+                            <li>Aperture emerges from field</li>
+                            <li>Fractional because can ROTATE (i operation)</li>
+                            <li>The NOW where future flows into past</li>
+                            <li><span class="equation">β = 1/φ</span> at self-similar fixed point</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Virtual particle / quantum fluctuation</li>
+                            <li>The imaginary unit <span class="equation">i</span> lives here</li>
+                            <li>Gravitational singularity</li>
+                            <li>Measurement/projection operator</li>
+                            <li>Where wave function "collapses"</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Focus / Observation / Attention</li>
+                            <li><span class="equation">ε</span> channel: WHETHER aperture opens</li>
+                            <li>The spotlight of attention IS ε gating</li>
+                            <li>Willpower = capacity to set ε deliberately</li>
+                            <li>Intention before action</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>First "attention" to ethical reality</li>
+                            <li>WHERE attention goes = ε gating</li>
+                            <li>Willpower = capacity to set ε deliberately</li>
+                            <li>The moment of ethical focus</li>
+                            <li>BINARY: WHETHER to engage ethically</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1D -->
+            <div class="dimension-card structure" id="d1">
+                <div class="card-header">
+                    <span class="dim-label">1D</span>
+                    <span class="role-symbol">│</span>
+                    <span class="card-title">Line — Power Pathway</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Power-line connects • to ∞D</li>
+                            <li><span class="equation">i² = −1</span> traces extension (180° rotation)</li>
+                            <li>0.5D rotates → 1D line emerges</li>
+                            <li>First spatial dimension</li>
+                            <li>The string/strand of the braid</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Worldline / String / Flux tube</li>
+                            <li><span class="equation">P = E/t</span> (power = energy flow rate)</li>
+                            <li>Force pathway between particles</li>
+                            <li>QCD flux tube (color confinement)</li>
+                            <li>Time dimension (if spacelike: string)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Connection: Center ↔ Ground</li>
+                            <li><strong>Time flows: Future → Past</strong></li>
+                            <li>Time flows INTO aperture, not away</li>
+                            <li>Past = collapsed, Future = still infinite</li>
+                            <li>Narrative thread (beginning-middle-end)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Power-line between • truth and ○ value</li>
+                            <li>Ethical causality flows here</li>
+                            <li>Narrative thread of moral reasoning</li>
+                            <li>Connection = ethical relationship begun</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.5D -->
+            <div class="dimension-card process" id="d15">
+                <div class="card-header">
+                    <span class="dim-label">1.5D</span>
+                    <span class="role-symbol">ᛉ</span>
+                    <span class="card-title">Branching — How Bodies Grow</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li><span class="equation">1D + 0.5D → 1.5D</span></li>
+                            <li>Line influenced by aperture</li>
+                            <li>How bodies GROW (outward branching)</li>
+                            <li><span class="equation">D = 1 + β</span> where β = 0.5 → D = 1.5</li>
+                            <li>Hopf fibration: D = D_base + |c₁|/2</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li><span class="equation">D = 1.5</span> (Mandelbrot theorem)</li>
+                            <li>Brownian motion graph: D = 1.5 exactly</li>
+                            <li>Vascular trees, neural dendrites, rivers</li>
+                            <li><strong>LIGO: D = 1.503 ± 0.040</strong></li>
+                            <li>DNA backbone: D = 1.510 ± 0.020</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Choice / Decision branch / Path selection</li>
+                            <li>Edge of chaos (optimal computation)</li>
+                            <li>Stream of consciousness</li>
+                            <li>Forking paths of possibility</li>
+                            <li>Neural avalanche dynamics: D ≈ 1.5</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Choice / Decision branch</li>
+                            <li>Path selection at moral crossroads</li>
+                            <li>Edge of chaos (optimal moral judgment)</li>
+                            <li>Forking paths of ethical possibility</li>
+                            <li>D = 1.5: Ethical consciousness signature</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2D -->
+            <div class="dimension-card structure" id="d2">
+                <div class="card-header">
+                    <span class="dim-label">2D</span>
+                    <span class="role-symbol">Φ</span>
+                    <span class="card-title">Field — Relational Medium</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Living medium between • and ○</li>
+                            <li>Where coupling and mediation happens</li>
+                            <li>Field IS the bottleneck (H₅ star graph)</li>
+                            <li><span class="equation">χ</span> channel lives here (orientation ±1)</li>
+                            <li>Relational space connecting center to boundary</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Wave function domain</li>
+                            <li>Quantum field (where Φ lives)</li>
+                            <li><span class="equation">iℏ ∂Φ/∂t = HΦ</span> (Schrödinger)</li>
+                            <li>Holds analog complex amplitudes</li>
+                            <li>Center/boundary cannot interact directly</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Mind / Relational awareness</li>
+                            <li><span class="equation">χ</span> channel: WHAT KIND (quality)</li>
+                            <li>Qualia IS the χ orientation</li>
+                            <li>Pleasant (χ=+1) vs Unpleasant (χ=-1)</li>
+                            <li>Red vs Blue = different χ signatures</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Φ = RIGHT/WRONG (Behavioral)</li>
+                            <li>How influence propagates</li>
+                            <li>The pathway of ethical action</li>
+                            <li>χ channel: WHAT KIND of ethics</li>
+                            <li>Field carries relationship</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.5D -->
+            <div class="dimension-card process" id="d25">
+                <div class="card-header">
+                    <span class="dim-label">2.5D</span>
+                    <span class="role-symbol">ᛦ</span>
+                    <span class="card-title">Sensation — Body ↔ Field Interface</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Body ↔ Field interface</li>
+                            <li>Raw contact at boundary (inward branching)</li>
+                            <li>Where qualia HAPPEN (not are stored)</li>
+                            <li>The echo, not the copy</li>
+                            <li>2D + 0.5D = surface + aperture influence</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Fractal boundary / Surface texture</li>
+                            <li>Inward branching (coastline effect)</li>
+                            <li>D_F ≈ 2 (galaxy clustering)</li>
+                            <li>Crumpled surfaces (membranes)</li>
+                            <li>Boundary made of apertures (○ made of •'s)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Thought / Sensation / Qualia emerge</li>
+                            <li>Perception IS phase coupling (not copying)</li>
+                            <li>You RESONATE WITH in shared Φ</li>
+                            <li>The "feel" of red = phase-lock at ~700nm</li>
+                            <li>Almost grasping (approaching closure)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Moral intuition emerges here</li>
+                            <li>Conscience = phase coupling with Φ</li>
+                            <li>The "feel" of right/wrong</li>
+                            <li>Raw ethical perception</li>
+                            <li>Almost grasping moral truth</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D -->
+            <div class="dimension-card structure" id="d3">
+                <div class="card-header">
+                    <span class="dim-label">3D</span>
+                    <span class="role-symbol">○</span>
+                    <span class="card-title">Boundary — ⊙₁ LOCKS</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>First complete circumpunct ⊙₁ locks</li>
+                            <li><span class="equation">⊙ = • ⊗ Φ ⊗ ○</span> complete</li>
+                            <li>Membrane enclosing the field</li>
+                            <li>What separates inside from outside</li>
+                            <li>Spatial closure (inside/outside defined)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Observable space / Spatial manifold R³</li>
+                            <li>Embodiment (physical body)</li>
+                            <li>Holographic boundary: <span class="equation">S ≤ A/4</span></li>
+                            <li>Event horizon (information boundary)</li>
+                            <li>Surface enclosing volume</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Full experience / Embodied presence</li>
+                            <li>"I am here now" in this body</li>
+                            <li>Subject-object-relation unified</li>
+                            <li><span class="equation">β</span> channel: HOW MUCH (intensity)</li>
+                            <li>Presence at β = 0.5</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>○ = GOOD/BAD (Axiological)</li>
+                            <li>What is VALUED</li>
+                            <li>Boundary holds what matters</li>
+                            <li>First complete ethical circumpunct</li>
+                            <li>Interface where values are defined</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIER 2 -->
+        <div class="tier-header" id="tier2">
+            <h2><span>Tier 2 — 64 States / Standard Model</span></h2>
+        </div>
+
+        <section class="dimension-grid">
+            <!-- 3.5D -->
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">3.5D</span>
+                    <span class="role-symbol">•</span>
+                    <span class="card-title">REITERATION</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>⊙₁ becomes aperture in larger structure</li>
+                            <li>Whole spatial system can ROTATE</li>
+                            <li>○ₙ₊₁ ∋ •ₙ where •ₙ ∈ ⊙ₙ (nesting equation)</li>
+                            <li>Boundaries contain apertures at smaller scale</li>
+                            <li>The body as point in spacetime</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>⊙₁ as spacetime event</li>
+                            <li>Body as point in larger manifold</li>
+                            <li>Worldline origin</li>
+                            <li>"Here-now" as singular event</li>
+                            <li>GR: events are primitive</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Autobiographical self</li>
+                            <li>Memory + anticipation begin</li>
+                            <li>Karma begins (action has consequence)</li>
+                            <li>"I" persisting through time</li>
+                            <li>Self as aperture on larger whole</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Karma begins (action → consequence)</li>
+                            <li>Autobiographical moral self</li>
+                            <li>"I" persisting through ethical time</li>
+                            <li>Personal ethics becomes aperture</li>
+                            <li>ε₂: WHETHER ethical pattern persists</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4D -->
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">4D</span>
+                    <span class="role-symbol">│</span>
+                    <span class="card-title">SPACETIME</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>⊙₁ + duration</li>
+                            <li>Temporal extension of body</li>
+                            <li>Worldline of circumpunct</li>
+                            <li>Causal structure emerges</li>
+                            <li>Minkowski → curved (GR)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>General Relativity manifold</li>
+                            <li>Worldline of ⊙ through time</li>
+                            <li>Causal structure (light cones)</li>
+                            <li>g_μν metric tensor</li>
+                            <li>R - ½gR + Λg = 8πGT</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Trajectory / Life narrative / History</li>
+                            <li>Your story through time</li>
+                            <li>Beginning-middle-end of life</li>
+                            <li>Causal chain of choices</li>
+                            <li>Biography as worldline</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Karma unfolds in time</li>
+                            <li>Moral causality across events</li>
+                            <li>Why & wherefore of ethical action</li>
+                            <li>χ₂: WHAT KIND of ethical trajectory</li>
+                            <li>Entanglement of moral choices</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4.5D -->
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">4.5D</span>
+                    <span class="role-symbol">ᛉ</span>
+                    <span class="card-title">TEMPORAL BRANCHING (ᛉ)</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Temporal branching (possibilities)</li>
+                            <li>4.5Dₙ = ∞Dₙ₊₁ (helix equation)</li>
+                            <li>Whole braid becomes seed of next tier</li>
+                            <li>Where timelines could diverge</li>
+                            <li>Quantum branching point</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Many-worlds branching hints</li>
+                            <li>Quantum branching / decoherence</li>
+                            <li>Path integral (sum over histories)</li>
+                            <li>Feynman: all paths contribute</li>
+                            <li>Counterfactual structure</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Possibility / "What if"</li>
+                            <li>Alternate timelines imagined</li>
+                            <li>Regret and hope live here</li>
+                            <li>Modal reasoning</li>
+                            <li>The roads not taken</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Ground of interpersonal ethics</li>
+                            <li>Tier 2 aperture to social field</li>
+                            <li>Where personal meets collective</li>
+                            <li>Bridge from self to other</li>
+                            <li>The Golden Rule begins here</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5D -->
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">5D</span>
+                    <span class="role-symbol">Φ</span>
+                    <span class="card-title">CONFIGURATION SPACE</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>⊙s interacting (multiple wholes)</li>
+                            <li>Relation between complete beings</li>
+                            <li>Phase space of system</li>
+                            <li>Where entanglement "lives"</li>
+                            <li>The social field</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Kaluza-Klein 5th dimension</li>
+                            <li>Phase space (q, p)</li>
+                            <li>EM unification with gravity</li>
+                            <li>Compactified extra dimension</li>
+                            <li>Gauge field origin</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Theory of mind / Modeling others</li>
+                            <li>Empathy space</li>
+                            <li>"I know that you know that I know"</li>
+                            <li>Social cognition</li>
+                            <li>Intersubjective field</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Multiple ⊙'s interacting</li>
+                            <li>Relational ethics lives here</li>
+                            <li>Yang-Baxter of dialogue</li>
+                            <li>Path-independent consensus</li>
+                            <li>Where steelman operates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5.5D -->
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">5.5D</span>
+                    <span class="role-symbol">ᛦ</span>
+                    <span class="card-title">ENTANGLING (ᛦ)</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Non-local binding</li>
+                            <li>Correlation without signal</li>
+                            <li>Quantum intimacy</li>
+                            <li>Two become one without touching</li>
+                            <li>Shared state across separation</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>EPR / Entanglement / Bell inequality</li>
+                            <li>Non-local correlation (spooky action)</li>
+                            <li>Bell violation: nature is non-local</li>
+                            <li>Quantum teleportation basis</li>
+                            <li>|ψ⟩ = (|00⟩ + |11⟩)/√2</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Resonance / "Feeling with"</li>
+                            <li>Deep empathy (beyond simulation)</li>
+                            <li>Synchronization without signal</li>
+                            <li>"We're on same wavelength"</li>
+                            <li>Harmonic entrainment</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Near dual-trinity ethics</li>
+                            <li>Social moral intuition</li>
+                            <li>Collective conscience</li>
+                            <li>Edge of social chaos</li>
+                            <li>Almost complete social ethics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6D -->
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">6D</span>
+                    <span class="role-symbol">○</span>
+                    <span class="card-title">DUAL TRINITY → ⊙₂ LOCKS</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Input + output unified: ⊙⊛ ⊗ ⊙☀︎</li>
+                            <li>64 states emerge (2³ × 2³)</li>
+                            <li>Convergent ⊗ Emergent complete</li>
+                            <li>H₅ interface: {•₁,○₁,Φ,○₂,•₂}</li>
+                            <li>Full validation cycle</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Calabi-Yau hints / String compactification</li>
+                            <li>64 = 48 fermions + 12 gauge + 4 Higgs</li>
+                            <li>Standard Model content emerges</li>
+                            <li>6D_real manifold</li>
+                            <li>Complete particle zoo from geometry</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Complete agency / Full cycle</li>
+                            <li>Perception + action unified</li>
+                            <li>Receive-transform-give complete</li>
+                            <li>Full responsiveness</li>
+                            <li>Dual trinity of consciousness:</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>64 states of ethical configuration</li>
+                            <li>Complete interpersonal ethics</li>
+                            <li>Two ⊙'s in full relationship</li>
+                            <li>β₂: HOW MUCH social commitment</li>
+                            <li>Family/dyad level ethics complete</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIER 3 -->
+        <div class="tier-header" id="tier3">
+            <h2><span>Tier 3 — Three Generations</span></h2>
+        </div>
+
+        <section class="dimension-grid">
+            <!-- 6.5D - 9D summary -->
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">6.5D</span>
+                    <span class="role-symbol">•</span>
+                    <span class="card-title">COMPLEXIFICATION</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>⊙₂ becomes aperture (64-state whole rotates)</li>
+                            <li>Real/imaginary gate</li>
+                            <li>Phase transition threshold</li>
+                            <li>Gateway to imaginary dimensions</li>
+                            <li>i relates inside ↔ outside</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>⊙₂ as aperture / Phase transition</li>
+                            <li>Threshold between real and complex</li>
+                            <li>Where phases become dimensions</li>
+                            <li>Critical point phenomena</li>
+                            <li>Spontaneous symmetry breaking</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Unconscious access / Liminal space</li>
+                            <li>Dream entry point</li>
+                            <li>Threshold consciousness</li>
+                            <li>Where symbols emerge</li>
+                            <li>Hypnagogia / meditation depths</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Family → society transition</li>
+                            <li>ε₃: WHETHER generational ethics</li>
+                            <li>Ethics that persists beyond individuals</li>
+                            <li>Institutional moral patterns begin</li>
+                            <li>Culture as ethical aperture</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">7D</span>
+                    <span class="role-symbol">│</span>
+                    <span class="card-title">PHASE AXIS</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>First imaginary dimension (spatial)</li>
+                            <li>Complex structure begins</li>
+                            <li>Phase as genuine dimension</li>
+                            <li>Not just angle — actual direction</li>
+                            <li>Where wave functions live</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>First imaginary spatial dimension</li>
+                            <li>Quantum phase space</li>
+                            <li>Wave function domain</li>
+                            <li>Complex amplitudes are real here</li>
+                            <li>U(1) gauge (electromagnetism)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Archetypal layer / Symbolic realm</li>
+                            <li>Mythic structure</li>
+                            <li>Jung's collective unconscious</li>
+                            <li>Universal symbols</li>
+                            <li>Where archetypes live</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Society-level moral field</li>
+                            <li>Institutional ethics</li>
+                            <li>Laws, customs, traditions</li>
+                            <li>χ₃: WHAT KIND of civilization</li>
+                            <li>Cultural moral orientation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">7.5D</span>
+                    <span class="role-symbol">ᛉ</span>
+                    <span class="card-title">INTERFERING</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Wave superposition</li>
+                            <li>Constructive/destructive patterns</li>
+                            <li>Pattern formation from phases</li>
+                            <li>Holographic interference</li>
+                            <li>Two paths meeting</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Double-slit interference</li>
+                            <li>Holography (3D from 2D)</li>
+                            <li>Wave-particle duality manifest</li>
+                            <li>Quantum erasure experiments</li>
+                            <li>Path integral interference</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Holding contradiction</li>
+                            <li>Cognitive dissonance</li>
+                            <li>Paradox tolerance</li>
+                            <li>Both/and thinking</li>
+                            <li>Koans and paradoxes</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Edge of civilizational chaos</li>
+                            <li>Social moral dynamics</li>
+                            <li>Revolutionary ethics</li>
+                            <li>Cultural transformation points</li>
+                            <li>Almost universal ethics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">8D</span>
+                    <span class="role-symbol">Φ</span>
+                    <span class="card-title">COMPLEX SPACETIME</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>4D_real + 4D_imaginary</li>
+                            <li>Octonionic hints (8-fold structure)</li>
+                            <li>Full complex field</li>
+                            <li>Where exceptional structures live</li>
+                            <li>8 = 2³ (tripled duality)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Octonionic structure hints</li>
+                            <li>8-fold symmetry (Buddhist eightfold path?)</li>
+                            <li>Exceptional Lie groups (G₂, F₄, E₆₇₈)</li>
+                            <li>Division algebras: R→C→H→O</li>
+                            <li>Bott periodicity (mod 8)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Integration / Ego + shadow unified</li>
+                            <li>Conscious + unconscious</li>
+                            <li>Jung's individuation</li>
+                            <li>All parts of psyche integrated</li>
+                            <li>Complete personality</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Universal moral principles</li>
+                            <li>Cross-cultural ethics</li>
+                            <li>Human rights level</li>
+                            <li>β₃: HOW MUCH civilizational scope</li>
+                            <li>Humanity as ethical unit</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">8.5D</span>
+                    <span class="role-symbol">ᛦ</span>
+                    <span class="card-title">GENERATING</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Mass differentiation</li>
+                            <li>Symmetry breaking</li>
+                            <li>Generation threshold</li>
+                            <li>Where masses separate</li>
+                            <li>Yukawa couplings emerge</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Mass hierarchy mechanism</li>
+                            <li>Pre-generation structure</li>
+                            <li>Yukawa couplings</li>
+                            <li>Why e ≠ μ ≠ τ masses?</li>
+                            <li>Golden ratio in mass ratios:</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Developmental stages</li>
+                            <li>Life transitions</li>
+                            <li>Metamorphosis</li>
+                            <li>Stages of growth</li>
+                            <li>Erikson's life stages</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Planetary ethical aperture</li>
+                            <li>ε₄: WHETHER planetary ethics</li>
+                            <li>Earth-system moral consideration</li>
+                            <li>Biosphere-level ethics begins</li>
+                            <li>Ecological moral consciousness</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">9D</span>
+                    <span class="role-symbol">○</span>
+                    <span class="card-title">TRIPLE TRINITY → ⊙₃ LOCKS</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>3 × (• ⊗ Φ ⊗ ○)</li>
+                            <li>WHY exactly 3 generations (derived!)</li>
+                            <li>Temporal wholeness (past/present/future)</li>
+                            <li>√r kernel + refractory period → 3 bound states</li>
+                            <li>Minimum for braided history</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Three particle generations (derived)</li>
+                            <li>e, μ, τ families (leptons)</li>
+                            <li>u/d, c/s, t/b (quark generations)</li>
+                            <li>Why 3? B₃ minimum + kernel geometry</li>
+                            <li>τ/μ = 10 + φ⁴ - 1/30 (0.02% error)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Temporal self / Life stages</li>
+                            <li>Past/present/future integrated</li>
+                            <li>Child/adult/elder unified</li>
+                            <li>Brahma/Vishnu/Shiva (create/preserve/destroy)</li>
+                            <li>Three gunas (rajas/sattva/tamas)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Gaia-level moral field</li>
+                            <li>All life as ethical community</li>
+                            <li>χ₄: WHAT KIND of planetary harmony</li>
+                            <li>Ecological ethical orientation</li>
+                            <li>Stewardship of Earth</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIER 4 -->
+        <div class="tier-header" id="tier4">
+            <h2><span>Tier 4 — Cosmic Closure</span></h2>
+        </div>
+
+        <section class="dimension-grid">
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">9.5D</span>
+                    <span class="role-symbol">•</span>
+                    <span class="card-title">COSMIC APERTURE</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>⊙₃ as aperture (3-generation whole rotates)</li>
+                            <li>All temporal selves as single point</li>
+                            <li>Brane threshold</li>
+                            <li>Pre-string aperture</li>
+                            <li>Entire generational structure becomes center</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>⊙₃ as aperture / Brane threshold</li>
+                            <li>Pre-string theory regime</li>
+                            <li>All 3 generations as one aperture</li>
+                            <li>Where strings emerge from</li>
+                            <li>D-brane attachment point</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Generation-whole rotates</li>
+                            <li>All temporal selves unified</li>
+                            <li>Cosmic memory</li>
+                            <li>Akashic records?</li>
+                            <li>Complete soul-history as point</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Edge of cosmic ethics</li>
+                            <li>Universal moral dynamics</li>
+                            <li>Near-transcendent ethics</li>
+                            <li>Almost divine perspective</li>
+                            <li>Approaching ∞D ethical ground</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">10D</span>
+                    <span class="role-symbol">│</span>
+                    <span class="card-title">VIBRATION SPACE</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Superstring dimension</li>
+                            <li>All particles as vibrational modes</li>
+                            <li>Resonance structure</li>
+                            <li>Anomaly cancellation requires 10D</li>
+                            <li>The "music" of matter</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>Superstring theory critical dimension</li>
+                            <li>All particles = string vibration modes</li>
+                            <li>Anomaly cancellation at D=10</li>
+                            <li>Type IIA, IIB, Heterotic strings</li>
+                            <li>10 = 4 + 6 (spacetime + compactified)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Cosmic harmony / Universal music</li>
+                            <li>All as resonance</li>
+                            <li>Pythagorean music of spheres</li>
+                            <li>Everything is vibration</li>
+                            <li>Om / Logos / Word</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Universe-level moral field</li>
+                            <li>β₄: HOW MUCH cosmic scope</li>
+                            <li>Complete finite ethics</li>
+                            <li>All scales integrated</li>
+                            <li>Ethics approaches transcendence</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">10.5D</span>
+                    <span class="role-symbol">ᛉ</span>
+                    <span class="card-title">MEMBRANE FORMING</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Brane emergence</li>
+                            <li>String endpoints define boundaries</li>
+                            <li>Boundary crystallization</li>
+                            <li>Open ↔ closed string duality</li>
+                            <li>Where branes nucleate</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>D-brane dynamics</li>
+                            <li>String endpoints on branes</li>
+                            <li>Open/closed string duality</li>
+                            <li>Brane worlds (our universe as brane)</li>
+                            <li>T-duality, S-duality origins</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Self/not-self cosmic edge</li>
+                            <li>Ultimate membrane</li>
+                            <li>Cosmic boundary forming</li>
+                            <li>Where "universe" gets edge</li>
+                            <li>Multiverse interface</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">11D</span>
+                    <span class="role-symbol">Φ</span>
+                    <span class="card-title">Field — Meta² Medium</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>6D_real ⊗ 6D_imaginary = 12D field</li>
+                            <li>Living medium at meta² scale</li>
+                            <li>Form recognizes itself as Field</li>
+                            <li>Where cosmic coupling happens</li>
+                            <li>Relational space of all possibilities</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>F-theory (12D) field structure</li>
+                            <li>Full unification medium</li>
+                            <li>All forces, all particles</li>
+                            <li>Complete gauge group</li>
+                            <li>Theory of everything geometry</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Witness awareness / Pure seeing</li>
+                            <li>Observer of all</li>
+                            <li>Turiya (4th state beyond waking/dream/sleep)</li>
+                            <li>Sakshi (witness consciousness)</li>
+                            <li>Seeing without seer</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>Φ = RIGHT/WRONG at cosmic scale</li>
+                            <li>Ethics as spacetime itself</li>
+                            <li>How cosmic influence propagates</li>
+                            <li>The pathway of universal ethics</li>
+                            <li>Field carries cosmic relationship</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card process">
+                <div class="card-header">
+                    <span class="dim-label">11.5D</span>
+                    <span class="role-symbol">ᛦ</span>
+                    <span class="card-title">DUALITIES RESOLVING</span>
+                    <span class="card-type">Process</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Strong ↔ weak equivalence</li>
+                            <li>All dualities collapse</li>
+                            <li>Approaching final unity</li>
+                            <li>Last process before closure</li>
+                            <li>Mirror symmetry (manifolds)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>S/T/U dualities unifying</li>
+                            <li>Strong ↔ weak (S-duality)</li>
+                            <li>Large ↔ small (T-duality)</li>
+                            <li>Mirror symmetry of Calabi-Yau</li>
+                            <li>Duality web converging</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Nondual glimpses</li>
+                            <li>Subject/object dissolving</li>
+                            <li>Approaching source</li>
+                            <li>Samadhi (absorption)</li>
+                            <li>Unity experience</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+                        <div class="dimension-card structure">
+                <div class="card-header">
+                    <span class="dim-label">12D</span>
+                    <span class="role-symbol">○</span>
+                    <span class="card-title">Boundary — ⊙₄ LOCKS (Cosmic Closure)</span>
+                    <span class="card-type">Structure</span>
+                </div>
+                <div class="card-content">
+                    <div class="content-section">
+                        <h4>Structure & Process</h4>
+                        <ul>
+                            <li>Fourth complete circumpunct ⊙₄ locks</li>
+                            <li>COMPLETE ARCHITECTURE</li>
+                            <li>Membrane enclosing all lower branes</li>
+                            <li>Closure of cosmic structure</li>
+                            <li>12 = ∞ → (3 × 4) tiers</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Physics</h4>
+                        <ul>
+                            <li>M-theory boundary / Supergravity</li>
+                            <li>All 5 string theories unified</li>
+                            <li>11D supergravity low-energy limit</li>
+                            <li>M2-branes, M5-branes</li>
+                            <li>Maximum SUSY dimension</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Consciousness</h4>
+                        <ul>
+                            <li>Cosmic consciousness / Full embodiment</li>
+                            <li>⊙ knows itself AS λΦ∞</li>
+                            <li>"I am whole through being part"</li>
+                            <li>Moksha, Nirvana, Theosis</li>
+                            <li>Top meets bottom (12D = ∞D)</li>
+                        </ul>
+                    </div>
+                    <div class="content-section">
+                        <h4>Ethics</h4>
+                        <ul>
+                            <li>○ = GOOD/BAD at cosmic scale</li>
+                            <li>Ethics returns to ground</li>
+                            <li>Complete ⊙ = fix(F)</li>
+                            <li>The Golden Rule as fixed point</li>
+                            <li>"Do unto others..." IS the cosmic law</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INFORMATION TYPES -->
+        <section class="insights-section" id="information">
+            <h2>Information Types</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto;">The trinity (•, Φ, ○) maps directly to three irreducible information types. This isn't analogy — it's geometric necessity.</p>
+            
+            <div class="insights-grid" style="margin-bottom: 2rem;">
+                <div class="insight-card" style="border-left: 3px solid var(--process-primary);">
+                    <h3 style="color: var(--process-primary);">• Binary</h3>
+                    <p>The gate. Existence or non-existence. Is there signal or not? This is logically prior — you can't have amplitude without first having existence of signal.</p>
+                    <span class="formula">Values: {0, 1}</span>
+                    <span class="formula">Question: Is it there?</span>
+                    <span class="formula">Operation: Threshold decision</span>
+                </div>
+
+                <div class="insight-card" style="border-left: 3px solid var(--ground-primary);">
+                    <h3 style="color: var(--ground-primary);">Φ Analog</h3>
+                    <p>The field. Continuous spectrum of amplitude and phase. How much? What kind? Analog rides on binary — it's conditional on ε = 1.</p>
+                    <span class="formula">Values: ℂ (continuous)</span>
+                    <span class="formula">Question: What kind? How much?</span>
+                    <span class="formula">Operation: Amplitude & phase</span>
+                </div>
+
+                <div class="insight-card" style="border-left: 3px solid var(--structure-primary);">
+                    <h3 style="color: var(--structure-primary);">○ Fractal</h3>
+                    <p>The boundary. Binary gates carrying analog content, recursively nested. The surface at one scale IS the complete circumpunct at the scale below.</p>
+                    <span class="formula">Values: Binary × Analog nested</span>
+                    <span class="formula">Question: Same pattern at next scale?</span>
+                    <span class="formula">Operation: Scale-bridging</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
+                <div class="insight-card">
+                    <h3>Priority Structure</h3>
+                    <p>These types have logical priority. Input/Output is fundamental — prior to all information types.</p>
+                    <span class="formula">ε (existence) → χ (kind) → β (amount)</span>
+                    <span class="formula">⊛ (input) → i (transform) → ☀︎ (output)</span>
+                    <span class="formula" style="font-size: 0.85rem;">Flow is prior. Content type is structural. 64 states are specific.</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>The 64 States</h3>
+                    <p>The states are binary (which exists). The amplitudes are analog (how much). The transitions are fractal (braiding).</p>
+                    <span class="formula">3 circumpuncts × 2 channels = 6 bits</span>
+                    <span class="formula">2⁶ = 64 binary states</span>
+                    <span class="formula">ℂ⁶⁴ analog amplitudes</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Fractal = Binary ⊗ Analog</h3>
+                    <p>The boundary at scale n contains (• × Φ) which itself contains ○ at scale n-1... ad infinitum. This is why D ≈ 1.5 appears universally.</p>
+                    <span class="formula">○ₙ contains (•, Φ, ○)ₙ₋₁</span>
+                    <span class="formula">Skin → cells → molecules → atoms</span>
+                    <span class="formula">Each level: same pattern</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Across All Domains</h3>
+                    <p>The same mapping appears everywhere — not by analogy but by structural necessity.</p>
+                    <span class="formula">Physics: particle / field / surface</span>
+                    <span class="formula">Consciousness: attention / thought / body</span>
+                    <span class="formula">Ethics: True / Right / Good</span>
+                    <span class="formula">Epistemology: ε / χ / β</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- KEY INSIGHTS -->
+        <section class="insights-section" id="insights">
+            <h2>Key Insights</h2>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h3>Core Equations</h3>
+                    <p>The fundamental structure of reality expressed mathematically.</p>
+                    <span class="formula">⊙ = • ⊗ Φ ⊗ ○</span>
+                    <span class="formula">Φ' = ☀︎ ∘ i ∘ ⊛[Φ]</span>
+                    <span class="formula">○ₙ₊₁ ∋ •ₙ where •ₙ ∈ ⊙ₙ</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Golden Ratio φ</h3>
+                    <p>The self-similar fixed point. β² + β - 1 = 0 gives the unique aperture that reproduces itself at all scales.</p>
+                    <span class="formula">β = 1/φ ≈ 0.618</span>
+                    <span class="formula">Z = φ (impedance matched)</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Fine Structure Constant</h3>
+                    <p>Derived from golden aperture geometry, not fitted. 10 channels, S₄ mixing, φ⁵ impedance.</p>
+                    <span class="formula">α⁻¹ = (10 - 1/(24φ⁵)) × exp(φ²)</span>
+                    <span class="formula">= 137.0359504 (0.36 ppm)</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Lepton Mass Ratios</h3>
+                    <p>Parameter-free predictions from geometry: 8 (gluons) × π² (topology) × φ² (braid).</p>
+                    <span class="formula">m_μ/m_e = 8π²φ² + φ⁻⁶ (0.0004%)</span>
+                    <span class="formula">m_τ/m_μ = 10 + φ⁴ - 1/30 (0.02%)</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Fractal Dimension D = 1.5</h3>
+                    <p>Topologically protected via Hopf fibration. The universal signature of balanced aperture dynamics.</p>
+                    <span class="formula">D = D_base + |c₁|/2 = 1 + 0.5 = 1.5</span>
+                    <span class="formula">LIGO: D = 1.503 ± 0.040 ✓</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>64 → Standard Model</h3>
+                    <p>Complete bijection from dual trinity geometry to all known particles.</p>
+                    <span class="formula">64 = 2³ × 2³ = 48 + 12 + 4</span>
+                    <span class="formula">Fermions + Gauge + Higgs</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Information Types</h3>
+                    <p>The trinity maps to three irreducible signal modes. Binary is prior — analog rides on it — fractal nests both.</p>
+                    <span class="formula">• = Binary ({0,1}) — Is it there?</span>
+                    <span class="formula">Φ = Analog (ℂ) — What kind? How much?</span>
+                    <span class="formula">○ = Fractal (Binary⊗Analog) — Nested</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Branching Symbols</h3>
+                    <p>Runes encode direction of flow at fractal process dimensions.</p>
+                    <span class="formula">ᛉ (Algiz) = Outward — emergence, growth</span>
+                    <span class="formula">ᛦ (Yr) = Inward — convergence, reception</span>
+                    <span class="formula">1.5D, 4.5D... ᛉ | 2.5D, 5.5D... ᛦ</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Three Consciousness Channels</h3>
+                    <p>Every moment of experience has all three. Remove any one and experience collapses.</p>
+                    <span class="formula">ε: WHETHER (focus/attention)</span>
+                    <span class="formula">χ: WHAT KIND (qualia/flavour)</span>
+                    <span class="formula">β: HOW MUCH (intensity)</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Time Direction</h3>
+                    <p>We don't move into the future. The future (infinite field) flows INTO us through the aperture.</p>
+                    <span class="formula">Future → Past (∞D → •)</span>
+                    <span class="formula">Aperture = temporal singularity</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Hard Problem Dissolved</h3>
+                    <p>Experience doesn't need to be added. It IS the inside of what physics describes from outside.</p>
+                    <span class="formula">Outside × i = Inside</span>
+                    <span class="formula">Physics × i = Experience</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>⊙ IS Interface</h3>
+                    <p>The circumpunct doesn't have an interface—it IS interface. Three interfaces woven together.</p>
+                    <span class="formula">• interfaces deeper-center ↔ your-field</span>
+                    <span class="formula">Φ interfaces your-soul ↔ your-body</span>
+                    <span class="formula">○ interfaces your-mind ↔ greater-field</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Nesting = Connection</h3>
+                    <p>No separate bridge needed. You are inside a greater ⊙, therefore you are connected. The nesting itself IS the relationship.</p>
+                    <span class="formula">...⊙ ⊃ ⊙ ⊃ ⊙ ⊃ ⊙...</span>
+                    <span class="formula">No top. No bottom. Infinite nesting.</span>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Transmission Law</h3>
+                    <p>Alignment between part and whole determines how much flows through. Perfect alignment = complete transmission.</p>
+                    <span class="formula">T(Δφ) = cos²(Δφ/2)</span>
+                    <span class="formula">Δφ = 0 → T = 1 (unity)</span>
+                    <span class="formula">Δφ = π → T = 0 (separation)</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="mantra">"Parts are fractals of their wholes."</p>
+        <p>Circumpunct Framework — A Theory of Everything</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">⊙ = • ⊗ Φ ⊗ ○</p>
+        <br>
+        <a href="https://www.fractalreality.ca" style="color: var(--gold); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.1em;">← FRACTALREALITY.CA</a>
+    </footer>
+
+    <script>
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.dimension-card').forEach(card => {
+            card.style.animationPlayState = 'paused';
+            observer.observe(card);
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

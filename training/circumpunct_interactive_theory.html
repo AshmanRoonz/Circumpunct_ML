@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CIRCUMPUNCT THEORY v4.0 — Interactive Predictions</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: rgba(255,255,255,0.06);
+    --panel2: rgba(255,255,255,0.08);
+    --text: rgba(255,255,255,0.92);
+    --muted: rgba(255,255,255,0.70);
+    --faint: rgba(255,255,255,0.55);
+    --border: rgba(255,255,255,0.14);
+    --accent: #7dd3fc;
+    --ok: #86efac;
+    --warn: #fbbf24;
+    --bad: #fb7185;
+    --code: #0b1220;
+    --codeText: rgba(255,255,255,0.92);
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    --gold: #d4af37;
+  }
+  [data-theme="light"] {
+    --bg: #f6f7fb;
+    --panel: rgba(0,0,0,0.045);
+    --panel2: rgba(0,0,0,0.06);
+    --text: rgba(0,0,0,0.88);
+    --muted: rgba(0,0,0,0.65);
+    --faint: rgba(0,0,0,0.52);
+    --border: rgba(0,0,0,0.13);
+    --accent: #0ea5e9;
+    --ok: #16a34a;
+    --warn: #d97706;
+    --bad: #e11d48;
+    --code: #0b1220;
+    --codeText: rgba(255,255,255,0.94);
+    --shadow: 0 10px 30px rgba(0,0,0,0.15);
+    --gold: #b8860b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(1200px 800px at 10% 0%, rgba(125,211,252,0.18), transparent 55%),
+                radial-gradient(1200px 800px at 80% 10%, rgba(251,113,133,0.12), transparent 55%),
+                var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.10));
+    backdrop-filter: blur(10px);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  [data-theme="light"] .topbar {
+    background: linear-gradient(to bottom, rgba(255,255,255,0.75), rgba(255,255,255,0.55));
+  }
+  .brand {
+    display:flex; align-items:center; gap:10px;
+  }
+  
+  .logo-container {
+    width: 40px; height: 40px;
+    position: relative;
+  }
+  .logo-ring {
+    position: absolute;
+    width: 100%; height: 100%;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    animation: pulse-ring 3s ease-in-out infinite;
+  }
+  .logo-field {
+    position: absolute;
+    width: 70%; height: 70%;
+    top: 15%; left: 15%;
+    background: radial-gradient(circle, rgba(125,211,252,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-field 3s ease-in-out infinite 0.5s;
+  }
+  .logo-center {
+    position: absolute;
+    width: 12px; height: 12px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--gold);
+    animation: pulse-center 3s ease-in-out infinite 1s;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+  }
+  @keyframes pulse-field {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+  }
+  @keyframes pulse-center {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
+  }
+
+  .brand h1 { font-size: 14px; margin: 0; line-height: 1.1; }
+  .brand .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  
+  .actions { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
+  
+  button, .pill, select {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  button:hover, .pill:hover { background: var(--panel2); }
+  button:active { transform: translateY(1px); }
+  
+  input[type="number"], input[type="text"] {
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: ui-monospace, monospace;
+    width: 120px;
+  }
+  [data-theme="light"] input[type="number"], [data-theme="light"] input[type="text"] {
+    background: rgba(255,255,255,0.8);
+  }
+  input:focus { outline: 2px solid var(--accent); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 14px;
+    padding: 14px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  
+  .panel {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel header {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel header h2 {
+    font-size: 13px;
+    margin: 0;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .panel .content { padding: 12px; }
+
+  .toc a {
+    display: block;
+    padding: 5px 8px;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .toc a:hover { background: var(--panel2); text-decoration: none; }
+  .toc .h2 { padding-left: 12px; color: var(--muted); }
+
+  /* Calculator Cards */
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .calc-card {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+  .calc-card h3 {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .calc-card .formula {
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--gold);
+    background: rgba(0,0,0,0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    text-align: center;
+  }
+  .calc-card .desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .input-row label {
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 100px;
+  }
+  
+  .result-box {
+    background: rgba(0,0,0,0.15);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 12px;
+  }
+  [data-theme="light"] .result-box {
+    background: rgba(0,0,0,0.04);
+  }
+  
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-label { font-size: 12px; color: var(--muted); }
+  .result-value { 
+    font-family: ui-monospace, monospace; 
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .result-value.good { color: var(--ok); }
+  .result-value.warn { color: var(--warn); }
+  .result-value.bad { color: var(--bad); }
+  
+  .error-bar {
+    height: 6px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .error-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+  .error-fill.excellent { background: var(--ok); }
+  .error-fill.good { background: var(--warn); }
+  .error-fill.poor { background: var(--bad); }
+  
+  .mono { font-family: ui-monospace, monospace; }
+  .small { font-size: 12px; color: var(--muted); }
+  
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.1);
+    font-size: 11px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
+  .dot.ok { background: var(--ok); }
+  
+  /* State explorer */
+  .bit-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: rgba(0,0,0,0.2);
+  }
+  .bit-toggle.on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
+  .bit-toggle:hover { transform: scale(1.05); }
+  
+  .state-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 12px;
+    margin: 12px 0;
+  }
+  .circumpunct-display {
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  .c-boundary {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid var(--muted);
+    border-radius: 50%;
+    opacity: 0.3;
+    transition: all 0.2s;
+  }
+  .c-boundary.active { border-color: var(--accent); opacity: 1; }
+  .c-field {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    background: radial-gradient(circle, var(--muted) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0.3;
+    transition: all 0.2s;
+  }
+  .c-field.active { background: radial-gradient(circle, var(--gold) 0%, transparent 70%); opacity: 0.8; }
+  .c-center {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--muted);
+    border-radius: 50%;
+    opacity: 0.3;
+    transition: all 0.2s;
+  }
+  .c-center.active { background: var(--ok); opacity: 1; box-shadow: 0 0 10px var(--ok); }
+  
+  .arrow-between {
+    font-size: 24px;
+    color: var(--muted);
+  }
+
+  /* Paper styles */
+  .paper { padding: 16px 20px 60px; }
+  .paper h1 { font-size: 24px; margin: 24px 0 14px; }
+  .paper h2 { font-size: 18px; margin: 28px 0 12px; color: var(--accent); }
+  .paper h3 { font-size: 15px; margin: 20px 0 10px; }
+  .paper p { margin: 10px 0; line-height: 1.6; }
+  .paper ul, .paper ol { margin: 10px 0; padding-left: 24px; }
+  .paper li { margin: 4px 0; }
+  .paper hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+  .paper table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+  .paper th, .paper td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+  .paper th { background: rgba(0,0,0,0.15); color: var(--muted); font-weight: 600; }
+  .paper code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.9em;
+    padding: 2px 6px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+  }
+  .paper pre {
+    background: var(--code);
+    color: var(--codeText);
+    padding: 12px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  .paper pre code { background: none; padding: 0; }
+  
+  .status-derived { color: var(--ok); }
+  .status-partial { color: var(--warn); }
+  .status-conjecture { color: var(--accent); }
+</style>
+</head>
+
+<body data-theme="dark">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo-container" title="⊙ = ○ ⊗ Φ ⊗ •">
+        <div class="logo-ring"></div>
+        <div class="logo-field"></div>
+        <div class="logo-center"></div>
+      </div>
+      <div>
+        <h1 class="mono">CIRCUMPUNCT THEORY v4.0</h1>
+        <div class="sub">Interactive Predictions & Calculators</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="toggleTheme">🌓 Theme</button>
+      <button id="showPaper">📄 Theory</button>
+      <button id="showCalcs">🧮 Calculators</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="panel" id="sidebar">
+      <header>
+        <h2>Navigation</h2>
+        <span class="badge"><span class="dot ok" id="statusDot"></span><span id="statusText">Ready</span></span>
+      </header>
+      <div class="content">
+        <div class="toc" id="toc">
+          <a href="#" onclick="showSection('calcs'); return false;"><strong>🧮 Calculators</strong></a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-alpha'); return false;">Fine Structure α</a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-proton'); return false;">Proton/Electron Mass</a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-gravity'); return false;">Gravitational Constant</a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-fractal'); return false;">Fractal Dimension</a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-lepton'); return false;">Lepton Masses</a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-state'); return false;">64-State Explorer</a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-chemistry'); return false;">Chemistry Predictor</a>
+          <a href="#" class="h2" onclick="scrollToCalc('calc-lambda'); return false;">Cosmological Λ</a>
+          <div style="height:16px;"></div>
+          <a href="#" onclick="showSection('paper'); return false;"><strong>📄 Full Theory</strong></a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="panel">
+      <header>
+        <h2 id="main-title">Interactive Calculators</h2>
+        <div class="small">Enter values → see framework predictions</div>
+      </header>
+      
+      <!-- CALCULATORS SECTION -->
+      <div id="calcs-section" class="calc-grid">
+        
+        <!-- 1. Fine Structure Constant -->
+        <div class="calc-card" id="calc-alpha">
+          <h3>⚡ Fine Structure Constant</h3>
+          <div class="formula">α⁻¹(M_Z) = 2⁷ = 128</div>
+          <div class="desc">
+            The framework predicts α⁻¹ = 128 at the Z boson mass scale from 7 binary dimensions 
+            (6 component bits + 1 actualization bit).
+          </div>
+          <div class="input-row">
+            <label>Your α⁻¹ value:</label>
+            <input type="number" id="alpha-input" value="137.036" step="0.001">
+            <button onclick="calcAlpha()">Calculate</button>
+          </div>
+          <div class="input-row">
+            <label>Energy scale:</label>
+            <select id="alpha-scale">
+              <option value="low">Low energy (α⁻¹ ≈ 137)</option>
+              <option value="mz" selected>M_Z scale (α⁻¹ ≈ 128)</option>
+              <option value="gut">GUT scale (α⁻¹ ≈ 42)</option>
+            </select>
+          </div>
+          <div class="result-box" id="alpha-result"></div>
+        </div>
+
+        <!-- 2. Proton-Electron Mass Ratio -->
+        <div class="calc-card" id="calc-proton">
+          <h3>⚛️ Proton-Electron Mass Ratio</h3>
+          <div class="formula">m_p / m_e = 6π⁵ = 1836.1181</div>
+          <div class="desc">
+            The proton is a 3-quark braid through 5D subspace. 
+            3! = 6 permutations × π⁵ volume element.
+          </div>
+          <div class="input-row">
+            <label>Proton mass (MeV):</label>
+            <input type="number" id="proton-mass" value="938.272" step="0.001">
+          </div>
+          <div class="input-row">
+            <label>Electron mass (MeV):</label>
+            <input type="number" id="electron-mass" value="0.511" step="0.0001">
+            <button onclick="calcProton()">Calculate</button>
+          </div>
+          <div class="result-box" id="proton-result"></div>
+        </div>
+
+        <!-- 3. Gravitational Constant -->
+        <div class="calc-card" id="calc-gravity">
+          <h3>🌍 Gravitational Constant</h3>
+          <div class="formula">G = (ℏc / m_p²) / 2¹²⁷</div>
+          <div class="desc">
+            Gravity is Planck-scale coupling screened by 127 nested vacuum layers.
+            This explains why gravity is 10³⁸ times weaker than EM.
+          </div>
+          <div class="input-row">
+            <label>Proton mass (kg):</label>
+            <input type="text" id="g-proton" value="1.673e-27" style="width:140px;">
+            <button onclick="calcGravity()">Calculate</button>
+          </div>
+          <div class="result-box" id="gravity-result"></div>
+        </div>
+
+        <!-- 4. Fractal Dimension -->
+        <div class="calc-card" id="calc-fractal">
+          <h3>🌿 Fractal Dimension</h3>
+          <div class="formula">D = 1 + β</div>
+          <div class="desc">
+            β = balance between convergence and emergence.
+            β = 0.5 (optimal) → D = 1.5 (observed in LIGO, DNA, coastlines).
+          </div>
+          <div class="input-row">
+            <label>Balance β (0-1):</label>
+            <input type="range" id="beta-slider" min="0" max="1" step="0.01" value="0.5" style="width:150px;">
+            <span class="mono" id="beta-display">0.50</span>
+          </div>
+          <div class="input-row">
+            <label>Or enter observed D:</label>
+            <input type="number" id="d-input" value="1.503" step="0.001" style="width:100px;">
+            <button onclick="calcFractal()">Calculate</button>
+          </div>
+          <div class="result-box" id="fractal-result"></div>
+        </div>
+
+        <!-- 5. Lepton Mass Calculator -->
+        <div class="calc-card" id="calc-lepton">
+          <h3>🔬 Lepton Mass Predictor</h3>
+          <div class="formula">m(n) = m_e × (α⁻¹)^(2(n-1)/3) × g_n</div>
+          <div class="desc">
+            Generation n determines nesting depth. g_n factors involve φ^(7/2) and D.
+            Currently phenomenological — derivation is an open problem.
+          </div>
+          <div class="input-row">
+            <label>Generation:</label>
+            <select id="lepton-gen">
+              <option value="1">n=1 (Electron)</option>
+              <option value="2">n=2 (Muon)</option>
+              <option value="3">n=3 (Tau)</option>
+              <option value="4">n=4 (Hypothetical)</option>
+            </select>
+            <button onclick="calcLepton()">Predict</button>
+          </div>
+          <div class="input-row">
+            <label>Use α⁻¹ =</label>
+            <input type="number" id="lepton-alpha" value="128" step="1" style="width:80px;">
+            <label>m_e (MeV):</label>
+            <input type="number" id="lepton-me" value="0.511" step="0.001" style="width:80px;">
+          </div>
+          <div class="result-box" id="lepton-result"></div>
+        </div>
+
+        <!-- 6. 64-State Explorer -->
+        <div class="calc-card" id="calc-state">
+          <h3>🎲 64-State Explorer</h3>
+          <div class="formula">State = (○,•,Φ)_in ⊗ (○,•,Φ)_out</div>
+          <div class="desc">
+            Click bits to toggle. Valid states require 2-of-3 components at each interface.
+            22 of 64 states are physically stable.
+          </div>
+          <div class="input-row" style="justify-content:center; gap:20px;">
+            <div>
+              <div class="small" style="text-align:center; margin-bottom:6px;">INPUT</div>
+              <div style="display:flex; gap:6px;">
+                <div class="bit-toggle" id="bit0" onclick="toggleBit(0)">○</div>
+                <div class="bit-toggle" id="bit1" onclick="toggleBit(1)">Φ</div>
+                <div class="bit-toggle" id="bit2" onclick="toggleBit(2)">•</div>
+              </div>
+            </div>
+            <div style="font-size:24px; color:var(--muted);">→</div>
+            <div>
+              <div class="small" style="text-align:center; margin-bottom:6px;">OUTPUT</div>
+              <div style="display:flex; gap:6px;">
+                <div class="bit-toggle" id="bit3" onclick="toggleBit(3)">○</div>
+                <div class="bit-toggle" id="bit4" onclick="toggleBit(4)">Φ</div>
+                <div class="bit-toggle" id="bit5" onclick="toggleBit(5)">•</div>
+              </div>
+            </div>
+          </div>
+          <div class="state-visual">
+            <div class="circumpunct-display" id="circumpunct-in">
+              <div class="c-boundary" id="cb-in"></div>
+              <div class="c-field" id="cf-in"></div>
+              <div class="c-center" id="cc-in"></div>
+            </div>
+            <div class="arrow-between">⟶</div>
+            <div class="circumpunct-display" id="circumpunct-out">
+              <div class="c-boundary" id="cb-out"></div>
+              <div class="c-field" id="cf-out"></div>
+              <div class="c-center" id="cc-out"></div>
+            </div>
+          </div>
+          <div class="result-box" id="state-result"></div>
+        </div>
+
+        <!-- 7. Chemistry Predictor -->
+        <div class="calc-card" id="calc-chemistry">
+          <h3>⚗️ Ionization Energy Predictor</h3>
+          <div class="formula">E = -R∞ × Z_eff² / (n+1)² + λ×ℓ(ℓ+1)</div>
+          <div class="desc">
+            Predicts first ionization energy using framework constants.
+            λ = R∞ × φ⁻⁷ ≈ 0.474 eV (angular penalty from golden ratio).
+          </div>
+          <div class="input-row">
+            <label>Atomic number Z:</label>
+            <input type="number" id="chem-z" value="1" min="1" max="118" step="1" style="width:80px;">
+            <button onclick="calcChemistry()">Predict</button>
+          </div>
+          <div class="result-box" id="chemistry-result"></div>
+        </div>
+
+        <!-- 8. Cosmological Constant -->
+        <div class="calc-card" id="calc-lambda">
+          <h3>🌌 Cosmological Constant</h3>
+          <div class="formula">Λ ≈ 8πGH₀²/c²</div>
+          <div class="desc">
+            Dark energy from T₃ expansion. Currently off by factor ~3 — 
+            may relate to three temporal dimensions.
+          </div>
+          <div class="input-row">
+            <label>H₀ (km/s/Mpc):</label>
+            <input type="number" id="hubble" value="67.4" step="0.1" style="width:100px;">
+            <button onclick="calcLambda()">Calculate</button>
+          </div>
+          <div class="result-box" id="lambda-result"></div>
+        </div>
+
+      </div>
+
+      <!-- PAPER SECTION (hidden by default) -->
+      <div id="paper-section" class="paper" style="display:none;">
+        <h1>CIRCUMPUNCT THEORY: A GEOMETRIC FRAMEWORK</h1>
+        <h2>Mathematical Foundations and Physical Predictions</h2>
+        
+        <p><strong>Author:</strong> Ashman Roonz<br>
+        <strong>Version:</strong> 4.0 (Rigorous Edition)<br>
+        <strong>Date:</strong> December 2025</p>
+
+        <hr>
+
+        <h2>Core Axioms</h2>
+        
+        <p><strong>A1: The Circumpunct</strong></p>
+        <pre><code>⊙ = ○ ⊗ Φ ⊗ •
+
+○ = Boundary (outermost)
+Φ = Field (mediates)
+• = Center (innermost)</code></pre>
+
+        <p><strong>A2: The Master Transformation</strong></p>
+        <pre><code>Φ' = ☀︎ ∘ i ∘ ⊛[Φ]
+
+⊛ = convergence (toward center)
+i = aperture (90° rotation)
+☀︎ = emergence (from center)</code></pre>
+
+        <p><strong>A3: The Balance Parameter</strong></p>
+        <pre><code>β = ⊛/(⊛ + ☀︎) = 0.5
+
+D = 1 + β = 1.5 (fractal dimension)</code></pre>
+
+        <hr>
+
+        <h2>Confirmed Predictions</h2>
+        
+        <table>
+          <tr><th>Prediction</th><th>Formula</th><th>Value</th><th>Measured</th><th>Error</th></tr>
+          <tr><td>Fine structure</td><td>α⁻¹ = 2⁷</td><td>128</td><td>127.952</td><td>0.04%</td></tr>
+          <tr><td>Proton/electron</td><td>m_p/m_e = 6π⁵</td><td>1836.118</td><td>1836.153</td><td>0.002%</td></tr>
+          <tr><td>Gravity</td><td>G = ℏc/m_p²/2¹²⁷</td><td>6.642×10⁻¹¹</td><td>6.674×10⁻¹¹</td><td>0.49%</td></tr>
+          <tr><td>Fractal dim</td><td>D = 1 + β</td><td>1.5</td><td>1.503 (LIGO)</td><td>0.2%</td></tr>
+        </table>
+
+        <hr>
+
+        <h2>Open Problems</h2>
+        <ul>
+          <li>Lepton mass hierarchy — needs nesting operator derivation</li>
+          <li>B₃ → three generations map — needs representation theory</li>
+          <li>Complete Standard Model mapping — needs gauge structure</li>
+          <li>Cosmological constant factor of 3</li>
+        </ul>
+
+        <hr>
+
+        <h2>The Core Insight</h2>
+        <p style="text-align:center; font-size:1.3em;">
+          <strong>⊙ = ○ ⊗ Φ ⊗ •</strong><br>
+          <strong>β = 0.5</strong>
+        </p>
+        <p style="text-align:center;">
+          Boundary, Field, Center.<br>
+          Three components, one transformation, optimal balance.
+        </p>
+
+        <hr>
+        <p><em>Not a model. A framework. Not finished. In progress.</em></p>
+      </div>
+
+    </main>
+  </div>
+
+<script>
+// Constants
+const PHI = (1 + Math.sqrt(5)) / 2;  // Golden ratio
+const PI = Math.PI;
+const HBAR = 1.054571817e-34;  // J·s
+const C = 299792458;  // m/s
+const R_INF = 13.605693;  // eV (Rydberg)
+
+// State for 64-state explorer
+let stateBits = [0, 0, 0, 0, 0, 0];
+
+// Theme toggle
+document.getElementById('toggleTheme').addEventListener('click', () => {
+  document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+});
+
+// Section switching
+function showSection(which) {
+  const calcs = document.getElementById('calcs-section');
+  const paper = document.getElementById('paper-section');
+  const title = document.getElementById('main-title');
+  
+  if (which === 'calcs') {
+    calcs.style.display = 'grid';
+    paper.style.display = 'none';
+    title.textContent = 'Interactive Calculators';
+  } else {
+    calcs.style.display = 'none';
+    paper.style.display = 'block';
+    title.textContent = 'Full Theory';
+  }
+}
+
+document.getElementById('showPaper').addEventListener('click', () => showSection('paper'));
+document.getElementById('showCalcs').addEventListener('click', () => showSection('calcs'));
+
+function scrollToCalc(id) {
+  showSection('calcs');
+  setTimeout(() => {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ============ CALCULATOR FUNCTIONS ============
+
+// 1. Fine Structure Constant
+function calcAlpha() {
+  const input = parseFloat(document.getElementById('alpha-input').value);
+  const scale = document.getElementById('alpha-scale').value;
+  
+  let predicted, measured, scaleName;
+  if (scale === 'low') {
+    predicted = 137;  // Framework doesn't predict low-energy directly
+    measured = 137.036;
+    scaleName = 'Low energy';
+  } else if (scale === 'mz') {
+    predicted = 128;  // 2^7
+    measured = 127.952;
+    scaleName = 'M_Z (91.2 GeV)';
+  } else {
+    predicted = 42;  // Approximate GUT
+    measured = 42.5;
+    scaleName = 'GUT scale';
+  }
+  
+  const errorPred = Math.abs(predicted - measured) / measured * 100;
+  const errorInput = Math.abs(input - predicted) / predicted * 100;
+  
+  const errClass = errorPred < 0.5 ? 'good' : errorPred < 2 ? 'warn' : 'bad';
+  const barClass = errorPred < 0.5 ? 'excellent' : errorPred < 2 ? 'good' : 'poor';
+  
+  document.getElementById('alpha-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Scale</span>
+      <span class="result-value">${scaleName}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Framework predicts</span>
+      <span class="result-value">${predicted}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Experimental value</span>
+      <span class="result-value">${measured}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Framework error</span>
+      <span class="result-value ${errClass}">${errorPred.toFixed(3)}%</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Your input vs framework</span>
+      <span class="result-value">${errorInput.toFixed(2)}% difference</span>
+    </div>
+    <div class="error-bar"><div class="error-fill ${barClass}" style="width:${100 - errorPred*10}%"></div></div>
+  `;
+}
+
+// 2. Proton-Electron Mass Ratio
+function calcProton() {
+  const mp = parseFloat(document.getElementById('proton-mass').value);
+  const me = parseFloat(document.getElementById('electron-mass').value);
+  
+  const measured = mp / me;
+  const predicted = 6 * Math.pow(PI, 5);
+  const error = Math.abs(predicted - measured) / measured * 100;
+  
+  const errClass = error < 0.01 ? 'good' : error < 0.1 ? 'warn' : 'bad';
+  const barClass = error < 0.01 ? 'excellent' : error < 0.1 ? 'good' : 'poor';
+  
+  document.getElementById('proton-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Your ratio (m_p/m_e)</span>
+      <span class="result-value mono">${measured.toFixed(5)}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Framework predicts (6π⁵)</span>
+      <span class="result-value mono">${predicted.toFixed(5)}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Error</span>
+      <span class="result-value ${errClass}">${error.toFixed(4)}%</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">6 × π⁵</span>
+      <span class="result-value mono">6 × ${Math.pow(PI,5).toFixed(4)} = ${predicted.toFixed(4)}</span>
+    </div>
+    <div class="error-bar"><div class="error-fill ${barClass}" style="width:${100 - error*100}%"></div></div>
+  `;
+}
+
+// 3. Gravitational Constant
+function calcGravity() {
+  const mpStr = document.getElementById('g-proton').value;
+  const mp = parseFloat(mpStr);
+  
+  // G = ℏc / (m_p² × 2^127)
+  const screening = Math.pow(2, 127);
+  const predicted = (HBAR * C) / (mp * mp * screening);
+  const measured = 6.67430e-11;
+  const error = Math.abs(predicted - measured) / measured * 100;
+  
+  const errClass = error < 1 ? 'good' : error < 5 ? 'warn' : 'bad';
+  
+  document.getElementById('gravity-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Framework predicts G</span>
+      <span class="result-value mono">${predicted.toExponential(3)} m³/kg/s²</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Measured G</span>
+      <span class="result-value mono">${measured.toExponential(3)} m³/kg/s²</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Error</span>
+      <span class="result-value ${errClass}">${error.toFixed(2)}%</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">2¹²⁷ screening</span>
+      <span class="result-value mono">≈ 1.70 × 10³⁸</span>
+    </div>
+    <div class="small" style="margin-top:8px;">This explains why gravity is ~10³⁸ weaker than electromagnetism.</div>
+  `;
+}
+
+// 4. Fractal Dimension
+document.getElementById('beta-slider').addEventListener('input', function() {
+  document.getElementById('beta-display').textContent = parseFloat(this.value).toFixed(2);
+});
+
+function calcFractal() {
+  const beta = parseFloat(document.getElementById('beta-slider').value);
+  const observedD = parseFloat(document.getElementById('d-input').value);
+  
+  const predictedD = 1 + beta;
+  const impliedBeta = observedD - 1;
+  
+  const systems = [
+    { name: 'LIGO gravitational waves', d: 1.503 },
+    { name: 'DNA backbone', d: 1.510 },
+    { name: 'Norwegian coastline', d: 1.52 },
+    { name: 'British coastline', d: 1.25 },
+    { name: 'DLA clusters', d: 1.70 },
+  ];
+  
+  let closest = systems[0];
+  let minDiff = Math.abs(systems[0].d - observedD);
+  for (const s of systems) {
+    const diff = Math.abs(s.d - observedD);
+    if (diff < minDiff) { minDiff = diff; closest = s; }
+  }
+  
+  document.getElementById('fractal-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">From β = ${beta.toFixed(2)}</span>
+      <span class="result-value">D = 1 + β = <strong>${predictedD.toFixed(2)}</strong></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">From observed D = ${observedD}</span>
+      <span class="result-value">Implied β = <strong>${impliedBeta.toFixed(3)}</strong></span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Optimal balance?</span>
+      <span class="result-value ${Math.abs(impliedBeta - 0.5) < 0.1 ? 'good' : 'warn'}">
+        ${Math.abs(impliedBeta - 0.5) < 0.05 ? '✓ Yes (near β=0.5)' : Math.abs(impliedBeta - 0.5) < 0.2 ? '~ Close' : '✗ Imbalanced'}
+      </span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Similar system</span>
+      <span class="result-value">${closest.name} (D=${closest.d})</span>
+    </div>
+  `;
+}
+
+// 5. Lepton Mass Calculator
+function calcLepton() {
+  const n = parseInt(document.getElementById('lepton-gen').value);
+  const alphaInv = parseFloat(document.getElementById('lepton-alpha').value);
+  const me = parseFloat(document.getElementById('lepton-me').value);
+  
+  // Naive scaling
+  const naiveMultiplier = Math.pow(alphaInv, (2/3) * (n - 1));
+  const naiveMass = me * naiveMultiplier;
+  
+  // g_n factors (phenomenological)
+  const D = 1.5;
+  const phi72 = Math.pow(PHI, 3.5);  // φ^(7/2) ≈ 5.388
+  let gn = 1;
+  if (n === 2) gn = D * phi72;  // ≈ 8.08
+  if (n === 3) gn = phi72;       // ≈ 5.39
+  if (n === 4) gn = phi72 / D;   // Speculative
+  
+  const correctedMass = naiveMass * gn;
+  
+  const experimental = [0.511, 105.658, 1776.86, null][n - 1];
+  const expStr = experimental ? `${experimental} MeV` : 'Unknown (>100 GeV excluded)';
+  const error = experimental ? Math.abs(correctedMass - experimental) / experimental * 100 : null;
+  
+  const leptonNames = ['Electron', 'Muon', 'Tau', '4th Gen (hypothetical)'];
+  
+  document.getElementById('lepton-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Particle</span>
+      <span class="result-value">${leptonNames[n-1]}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Naive scaling (no g_n)</span>
+      <span class="result-value mono">${naiveMass.toFixed(3)} MeV</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">g_${n} factor</span>
+      <span class="result-value mono">${gn.toFixed(4)} ${n > 1 ? (n === 2 ? '(D×φ^3.5)' : '(φ^3.5)') : ''}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Corrected prediction</span>
+      <span class="result-value mono" style="color:var(--gold);">${correctedMass.toFixed(3)} MeV</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Experimental</span>
+      <span class="result-value">${expStr}</span>
+    </div>
+    ${error !== null ? `
+    <div class="result-row">
+      <span class="result-label">Error</span>
+      <span class="result-value ${error < 1 ? 'good' : 'warn'}">${error.toFixed(2)}%</span>
+    </div>` : ''}
+    <div class="small" style="margin-top:8px;">⚠️ g_n factors are phenomenological fits. Derivation is an open problem.</div>
+  `;
+}
+
+// 6. 64-State Explorer
+function toggleBit(i) {
+  stateBits[i] = 1 - stateBits[i];
+  updateStateDisplay();
+}
+
+function updateStateDisplay() {
+  // Update bit toggles
+  for (let i = 0; i < 6; i++) {
+    const el = document.getElementById('bit' + i);
+    el.classList.toggle('on', stateBits[i] === 1);
+  }
+  
+  // Update circumpunct visuals
+  document.getElementById('cb-in').classList.toggle('active', stateBits[0] === 1);
+  document.getElementById('cf-in').classList.toggle('active', stateBits[1] === 1);
+  document.getElementById('cc-in').classList.toggle('active', stateBits[2] === 1);
+  document.getElementById('cb-out').classList.toggle('active', stateBits[3] === 1);
+  document.getElementById('cf-out').classList.toggle('active', stateBits[4] === 1);
+  document.getElementById('cc-out').classList.toggle('active', stateBits[5] === 1);
+  
+  // Calculate state
+  const stateNum = stateBits[0]*32 + stateBits[1]*16 + stateBits[2]*8 + stateBits[3]*4 + stateBits[4]*2 + stateBits[5];
+  const binary = stateBits.join('');
+  
+  // Validation: 2-of-3 at each interface
+  const midPresent = stateBits[1] || stateBits[4];
+  const inSum = stateBits[0] + (midPresent ? 1 : 0) + stateBits[2];
+  const outSum = stateBits[3] + (midPresent ? 1 : 0) + stateBits[5];
+  const isValid = inSum >= 2 && outSum >= 2;
+  
+  // Particle hints
+  let particleHint = '';
+  if (stateBits[0] && stateBits[1] && stateBits[2] && stateBits[3] && stateBits[4] && stateBits[5]) {
+    particleHint = 'Full circumpunct — maximum coherence';
+  } else if (!stateBits[0] && !stateBits[3] && stateBits[2] && stateBits[5]) {
+    particleHint = 'Center-only — neutrino-like (input only)';
+  } else if (stateBits[3] && stateBits[4] && stateBits[5] && !stateBits[0] && !stateBits[1] && !stateBits[2]) {
+    particleHint = 'Output-only — photon-like';
+  }
+  
+  document.getElementById('state-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">State number</span>
+      <span class="result-value mono">${stateNum} / 64</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Binary</span>
+      <span class="result-value mono">${binary}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Input components</span>
+      <span class="result-value">${stateBits[0] ? '○' : '·'} ${stateBits[1] ? 'Φ' : '·'} ${stateBits[2] ? '•' : '·'}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Output components</span>
+      <span class="result-value">${stateBits[3] ? '○' : '·'} ${stateBits[4] ? 'Φ' : '·'} ${stateBits[5] ? '•' : '·'}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Valid (2-of-3 rule)?</span>
+      <span class="result-value ${isValid ? 'good' : 'bad'}">${isValid ? '✓ STABLE' : '✗ Unstable'}</span>
+    </div>
+    ${particleHint ? `<div class="small" style="margin-top:8px;">💡 ${particleHint}</div>` : ''}
+  `;
+}
+
+// 7. Chemistry Predictor
+function calcChemistry() {
+  const Z = parseInt(document.getElementById('chem-z').value);
+  
+  // Simple model based on framework
+  const lambda = R_INF * Math.pow(PHI, -7);  // ≈ 0.474 eV
+  
+  // Determine shell/subshell (simplified)
+  const shells = [
+    {max: 2, n: 1, l: 0},
+    {max: 4, n: 2, l: 0},
+    {max: 10, n: 2, l: 1},
+    {max: 12, n: 3, l: 0},
+    {max: 18, n: 3, l: 1},
+    {max: 20, n: 4, l: 0},
+    {max: 30, n: 3, l: 2},
+    {max: 36, n: 4, l: 1},
+  ];
+  
+  let n = 1, l = 0;
+  for (const s of shells) {
+    if (Z <= s.max) { n = s.n; l = s.l; break; }
+  }
+  
+  // Screening (simplified Slater rules)
+  const sigma = Math.max(0, Z - 1) * 0.35;
+  const Zeff = Z - sigma;
+  
+  // Energy
+  const E = R_INF * (Zeff * Zeff) / ((n) * (n)) - lambda * l * (l + 1);
+  
+  // Experimental (approximate)
+  const expIE = {
+    1: 13.6, 2: 24.6, 3: 5.4, 4: 9.3, 5: 8.3, 6: 11.3, 7: 14.5, 8: 13.6,
+    9: 17.4, 10: 21.6, 11: 5.1, 12: 7.6, 13: 6.0, 14: 8.2, 15: 10.5,
+    16: 10.4, 17: 13.0, 18: 15.8, 19: 4.3, 20: 6.1, 26: 7.9, 29: 7.7,
+    47: 7.6, 79: 9.2
+  };
+  
+  const measured = expIE[Z] || null;
+  const error = measured ? Math.abs(E - measured) / measured * 100 : null;
+  
+  const elements = ['','H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','Cl','Ar','K','Ca'];
+  const name = elements[Z] || `Z=${Z}`;
+  
+  document.getElementById('chemistry-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">Element</span>
+      <span class="result-value">${name} (Z=${Z})</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Shell (n, ℓ)</span>
+      <span class="result-value mono">n=${n}, ℓ=${l}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Z_eff (screened)</span>
+      <span class="result-value mono">${Zeff.toFixed(2)}</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Predicted IE</span>
+      <span class="result-value mono" style="color:var(--gold);">${E.toFixed(2)} eV</span>
+    </div>
+    ${measured ? `
+    <div class="result-row">
+      <span class="result-label">Experimental IE</span>
+      <span class="result-value mono">${measured.toFixed(1)} eV</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Error</span>
+      <span class="result-value ${error < 20 ? 'warn' : 'bad'}">${error.toFixed(1)}%</span>
+    </div>` : '<div class="small">No experimental data for comparison</div>'}
+    <div class="small" style="margin-top:8px;">λ = R∞ × φ⁻⁷ ≈ ${lambda.toFixed(3)} eV</div>
+  `;
+}
+
+// 8. Cosmological Constant
+function calcLambda() {
+  const H0_kmsMpc = parseFloat(document.getElementById('hubble').value);
+  
+  // Convert H0 to SI (1/s)
+  const H0 = H0_kmsMpc * 1000 / (3.086e22);  // km/s/Mpc → 1/s
+  
+  const G = 6.674e-11;
+  
+  // Λ ≈ 8πGH²/c²
+  const predicted = 8 * PI * G * H0 * H0 / (C * C);
+  const measured = 1.1e-52;  // m⁻²
+  
+  const ratio = predicted / measured;
+  
+  document.getElementById('lambda-result').innerHTML = `
+    <div class="result-row">
+      <span class="result-label">H₀ input</span>
+      <span class="result-value mono">${H0_kmsMpc} km/s/Mpc</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">H₀ in SI</span>
+      <span class="result-value mono">${H0.toExponential(2)} s⁻¹</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Predicted Λ</span>
+      <span class="result-value mono">${predicted.toExponential(2)} m⁻²</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Measured Λ</span>
+      <span class="result-value mono">${measured.toExponential(2)} m⁻²</span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Ratio (pred/meas)</span>
+      <span class="result-value ${ratio < 5 ? 'warn' : 'bad'}">${ratio.toFixed(1)}×</span>
+    </div>
+    <div class="small" style="margin-top:8px;">
+      ⚠️ Factor of ~3 discrepancy. May relate to three temporal dimensions (T₁, T₂, T₃) 
+      contributing differently. This is an open problem.
+    </div>
+  `;
+}
+
+// Initialize
+updateStateDisplay();
+calcAlpha();
+calcProton();
+</script>
+
+<script>
+  // Optional MathJax
+  if (!window.MATHJAX_OFF) {
+    const s = document.createElement('script');
+    s.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+    s.async = true;
+    document.head.appendChild(s);
+  }
+</script>
+
+</body>
+</html>
