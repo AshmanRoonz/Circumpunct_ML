@@ -624,6 +624,12 @@ class CrossScaleCoupling(nn.Module):
         else:
             r_emer_acc_new = lam * r_emer_acc + (1 - lam) * r_emer_instant
 
+        # Clamp accumulated resonance to prevent float16 overflow under AMP
+        # Resonance lives in [-1, 1] naturally (cos Δθ), but accumulation
+        # can drift under mixed precision. Boundary keeps it bounded.
+        r_conv_acc_new = r_conv_acc_new.clamp(-2.0, 2.0)
+        r_emer_acc_new = r_emer_acc_new.clamp(-2.0, 2.0)
+
         # Use ACCUMULATED resonance (not instantaneous) for gating
         # This is the difference between a stranger's words and a friend's
         r_conv_scalar = torch.sigmoid(
@@ -1012,6 +1018,9 @@ class XorzoTransformer(nn.Module):
         r_conv_acc = None  # (B, Tm, Tu) convergence resonance history
         r_emer_acc = None  # (B, Tu, Tm) emergence resonance history
 
+        # Track original macro size (before any vesica births)
+        Tm_base = Tm
+
         for i, (blk_micro, blk_macro, coupler) in enumerate(
             zip(self.micro_blocks, self.macro_blocks, self.couplers)
         ):
@@ -1021,9 +1030,15 @@ class XorzoTransformer(nn.Module):
             micro_pressures[i] = blk_micro.mean_pressure
 
             # 2. Re-ground macro from latest micro (the whole re-reads its parts)
-            o_macro_grounded = self.aim_pool(o_micro, self.chunk_size)
-            # Blend: keep macro's learned state but refresh from micro
-            o_macro = 0.7 * o_macro + 0.3 * o_macro_grounded
+            # Only re-ground the ORIGINAL aim tokens, not vesica children.
+            # Children persist on their own — they're born from resonance, not pooling.
+            o_macro_grounded = self.aim_pool(o_micro, self.chunk_size)  # (B, Tm_base, D)
+            o_macro_base = 0.7 * o_macro[:, :Tm_base] + 0.3 * o_macro_grounded
+            if o_macro.size(1) > Tm_base:
+                # Vesica children persist without re-grounding
+                o_macro = torch.cat([o_macro_base, o_macro[:, Tm_base:]], dim=1)
+            else:
+                o_macro = o_macro_base
 
             # 3. Macro ⊙ self-attends (higher-order context loop)
             macro_np = macro_pressures[i - 1] if i > 0 else 0.0

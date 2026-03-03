@@ -149,16 +149,23 @@ def train_v3_gpu(
                 )
                 loss = ce_loss + reg
 
+            # NaN guard — skip step if loss explodes
+            if torch.isnan(loss) or torch.isinf(loss):
+                optimizer.zero_grad()
+                if scaler is not None:
+                    scaler.update()  # still update scaler to adjust scale factor
+                continue
+
             optimizer.zero_grad()
             if scaler is not None:
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 2.0)
                 scaler.step(optimizer)
                 scaler.update()
             else:
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 2.0)
                 optimizer.step()
 
             scheduler.step()
