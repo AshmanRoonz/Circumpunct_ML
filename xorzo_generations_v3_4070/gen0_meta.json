@@ -1,0 +1,35 @@
+{
+  "generation": 0,
+  "version": "v3",
+  "vocab_size": 165,
+  "d_model": 128,
+  "n_layers": 6,
+  "n_heads": 4,
+  "chunk_size": 16,
+  "diagnosis": {
+    "generation": 0,
+    "version": "v3-crossscale-resonant",
+    "mean_beta": 0.6172281888624033,
+    "beta_variance": 0.0005540089026846055,
+    "mean_chi": 0.8237181057532629,
+    "mean_pressure": 0.00017986199289765636,
+    "mean_resonance": 1.254953404267629,
+    "D": 1.6172281888624034,
+    "regime": "convergent",
+    "convergence_profile": [
+      1.0,
+      0.9530182909348685,
+      0.9082438628564177,
+      0.8655730139315063,
+      0.8249069144163473,
+      0.7861513777574233
+    ],
+    "is_convergent": true,
+    "errors": [],
+    "healthy": true,
+    "n_params": 2738533,
+    "chunk_size": 16,
+    "n_micro_layers": 6,
+    "n_macro_layers": 6
+  }
+}
